@@ -4,559 +4,99 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personal Finance Calculator</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f3f4f6; /* Light gray background */
-    }
-    .input-group {
-      @apply mb-4;
-    }
-    .input-group label {
-      @apply block text-sm font-medium text-gray-700 mb-1;
-    }
-    .input-field {
-      @apply w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out;
-    }
-    .result-box {
-      @apply bg-white p-6 rounded-lg shadow-md mb-6;
-    }
-    .result-box h3 {
-      @apply text-lg font-semibold text-gray-800 mb-3;
-    }
-    .result-box p {
-      @apply text-gray-600 mb-1;
-    }
-    .status-badge {
-      @apply px-3 py-1 rounded-full text-xs font-semibold;
-    }
-    .green-zone {
-      @apply bg-green-100 text-green-800;
-    }
-    .moderate-zone {
-      @apply bg-yellow-100 text-yellow-800;
-    }
-    .red-zone {
-      @apply bg-red-100 text-red-800;
-    }
-    .error-message {
-      @apply text-red-600 text-xs mt-1;
-    }
-  </style>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="p-4 md:p-8 flex items-center justify-center min-h-screen">
-<div class="max-w-4xl w-full bg-white p-6 md:p-8 rounded-xl shadow-2xl">
-  <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Personal Finance Calculator</h1>
+<body class="p-4 md:p-8 flex items-center justify-center min-h-screen bg-gray-50 font-inter">
+<div id="main-calculator-card" class="max-w-4xl w-full bg-white p-6 md:p-8 rounded-2xl shadow-xl animate-fade-in">
+  <h1 class="text-3xl font-bold text-center text-gray-800 mb-8 tracking-tight">Your Personal Finance Calculator</h1>
 
   <!-- Annual Income Input -->
-  <section id="annual-income-section" class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Your Income</h2>
+  <section id="annual-income-section" class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-5 border-b pb-3 border-gray-200">Your Income Details</h2>
     <div class="input-group">
       <label for="annualIncome">Annual Gross Income ($)</label>
-      <input type="number" id="annualIncome" class="input-field" placeholder="e.g., 60000" min="0">
+      <input type="number" id="annualIncome" class="input-field" placeholder="e.g., 60,000" min="0">
       <p id="annualIncomeError" class="error-message"></p>
+    </div>
+    <div class="input-group flex items-center mt-5">
+      <input type="checkbox" id="includeRetirement" class="custom-checkbox mr-3">
+      <label for="includeRetirement" class="text-base font-medium text-gray-700 select-none cursor-pointer">Include 10% Retirement Contribution?</label>
     </div>
   </section>
 
   <!-- Deductions and Disposable Income Display -->
-  <section id="deductions-disposable-section" class="result-box hidden">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Income & Deductions Overview</h2>
-    <p class="text-gray-700 mb-2"><strong>Total Annual Deductions:</strong> <span id="totalAnnualDeductions">$0.00</span></p>
-    <div class="mb-3">
-      <h3 class="text-base font-medium text-gray-800">Deductions Breakdown:</h3>
-      <ul id="deductionsBreakdownList" class="list-disc list-inside text-gray-600 ml-4">
-        <!-- Deductions will be listed here -->
-      </ul>
+  <section id="deductions-disposable-section" class="result-box hidden animate-slide-up">
+    <h2 class="text-xl font-semibold text-gray-700 mb-4">Income & Deductions Overview</h2>
+
+    <div id="deduction-inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6">
+      <!-- Deduction inputs will be dynamically generated here by JS -->
     </div>
-    <p class="text-gray-700 mb-2"><strong>Annual Disposable Income:</strong> <span id="annualDisposableIncome">$0.00</span></p>
-    <p class="text-gray-700"><strong>Monthly Disposable Income:</strong> <span id="monthlyDisposableIncome">$0.00</span></p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6">
+      <p class="text-gray-600"><strong>Total Annual Deductions:</strong> <span id="totalAnnualDeductions" class="font-semibold text-gray-800">$0.00</span></p>
+      <p class="text-gray-600"><strong>Annual Disposable Income:</strong> <span id="annualDisposableIncome" class="font-semibold text-gray-800">$0.00</span></p>
+      <p class="text-gray-600 col-span-full"><strong>Monthly Disposable Income:</strong> <span id="monthlyDisposableIncome" class="font-bold text-blue-600 text-lg">$0.00</span></p>
+    </div>
   </section>
 
   <!-- Monthly Living Expenses Input -->
-  <section id="living-expenses-section" class="mt-8 opacity-50 pointer-events-none">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Monthly Living Expenses</h2>
-    <div id="expense-inputs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <section id="living-expenses-section" class="mt-10 opacity-50 pointer-events-none rounded-xl p-6 md:p-8 transition-colors duration-500 ease-in-out border border-gray-200">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-5 border-b pb-3 border-gray-200">Monthly Living Expenses</h2>
+    <div id="expense-inputs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
       <!-- Expense inputs will be dynamically generated here by JS -->
     </div>
-  </section>
 
-  <!-- Real-time Status Display -->
-  <section id="realtime-status-section" class="result-box mt-8 hidden">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Current Spending Snapshot</h2>
-    <p class="mb-2"><strong>Current Total Monthly Expenses:</strong> <span id="currentTotalExpenses">$0.00</span></p>
-    <p class="mb-2"><strong>Expenses as % of Disposable Income:</strong> <span id="currentExpensesPercentage">0.0%</span></p>
-    <div class="flex items-center">
-      <p class="mr-2"><strong>Current Budget Zone:</strong></p>
-      <span id="currentBudgetZone" class="status-badge">N/A</span>
+    <!-- Integrated Current Spending Snapshot -->
+    <div id="integrated-expense-summary" class="expense-summary-box mt-8 hidden border border-gray-200 animate-slide-up">
+      <p class="mb-2 text-lg font-medium"><strong>Total Monthly Expenses:</strong> <span id="currentTotalExpenses">$0.00</span> (<span id="currentExpensesPercentage">0.0%</span>)</p>
+      <div class="flex items-center">
+        <p class="mr-3 text-lg font-medium"><strong>Budget Zone:</strong></p>
+        <span id="currentBudgetZone" class="status-badge">N/A</span>
+      </div>
+      <p id="currentZoneMessage" class="status-message mt-3 text-base italic"></p>
     </div>
-    <p id="currentZoneMessage" class="text-gray-600 mt-2 text-sm italic"></p>
   </section>
 
   <!-- Savings & Investments Input -->
-  <section id="savings-investments-section" class="mt-8 opacity-50 pointer-events-none">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Savings & Investments Goals</h2>
-    <p id="si-guidance" class="text-gray-600 mb-4">
-      You can enter your desired savings and investment percentages. Leave blank to see our recommended allocation.
-      We will ensure your 10% cash flow target is met regardless of your inputs.
+  <section id="savings-investments-section" class="mt-10 opacity-50 pointer-events-none">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-5 border-b pb-3 border-gray-200">Savings & Investments Goals</h2>
+    <p id="si-guidance" class="text-gray-600 text-base mb-6">
+      This section will guide you based on your spending habits.
     </p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
       <div class="input-group">
-        <label for="savingsPercentage">Desired Monthly Savings %</label>
-        <input type="number" id="savingsPercentage" class="input-field" placeholder="e.g., 12 (for 12%)" min="0" max="100">
+        <label for="savingsPercentage">Desired Monthly Savings % (10-15%)</label>
+        <input type="number" id="savingsPercentage" class="input-field" placeholder="e.g., 12 (for 12%)" min="10" max="15">
         <p id="savingsPercentageError" class="error-message"></p>
       </div>
       <div class="input-group">
-        <label for="investmentsPercentage">Desired Monthly Investments %</label>
-        <input type="number" id="investmentsPercentage" class="input-field" placeholder="e.g., 15 (for 15%)" min="0" max="100">
+        <label for="investmentsPercentage">Desired Monthly Investments % (10-20%)</label>
+        <input type="number" id="investmentsPercentage" class="input-field" placeholder="e.g., 15 (for 15%)" min="10" max="20">
         <p id="investmentsPercentageError" class="error-message"></p>
+      </div>
+      <div class="input-group col-span-full md:col-span-1">
+        <label for="cashflowAmount">Calculated Monthly Cashflow ($)</label>
+        <input type="text" id="cashflowAmount" class="input-field font-semibold text-blue-700" readonly placeholder="$0.00 (0.0%)">
       </div>
     </div>
   </section>
 
   <!-- Final Comprehensive Summary -->
-  <section id="final-summary-section" class="mt-8 hidden">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Comprehensive Budget Summary</h2>
-    <div id="final-summary-content" class="result-box p-6 md:p-8">
+  <section id="final-summary-section" class="mt-10 hidden animate-slide-up">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-5 border-b pb-3 border-gray-200">Comprehensive Budget Summary</h2>
+    <div id="final-summary-content" class="result-box p-6 md:p-8 shadow-md rounded-xl border border-gray-200">
       <!-- Final summary details will be populated here by JS -->
     </div>
   </section>
 
 </div>
 
-<script>
-  class PersonalFinanceCalculator {
-    constructor() {
-      this.deductionRates = {
-        'federal_tax': 0.20,
-        'state_tax': 0.08,
-        'retirement': 0.10,
-        'health_insurance': 0.03,
-        'social_security': 0.062,
-        'medicare': 0.0145
-      };
-      this.annualIncome = 0.0;
-      this.monthlyDisposableIncome = 0.0;
-      this.totalMonthlyExpensesEntered = 0.0;
-      this.deductionsBreakdown = {};
-      this.annualDisposable = 0.0;
-    }
-
-    calculateDeductions(annualIncome) {
-      const deductions = {};
-      let totalDeductions = 0;
-
-      for (const deductionType in this.deductionRates) {
-        const rate = this.deductionRates[deductionType];
-        const amount = annualIncome * rate;
-        deductions[deductionType] = amount;
-        totalDeductions += amount;
-      }
-      return { deductions, totalDeductions };
-    }
-
-    _allocateFunds(monthlyDisposable, totalMonthlyExpenses, savingsPctDesired, investmentsPctDesired) {
-      let monthlySavings = 0;
-      let monthlyInvestments = 0;
-      let monthlyCashflow = 0;
-
-      const remainingAfterExpenses = monthlyDisposable - totalMonthlyExpenses;
-      const targetCashflowPct = 0.10;
-      const targetCashflowAmount = monthlyDisposable * targetCashflowPct;
-
-      let hasAdequateCashflow = false;
-
-      if (remainingAfterExpenses < targetCashflowAmount) {
-        monthlyCashflow = remainingAfterExpenses; // This will be less than target or negative
-        hasAdequateCashflow = false;
-      } else {
-        monthlyCashflow = targetCashflowAmount;
-        const remainingForSI = remainingAfterExpenses - monthlyCashflow;
-
-        const initialMonthlySavings = (monthlyDisposable * savingsPctDesired / 100);
-        const initialMonthlyInvestments = (monthlyDisposable * investmentsPctDesired / 100);
-        const totalDesiredSI = initialMonthlySavings + initialMonthlyInvestments;
-
-        if (totalDesiredSI <= remainingForSI) {
-          monthlySavings = initialMonthlySavings;
-          monthlyInvestments = initialMonthlyInvestments;
-
-          const excessAfterSI = remainingForSI - totalDesiredSI;
-          if (totalDesiredSI > 0) {
-            const savingsShare = savingsPctDesired / totalDesiredSI;
-            const investmentsShare = investmentsPctDesired / totalDesiredSI;
-            monthlySavings += excessAfterSI * savingsShare;
-            monthlyInvestments += excessAfterSI * investmentsShare;
-          } else {
-            // If both desired S/I were 0, put all excess into investments (arbitrary choice)
-            monthlyInvestments += excessAfterSI;
-          }
-        } else {
-          // Not enough for desired S/I, scale down proportionally
-          if (totalDesiredSI > 0) {
-            const scaleFactor = remainingForSI / totalDesiredSI;
-            monthlySavings = initialMonthlySavings * scaleFactor;
-            monthlyInvestments = initialMonthlyInvestments * scaleFactor;
-          } else {
-            // If desired S/I were 0, put all remaining into investments
-            monthlyInvestments += remainingForSI;
-          }
-        }
-        hasAdequateCashflow = true;
-      }
-
-      // Ensure non-negative and round to 2 decimal places
-      monthlySavings = Math.max(0, monthlySavings).toFixed(2);
-      monthlyInvestments = Math.max(0, monthlyInvestments).toFixed(2);
-      monthlyCashflow = Math.max(0, monthlyCashflow).toFixed(2);
-      const remainingUnallocated = (monthlyDisposable - totalMonthlyExpenses - monthlySavings - monthlyInvestments - monthlyCashflow).toFixed(2);
-
-
-      return {
-        monthly_savings: parseFloat(monthlySavings),
-        monthly_investments: parseFloat(monthlyInvestments),
-        monthly_cashflow: parseFloat(monthlyCashflow),
-        has_adequate_cashflow: hasAdequateCashflow,
-        target_cashflow_amount: parseFloat(targetCashflowAmount.toFixed(2)),
-        remaining_unallocated: parseFloat(remainingUnallocated)
-      };
-    }
-
-    calculateBudget(annualIncome, livingExpenses, userSavingsPct = null, userInvestmentsPct = null) {
-      const { deductions, totalDeductions } = this.calculateDeductions(annualIncome);
-      const annualDisposable = annualIncome - totalDeductions;
-      const monthlyDisposable = annualDisposable / 12;
-      const totalMonthlyExpenses = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-
-      const expensesPercentage = monthlyDisposable <= 0 ? Infinity : (totalMonthlyExpenses / monthlyDisposable) * 100;
-      const [zone, status, canSaveInvest] = this.determineBudgetZone(expensesPercentage);
-
-      const recommendedSavingsPct = 12;
-      const recommendedInvestmentsPct = 15;
-
-      const recommendedAllocations = this._allocateFunds(
-              monthlyDisposable, totalMonthlyExpenses, recommendedSavingsPct, recommendedInvestmentsPct
-      );
-
-      let customAllocations = null;
-      if (zone === "GREEN" && (userSavingsPct !== null || userInvestmentsPct !== null)) {
-        const userSavingsPctValidated = this.validateInputPercentage(userSavingsPct);
-        const userInvestmentsPctValidated = this.validateInputPercentage(userInvestmentsPct);
-
-        if (userSavingsPctValidated > 0 || userInvestmentsPctValidated > 0 || (userSavingsPct !== null && userSavingsPct === 0) || (userInvestmentsPct !== null && userInvestmentsPct === 0)) {
-          customAllocations = this._allocateFunds(
-                  monthlyDisposable, totalMonthlyExpenses, userSavingsPctValidated, userInvestmentsPctValidated
-          );
-        }
-      }
-
-      return {
-        annual_income: annualIncome,
-        deductions: deductions,
-        total_deductions: totalDeductions,
-        annual_disposable: annualDisposable,
-        monthly_disposable: monthlyDisposable,
-        living_expenses: livingExpenses,
-        total_monthly_expenses: totalMonthlyExpenses,
-        expenses_percentage: expensesPercentage,
-        budget_zone: zone,
-        status_message: status,
-        can_save_invest: canSaveInvest,
-        recommended_allocations: recommendedAllocations,
-        custom_allocations: customAllocations
-      };
-    }
-
-    determineBudgetZone(expensesPercentage) {
-      if (expensesPercentage <= 59) {
-        return ["GREEN", "You are in a healthy spending range.", true];
-      } else if (expensesPercentage <= 70) {
-        return ["MODERATE", "Your spending is manageable but close to the limit.", true];
-      } else {
-        return ["RED", "Your spending is too high for healthy financial allocations.", false];
-      }
-    }
-
-    validateInputPercentage(value) {
-      if (value === null || value === '') {
-        return 0; // Treat empty/null as 0 for calculation purposes
-      }
-      const val = parseFloat(value);
-      if (isNaN(val) || val < 0 || val > 100) {
-        return 0; // Return 0 for invalid percentages
-      }
-      return val;
-    }
-  }
-
-  // --- DOM Elements ---
-  const annualIncomeInput = document.getElementById('annualIncome');
-  const annualIncomeError = document.getElementById('annualIncomeError');
-  const deductionsDisposableSection = document.getElementById('deductions-disposable-section');
-  const totalAnnualDeductionsSpan = document.getElementById('totalAnnualDeductions');
-  const deductionsBreakdownList = document.getElementById('deductionsBreakdownList');
-  const annualDisposableIncomeSpan = document.getElementById('annualDisposableIncome');
-  const monthlyDisposableIncomeSpan = document.getElementById('monthlyDisposableIncome');
-
-  const livingExpensesSection = document.getElementById('living-expenses-section');
-  const expenseInputsContainer = document.getElementById('expense-inputs-container');
-  const realtimeStatusSection = document.getElementById('realtime-status-section');
-  const currentTotalExpensesSpan = document.getElementById('currentTotalExpenses');
-  const currentExpensesPercentageSpan = document.getElementById('currentExpensesPercentage');
-  const currentBudgetZoneSpan = document.getElementById('currentBudgetZone');
-  const currentZoneMessageP = document.getElementById('currentZoneMessage');
-
-  const savingsInvestmentsSection = document.getElementById('savings-investments-section');
-  const siGuidanceP = document.getElementById('si-guidance');
-  const savingsPercentageInput = document.getElementById('savingsPercentage');
-  const savingsPercentageError = document.getElementById('savingsPercentageError');
-  const investmentsPercentageInput = document.getElementById('investmentsPercentage');
-  const investmentsPercentageError = document.getElementById('investmentsPercentageError');
-
-  const finalSummarySection = document.getElementById('final-summary-section');
-  const finalSummaryContentDiv = document.getElementById('final-summary-content');
-
-  const calculator = new PersonalFinanceCalculator();
-  const livingExpenseCategories = [
-    'Mortgage/Rent', 'Transport', 'Insurance', 'Utilities', 'Groceries',
-    'Entertainment', 'Phone Bill', 'Internet Bill', 'Home Maintenance', 'Miscellaneous'
-  ];
-  const livingExpenses = {}; // Object to store current living expense values
-
-  // --- Dynamic Expense Input Generation ---
-  function createExpenseInputs() {
-    expenseInputsContainer.innerHTML = ''; // Clear existing
-    livingExpenseCategories.forEach(category => {
-      const id = category.toLowerCase().replace(/[\s/]/g, '_');
-      const div = document.createElement('div');
-      div.className = 'input-group';
-      div.innerHTML = `
-                    <label for="${id}">${category} ($)</label>
-                    <input type="number" id="${id}" class="input-field expense-input" placeholder="0" min="0">
-                    <p id="${id}Error" class="error-message"></p>
-                `;
-      expenseInputsContainer.appendChild(div);
-      livingExpenses[id] = 0; // Initialize expense to 0
-    });
-
-    // Add event listeners to newly created expense inputs
-    document.querySelectorAll('.expense-input').forEach(input => {
-      input.addEventListener('input', handleExpenseInput);
-    });
-  }
-
-  // --- Event Handlers ---
-  annualIncomeInput.addEventListener('input', handleAnnualIncomeInput);
-  savingsPercentageInput.addEventListener('input', handleSavingsInvestmentsInput);
-  investmentsPercentageInput.addEventListener('input', handleSavingsInvestmentsInput);
-
-  function handleAnnualIncomeInput() {
-    const incomeValue = parseFloat(annualIncomeInput.value);
-    annualIncomeError.textContent = '';
-
-    if (isNaN(incomeValue) || incomeValue < 0) {
-      annualIncomeError.textContent = 'Please enter a valid positive number.';
-      deductionsDisposableSection.classList.add('hidden');
-      livingExpensesSection.classList.add('opacity-50', 'pointer-events-none');
-      realtimeStatusSection.classList.add('hidden');
-      savingsInvestmentsSection.classList.add('opacity-50', 'pointer-events-none');
-      finalSummarySection.classList.add('hidden');
-      calculator.annualIncome = 0;
-      calculator.monthlyDisposableIncome = 0;
-      calculator.totalMonthlyExpensesEntered = 0;
-      // Reset all expense inputs
-      document.querySelectorAll('.expense-input').forEach(input => input.value = '');
-      for (const key in livingExpenses) {
-        livingExpenses[key] = 0;
-      }
-      return;
-    }
-
-    calculator.annualIncome = incomeValue;
-    const { deductions, totalDeductions } = calculator.calculateDeductions(incomeValue);
-    calculator.deductionsBreakdown = deductions;
-    calculator.totalDeductions = totalDeductions;
-    calculator.annualDisposable = incomeValue - totalDeductions;
-    calculator.monthlyDisposableIncome = calculator.annualDisposable / 12;
-
-    totalAnnualDeductionsSpan.textContent = `$${totalDeductions.toFixed(2)}`;
-    deductionsBreakdownList.innerHTML = '';
-    for (const type in deductions) {
-      const li = document.createElement('li');
-      li.textContent = `${type.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}: $${deductions[type].toFixed(2)}`;
-      deductionsBreakdownList.appendChild(li);
-    }
-    annualDisposableIncomeSpan.textContent = `$${calculator.annualDisposable.toFixed(2)}`;
-    monthlyDisposableIncomeSpan.textContent = `$${calculator.monthlyDisposableIncome.toFixed(2)}`;
-
-    deductionsDisposableSection.classList.remove('hidden');
-    livingExpensesSection.classList.remove('opacity-50', 'pointer-events-none');
-    realtimeStatusSection.classList.remove('hidden');
-    // Update real-time status with current (zero) expenses
-    updateRealtimeStatusDisplay();
-  }
-
-  function handleExpenseInput(event) {
-    const inputId = event.target.id;
-    const expenseError = document.getElementById(`${inputId}Error`);
-    const expenseValue = parseFloat(event.target.value);
-
-    if (isNaN(expenseValue) || expenseValue < 0) {
-      expenseError.textContent = 'Enter a valid positive number.';
-      livingExpenses[inputId] = 0;
-    } else {
-      expenseError.textContent = '';
-      livingExpenses[inputId] = expenseValue;
-    }
-
-    calculator.totalMonthlyExpensesEntered = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-    updateRealtimeStatusDisplay();
-  }
-
-  function handleSavingsInvestmentsInput(event) {
-    const inputId = event.target.id;
-    const errorElement = document.getElementById(`${inputId}Error`);
-    let value = event.target.value;
-
-    if (value === '') { // Allow empty string for clearing
-      errorElement.textContent = '';
-    } else {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-        errorElement.textContent = 'Percentage must be between 0 and 100.';
-      } else {
-        errorElement.textContent = '';
-      }
-    }
-
-    updateFinalSummaryDisplay(); // Trigger final summary update on S/I input
-  }
-
-  function updateRealtimeStatusDisplay() {
-    const currentTotalExpenses = calculator.totalMonthlyExpensesEntered;
-    const monthlyDisposable = calculator.monthlyDisposableIncome;
-
-    currentTotalExpensesSpan.textContent = `$${currentTotalExpenses.toFixed(2)}`;
-
-    let currentExpensesPercentage = 0;
-    if (monthlyDisposable > 0) {
-      currentExpensesPercentage = (currentTotalExpenses / monthlyDisposable) * 100;
-    } else if (monthlyDisposable === 0 && currentTotalExpenses > 0) {
-      currentExpensesPercentage = Infinity; // Infinite percentage if expenses exist with no disposable income
-    }
-    currentExpensesPercentageSpan.textContent = `${currentExpensesPercentage.toFixed(1)}%`;
-
-    const [zone, statusMessage, canSaveInvest] = calculator.determineBudgetZone(currentExpensesPercentage);
-    currentBudgetZoneSpan.textContent = zone;
-    currentBudgetZoneSpan.className = `status-badge ${zone.toLowerCase()}-zone`;
-    currentZoneMessageP.textContent = statusMessage;
-
-    // Enable/disable savings/investments section based on zone
-    if (zone === "GREEN" && calculator.annualIncome > 0) { // Also check annual income for initial state
-      savingsInvestmentsSection.classList.remove('opacity-50', 'pointer-events-none');
-      siGuidanceP.textContent = "As you are in the 'Green Zone', you can set custom percentages for savings and investments. Leave blank to see our recommended allocation. We will ensure your 10% cash flow target is met regardless of your inputs.";
-    } else {
-      savingsInvestmentsSection.classList.add('opacity-50', 'pointer-events-none');
-      savingsPercentageInput.value = '';
-      investmentsPercentageInput.value = '';
-      savingsPercentageError.textContent = '';
-      investmentsPercentageError.textContent = '';
-      siGuidanceP.textContent = `Based on your expenses, you are in the '${zone}' zone. Custom savings and investment percentages are not applicable in this zone. Our system will use default allocation logic to prioritize financial stability.`;
-    }
-
-    // Always trigger final summary update, it handles visibility
-    updateFinalSummaryDisplay();
-  }
-
-  function updateFinalSummaryDisplay() {
-    if (calculator.annualIncome <= 0 || calculator.monthlyDisposableIncome <= 0) {
-      finalSummarySection.classList.add('hidden');
-      return;
-    }
-
-    const userSavingsPct = savingsPercentageInput.value === '' ? null : parseFloat(savingsPercentageInput.value);
-    const userInvestmentsPct = investmentsPercentageInput.value === '' ? null : parseFloat(investmentsPercentageInput.value);
-
-    const result = calculator.calculateBudget(
-            calculator.annualIncome,
-            livingExpenses,
-            userSavingsPct,
-            userInvestmentsPct
-    );
-
-    let htmlContent = `
-                <h3 class="text-xl font-semibold text-gray-800 mb-3">Overall Budget Status:</h3>
-                <p class="text-gray-700 mb-2"><strong>Zone:</strong> <span class="status-badge ${result.budget_zone.toLowerCase()}-zone">${result.budget_zone}</span></p>
-                <p class="text-gray-700 mb-4"><strong>Message:</strong> ${result.status_message}</p>
-            `;
-
-    if (result.can_save_invest) {
-      // --- Recommended Allocation ---
-      const recAlloc = result.recommended_allocations;
-      const recSavingsPct = (recAlloc.monthly_savings / result.monthly_disposable) * 100;
-      const recInvestmentsPct = (recAlloc.monthly_investments / result.monthly_disposable) * 100;
-      const recCashflowPct = (recAlloc.monthly_cashflow / result.monthly_disposable) * 100;
-
-      htmlContent += `
-                    <div class="border-t pt-4 mt-4">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Our Recommended Allocation:</h3>
-                        <p class="mb-1"><strong>Monthly Savings (${recSavingsPct.toFixed(1)}%):</strong> $${recAlloc.monthly_savings.toFixed(2)}</p>
-                        <p class="mb-1"><strong>Monthly Investments (${recInvestmentsPct.toFixed(1)}%):</strong> $${recAlloc.monthly_investments.toFixed(2)}</p>
-                        <p class="mb-3"><strong>Monthly Cashflow Buffer (${recCashflowPct.toFixed(1)}%):</strong> $${recAlloc.monthly_cashflow.toFixed(2)}</p>
-                        ${recAlloc.has_adequate_cashflow ?
-              `<p class="text-green-700 mb-2">✅ Good! You have an adequate cashflow buffer.</p>` :
-              `<p class="text-red-700 mb-2">❌ WARNING: Inadequate cashflow with recommendations! Target: $${recAlloc.target_cashflow_amount.toFixed(2)}, Actual: $${recAlloc.monthly_cashflow.toFixed(2)}</p>`
-      }
-                        ${Math.abs(recAlloc.remaining_unallocated) > 0.01 ?
-              `<p class="text-gray-700"><strong>Remaining Unallocated Funds:</strong> $${recAlloc.remaining_unallocated.toFixed(2)}<br><span class="text-sm italic">Consider putting this into additional savings or investments!</span></p>` :
-              `<p class="text-gray-700">All disposable income has been optimally allocated.</p>`
-      }
-                    </div>
-                `;
-
-      // --- Custom Allocation (if applicable) ---
-      if (result.custom_allocations) {
-        const customAlloc = result.custom_allocations;
-        const customSavingsPct = (customAlloc.monthly_savings / result.monthly_disposable) * 100;
-        const customInvestmentsPct = (customAlloc.monthly_investments / result.monthly_disposable) * 100;
-        const customCashflowPct = (customAlloc.monthly_cashflow / result.monthly_disposable) * 100;
-
-        htmlContent += `
-                        <div class="border-t pt-4 mt-4">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Your Custom Allocation Strategy:</h3>
-                            <p class="mb-1"><strong>Monthly Savings (${customSavingsPct.toFixed(1)}%):</strong> $${customAlloc.monthly_savings.toFixed(2)}</p>
-                            <p class="mb-1"><strong>Monthly Investments (${customInvestmentsPct.toFixed(1)}%):</strong> $${customAlloc.monthly_investments.toFixed(2)}</p>
-                            <p class="mb-3"><strong>Monthly Cashflow Buffer (${customCashflowPct.toFixed(1)}%):</strong> $${customAlloc.monthly_cashflow.toFixed(2)}</p>
-                            ${customAlloc.has_adequate_cashflow ?
-                `<p class="text-green-700 mb-2">✅ Good! Your custom strategy maintains an adequate cashflow buffer.</p>` :
-                `<p class="text-red-700 mb-2">❌ WARNING: Your custom strategy results in inadequate cashflow! Target: $${customAlloc.target_cashflow_amount.toFixed(2)}, Actual: $${customAlloc.monthly_cashflow.toFixed(2)}</p>`
-        }
-                            ${Math.abs(customAlloc.remaining_unallocated) > 0.01 ?
-                `<p class="text-gray-700"><strong>Remaining Unallocated Funds:</strong> $${customAlloc.remaining_unallocated.toFixed(2)}<br><span class="text-sm italic">This amount is available for additional savings, investments, or discretionary spending.</span></p>` :
-                `<p class="text-gray-700">All disposable income has been allocated based on your custom strategy.</p>`
-        }
-                        </div>
-                    `;
-      }
-    } else {
-      htmlContent += `
-                    <p class="text-red-700 text-base mt-4">❌ No meaningful savings, investments, or adequate cashflow possible due to high expenses!</p>
-                    <p class="text-gray-600 text-sm mt-2 italic">Please focus on reducing your monthly living expenses to improve your financial health.</p>
-                `;
-    }
-
-    finalSummaryContentDiv.innerHTML = htmlContent;
-    finalSummarySection.classList.remove('hidden');
-  }
-
-  // --- Initialization ---
-  document.addEventListener('DOMContentLoaded', () => {
-    createExpenseInputs();
-    // Initial state: sections for deductions, realtime status, savings/investments, and final summary are hidden/disabled
-    // This is handled by default hidden class and initial JS calls for annual income input
-  });
-
-</script>
+<!-- JavaScript File -->
+<script src="script.js"></script>
 </body>
 </html>
