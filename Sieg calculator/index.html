@@ -1,562 +1,561 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personal Finance Calculator</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1',
+            secondary: '#8b5cf6',
+            accent: '#06b6d4',
+            dark: '#0f172a',
+            'dark-light': '#1e293b'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'glow': 'glow 2s ease-in-out infinite alternate'
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f3f4f6; /* Light gray background */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .input-group {
-      @apply mb-4;
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
-    .input-group label {
-      @apply block text-sm font-medium text-gray-700 mb-1;
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      }
+
+      to {
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+      }
     }
-    .input-field {
-      @apply w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out;
+
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .result-box {
-      @apply bg-white p-6 rounded-lg shadow-md mb-6;
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-    .result-box h3 {
-      @apply text-lg font-semibold text-gray-800 mb-3;
-    }
-    .result-box p {
-      @apply text-gray-600 mb-1;
-    }
-    .status-badge {
-      @apply px-3 py-1 rounded-full text-xs font-semibold;
-    }
-    .green-zone {
-      @apply bg-green-100 text-green-800;
-    }
-    .moderate-zone {
-      @apply bg-yellow-100 text-yellow-800;
-    }
-    .red-zone {
-      @apply bg-red-100 text-red-800;
-    }
-    .error-message {
-      @apply text-red-600 text-xs mt-1;
+
+    .input-glow:focus {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 20px rgba(99, 102, 241, 0.2);
     }
   </style>
 </head>
-<body class="p-4 md:p-8 flex items-center justify-center min-h-screen">
-<div class="max-w-4xl w-full bg-white p-6 md:p-8 rounded-xl shadow-2xl">
-  <h1 class="text-3xl font-bold text-center text-gray-900 mb-8">Personal Finance Calculator</h1>
 
-  <!-- Annual Income Input -->
-  <section id="annual-income-section" class="mb-8">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Your Income</h2>
-    <div class="input-group">
-      <label for="annualIncome">Annual Gross Income ($)</label>
-      <input type="number" id="annualIncome" class="input-field" placeholder="e.g., 60000" min="0">
-      <p id="annualIncomeError" class="error-message"></p>
-    </div>
-  </section>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+  <!-- Navigation Header -->
+  <nav class="glass-effect border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo -->
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center">
+            <span class="text-white font-bold text-lg">SW</span>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">StewardWell Capital</h1>
+            <p class="text-sm text-gray-300">Personal Finance Calculator</p>
+          </div>
+        </div>
 
-  <!-- Deductions and Disposable Income Display -->
-  <section id="deductions-disposable-section" class="result-box hidden">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Income & Deductions Overview</h2>
-    <p class="text-gray-700 mb-2"><strong>Total Annual Deductions:</strong> <span id="totalAnnualDeductions">$0.00</span></p>
-    <div class="mb-3">
-      <h3 class="text-base font-medium text-gray-800">Deductions Breakdown:</h3>
-      <ul id="deductionsBreakdownList" class="list-disc list-inside text-gray-600 ml-4">
-        <!-- Deductions will be listed here -->
-      </ul>
-    </div>
-    <p class="text-gray-700 mb-2"><strong>Annual Disposable Income:</strong> <span id="annualDisposableIncome">$0.00</span></p>
-    <p class="text-gray-700"><strong>Monthly Disposable Income:</strong> <span id="monthlyDisposableIncome">$0.00</span></p>
-  </section>
-
-  <!-- Monthly Living Expenses Input -->
-  <section id="living-expenses-section" class="mt-8 opacity-50 pointer-events-none">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Monthly Living Expenses</h2>
-    <div id="expense-inputs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Expense inputs will be dynamically generated here by JS -->
-    </div>
-  </section>
-
-  <!-- Real-time Status Display -->
-  <section id="realtime-status-section" class="result-box mt-8 hidden">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Current Spending Snapshot</h2>
-    <p class="mb-2"><strong>Current Total Monthly Expenses:</strong> <span id="currentTotalExpenses">$0.00</span></p>
-    <p class="mb-2"><strong>Expenses as % of Disposable Income:</strong> <span id="currentExpensesPercentage">0.0%</span></p>
-    <div class="flex items-center">
-      <p class="mr-2"><strong>Current Budget Zone:</strong></p>
-      <span id="currentBudgetZone" class="status-badge">N/A</span>
-    </div>
-    <p id="currentZoneMessage" class="text-gray-600 mt-2 text-sm italic"></p>
-  </section>
-
-  <!-- Savings & Investments Input -->
-  <section id="savings-investments-section" class="mt-8 opacity-50 pointer-events-none">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Savings & Investments Goals</h2>
-    <p id="si-guidance" class="text-gray-600 mb-4">
-      You can enter your desired savings and investment percentages. Leave blank to see our recommended allocation.
-      We will ensure your 10% cash flow target is met regardless of your inputs.
-    </p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="input-group">
-        <label for="savingsPercentage">Desired Monthly Savings %</label>
-        <input type="number" id="savingsPercentage" class="input-field" placeholder="e.g., 12 (for 12%)" min="0" max="100">
-        <p id="savingsPercentageError" class="error-message"></p>
-      </div>
-      <div class="input-group">
-        <label for="investmentsPercentage">Desired Monthly Investments %</label>
-        <input type="number" id="investmentsPercentage" class="input-field" placeholder="e.g., 15 (for 15%)" min="0" max="100">
-        <p id="investmentsPercentageError" class="error-message"></p>
+        <!-- Navigation Links -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center space-x-2">
+            <span class="w-2 h-2 bg-primary rounded-full"></span>
+            <span>Dashboard</span>
+          </a>
+          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Analytics</a>
+          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Projects</a>
+          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Team</a>
+        </div>
       </div>
     </div>
-  </section>
+  </nav>
 
-  <!-- Final Comprehensive Summary -->
-  <section id="final-summary-section" class="mt-8 hidden">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Comprehensive Budget Summary</h2>
-    <div id="final-summary-content" class="result-box p-6 md:p-8">
-      <!-- Final summary details will be populated here by JS -->
+  <!-- Main Content -->
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12 animate-fade-in">
+      <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+        Take Control of Your
+        <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Financial Future
+        </span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+        Smart budgeting tools to help you achieve your financial goals with precision and confidence.
+      </p>
     </div>
-  </section>
 
-</div>
+    <!-- Income Section -->
+    <section class="mb-8">
+      <div class="glass-effect rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-white">Your Income</h2>
+        </div>
 
-<script>
-  class PersonalFinanceCalculator {
-    constructor() {
-      this.deductionRates = {
-        'federal_tax': 0.20,
-        'state_tax': 0.08,
-        'retirement': 0.10,
-        'health_insurance': 0.03,
-        'social_security': 0.062,
-        'medicare': 0.0145
-      };
-      this.annualIncome = 0.0;
-      this.monthlyDisposableIncome = 0.0;
-      this.totalMonthlyExpensesEntered = 0.0;
-      this.deductionsBreakdown = {};
-      this.annualDisposable = 0.0;
-    }
+        <div class="relative">
+          <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">
+            Annual Gross Income
+          </label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">$</span>
+            <input type="number" id="annualIncome" class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="60,000" min="0" />
+          </div>
+          <p id="annualIncomeError" class="text-red-400 text-sm mt-2 hidden"></p>
+        </div>
+      </div>
+    </section>
 
-    calculateDeductions(annualIncome) {
-      const deductions = {};
-      let totalDeductions = 0;
+    <!-- Income Overview (Hidden initially) -->
+    <section id="deductions-section" class="mb-8 hidden animate-slide-up">
+      <div class="glass-effect rounded-3xl p-8 border border-white/10">
+        <h3 class="text-xl font-bold text-white mb-6">Income & Deductions Overview</h3>
 
-      for (const deductionType in this.deductionRates) {
-        const rate = this.deductionRates[deductionType];
-        const amount = annualIncome * rate;
-        deductions[deductionType] = amount;
-        totalDeductions += amount;
-      }
-      return { deductions, totalDeductions };
-    }
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+          <!-- Expense categories -->
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Federal Tax ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-3field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
 
-    _allocateFunds(monthlyDisposable, totalMonthlyExpenses, savingsPctDesired, investmentsPctDesired) {
-      let monthlySavings = 0;
-      let monthlyInvestments = 0;
-      let monthlyCashflow = 0;
 
-      const remainingAfterExpenses = monthlyDisposable - totalMonthlyExpenses;
-      const targetCashflowPct = 0.10;
-      const targetCashflowAmount = monthlyDisposable * targetCashflowPct;
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">State Tax ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
 
-      let hasAdequateCashflow = false;
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Health Insurance ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
 
-      if (remainingAfterExpenses < targetCashflowAmount) {
-        monthlyCashflow = remainingAfterExpenses; // This will be less than target or negative
-        hasAdequateCashflow = false;
-      } else {
-        monthlyCashflow = targetCashflowAmount;
-        const remainingForSI = remainingAfterExpenses - monthlyCashflow;
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Social Security ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
 
-        const initialMonthlySavings = (monthlyDisposable * savingsPctDesired / 100);
-        const initialMonthlyInvestments = (monthlyDisposable * investmentsPctDesired / 100);
-        const totalDesiredSI = initialMonthlySavings + initialMonthlyInvestments;
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Medical care ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">Total Annual Deductions</p>
+            <p id="totalDeductions" class="text-2xl font-bold text-red-400">$0.00</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">Annual Disposable Income</p>
+            <p id="annualDisposable" class="text-2xl font-bold text-green-400">$0.00</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">Monthly Disposable Income</p>
+            <p id="monthlyDisposable" class="text-2xl font-bold text-primary">$0.00</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        if (totalDesiredSI <= remainingForSI) {
-          monthlySavings = initialMonthlySavings;
-          monthlyInvestments = initialMonthlyInvestments;
+    <!-- Monthly Expenses -->
+    <section id="expenses-section" class="mb-8 opacity-50 pointer-events-none transition-all duration-500">
+      <div class="glass-effect rounded-3xl p-8 border border-white/10">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-white">Monthly Living Expenses</h2>
+        </div>
 
-          const excessAfterSI = remainingForSI - totalDesiredSI;
-          if (totalDesiredSI > 0) {
-            const savingsShare = savingsPctDesired / totalDesiredSI;
-            const investmentsShare = investmentsPctDesired / totalDesiredSI;
-            monthlySavings += excessAfterSI * savingsShare;
-            monthlyInvestments += excessAfterSI * investmentsShare;
-          } else {
-            // If both desired S/I were 0, put all excess into investments (arbitrary choice)
-            monthlyInvestments += excessAfterSI;
-          }
-        } else {
-          // Not enough for desired S/I, scale down proportionally
-          if (totalDesiredSI > 0) {
-            const scaleFactor = remainingForSI / totalDesiredSI;
-            monthlySavings = initialMonthlySavings * scaleFactor;
-            monthlyInvestments = initialMonthlyInvestments * scaleFactor;
-          } else {
-            // If desired S/I were 0, put all remaining into investments
-            monthlyInvestments += remainingForSI;
-          }
-        }
-        hasAdequateCashflow = true;
-      }
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <!-- Expense categories -->
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Mortgage/Rent</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
 
-      // Ensure non-negative and round to 2 decimal places
-      monthlySavings = Math.max(0, monthlySavings).toFixed(2);
-      monthlyInvestments = Math.max(0, monthlyInvestments).toFixed(2);
-      monthlyCashflow = Math.max(0, monthlyCashflow).toFixed(2);
-      const remainingUnallocated = (monthlyDisposable - totalMonthlyExpenses - monthlySavings - monthlyInvestments - monthlyCashflow).toFixed(2);
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Transport {$}</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
 
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Insurance {$}</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Utilities {$}</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Groceries {$}</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Entertainment {$}</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Phone Bill ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Internet Bill {$}</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Home Maintenance ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+          <div class="expense-input">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Miscellaneous ($)</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+          <!-- the monthtly expense has to change -->
+          <p class="text-gray-400 text-sm mb-2">Total Monthly Expenses: $0.00 (0.0%)</p>
+          <!-- the field should change color based on the users spendind -->
+          <!-- change message based on the users spending-->
+          <p class="italic">You have a good financial flexibility</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Real-time Status -->
+    <section id="status-section" class="mb-8 hidden animate-slide-up">
+      <div class="glass-effect rounded-3xl p-8 border border-white/10">
+        <h3 class="text-xl font-bold text-white mb-6">Current Spending Snapshot</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">Total Monthly Expenses</p>
+            <p id="totalExpenses" class="text-2xl font-bold text-orange-400">$0.00</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">% of Income</p>
+            <p id="expensePercentage" class="text-2xl font-bold text-yellow-400">0%</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">Budget Zone</p>
+            <span id="budgetZone" class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-gray-500 text-white">N/A</span>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <p class="text-gray-400 text-sm mb-2">Remaining</p>
+            <p id="remaining" class="text-2xl font-bold text-green-400">$0.00</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Savings & Investments -->
+    <section id="savings-section" class="mb-8 opacity-50 pointer-events-none transition-all duration-500">
+      <div class="glass-effect rounded-3xl p-8 border border-white/10">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-white">Savings & Investment Goals</h2>
+        </div>
+
+        <p class="text-gray-300 mb-6">
+          Set your desired savings and investment percentages. We'll ensure your financial targets are realistic and achievable.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Desired Monthly Savings % (10-15%)</label>
+            <div class="relative">
+              <input type="number" id="savingsPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="12" min="0" max="100">
+              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Desired Monthly Investments % (10-20%)</label>
+            <div class="relative">
+              <input type="number" id="investmentPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="15" min="0" max="100">
+              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+            </div>
+          </div>
+
+
+          <!-- i haven't attached the logic for this yet so needs to be recalculated with others -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Calculated Monthly Cashflow ($)</label>
+            <div class="relative">
+              <input type="number" id="investmentPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="15" min="0" max="100">
+              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+  </div>
+
+  <script>
+    // Modern Finance Calculator Logic
+    let annualIncome = 0;
+    let monthlyDisposableIncome = 0;
+    let totalMonthlyExpenses = 0;
+
+    // Income calculation with modern tax brackets (simplified)
+    function calculateDeductions(income) {
+      const federalTax = income * 0.22; // Simplified federal tax rate
+      const stateTax = income * 0.05; // Simplified state tax rate
+      const socialSecurity = Math.min(income * 0.062, 160200 * 0.062);
+      const medicare = income * 0.0145;
+      const totalDeductions = federalTax + stateTax + socialSecurity + medicare;
 
       return {
-        monthly_savings: parseFloat(monthlySavings),
-        monthly_investments: parseFloat(monthlyInvestments),
-        monthly_cashflow: parseFloat(monthlyCashflow),
-        has_adequate_cashflow: hasAdequateCashflow,
-        target_cashflow_amount: parseFloat(targetCashflowAmount.toFixed(2)),
-        remaining_unallocated: parseFloat(remainingUnallocated)
+        federal: federalTax,
+        state: stateTax,
+        socialSecurity: socialSecurity,
+        medicare: medicare,
+        total: totalDeductions
       };
     }
 
-    calculateBudget(annualIncome, livingExpenses, userSavingsPct = null, userInvestmentsPct = null) {
-      const { deductions, totalDeductions } = this.calculateDeductions(annualIncome);
-      const annualDisposable = annualIncome - totalDeductions;
-      const monthlyDisposable = annualDisposable / 12;
-      const totalMonthlyExpenses = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-
-      const expensesPercentage = monthlyDisposable <= 0 ? Infinity : (totalMonthlyExpenses / monthlyDisposable) * 100;
-      const [zone, status, canSaveInvest] = this.determineBudgetZone(expensesPercentage);
-
-      const recommendedSavingsPct = 12;
-      const recommendedInvestmentsPct = 15;
-
-      const recommendedAllocations = this._allocateFunds(
-              monthlyDisposable, totalMonthlyExpenses, recommendedSavingsPct, recommendedInvestmentsPct
-      );
-
-      let customAllocations = null;
-      if (zone === "GREEN" && (userSavingsPct !== null || userInvestmentsPct !== null)) {
-        const userSavingsPctValidated = this.validateInputPercentage(userSavingsPct);
-        const userInvestmentsPctValidated = this.validateInputPercentage(userInvestmentsPct);
-
-        if (userSavingsPctValidated > 0 || userInvestmentsPctValidated > 0 || (userSavingsPct !== null && userSavingsPct === 0) || (userInvestmentsPct !== null && userInvestmentsPct === 0)) {
-          customAllocations = this._allocateFunds(
-                  monthlyDisposable, totalMonthlyExpenses, userSavingsPctValidated, userInvestmentsPctValidated
-          );
-        }
-      }
-
-      return {
-        annual_income: annualIncome,
-        deductions: deductions,
-        total_deductions: totalDeductions,
-        annual_disposable: annualDisposable,
-        monthly_disposable: monthlyDisposable,
-        living_expenses: livingExpenses,
-        total_monthly_expenses: totalMonthlyExpenses,
-        expenses_percentage: expensesPercentage,
-        budget_zone: zone,
-        status_message: status,
-        can_save_invest: canSaveInvest,
-        recommended_allocations: recommendedAllocations,
-        custom_allocations: customAllocations
-      };
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(amount);
     }
 
-    determineBudgetZone(expensesPercentage) {
-      if (expensesPercentage <= 59) {
-        return ["GREEN", "You are in a healthy spending range.", true];
-      } else if (expensesPercentage <= 70) {
-        return ["MODERATE", "Your spending is manageable but close to the limit.", true];
-      } else {
-        return ["RED", "Your spending is too high for healthy financial allocations.", false];
-      }
+    // Enable section with animation
+    function enableSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      section.classList.remove('opacity-50', 'pointer-events-none');
+      section.classList.add('animate-slide-up');
     }
 
-    validateInputPercentage(value) {
-      if (value === null || value === '') {
-        return 0; // Treat empty/null as 0 for calculation purposes
-      }
-      const val = parseFloat(value);
-      if (isNaN(val) || val < 0 || val > 100) {
-        return 0; // Return 0 for invalid percentages
-      }
-      return val;
+    // Show section with animation
+    function showSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      section.classList.remove('hidden');
+      section.classList.add('animate-fade-in');
     }
-  }
 
-  // --- DOM Elements ---
-  const annualIncomeInput = document.getElementById('annualIncome');
-  const annualIncomeError = document.getElementById('annualIncomeError');
-  const deductionsDisposableSection = document.getElementById('deductions-disposable-section');
-  const totalAnnualDeductionsSpan = document.getElementById('totalAnnualDeductions');
-  const deductionsBreakdownList = document.getElementById('deductionsBreakdownList');
-  const annualDisposableIncomeSpan = document.getElementById('annualDisposableIncome');
-  const monthlyDisposableIncomeSpan = document.getElementById('monthlyDisposableIncome');
+    // Handle income input
+    document.getElementById('annualIncome').addEventListener('input', function(e) {
+      annualIncome = parseFloat(e.target.value) || 0;
 
-  const livingExpensesSection = document.getElementById('living-expenses-section');
-  const expenseInputsContainer = document.getElementById('expense-inputs-container');
-  const realtimeStatusSection = document.getElementById('realtime-status-section');
-  const currentTotalExpensesSpan = document.getElementById('currentTotalExpenses');
-  const currentExpensesPercentageSpan = document.getElementById('currentExpensesPercentage');
-  const currentBudgetZoneSpan = document.getElementById('currentBudgetZone');
-  const currentZoneMessageP = document.getElementById('currentZoneMessage');
+      if (annualIncome > 0) {
+        const deductions = calculateDeductions(annualIncome);
+        const disposableIncome = annualIncome - deductions.total;
+        monthlyDisposableIncome = disposableIncome / 12;
 
-  const savingsInvestmentsSection = document.getElementById('savings-investments-section');
-  const siGuidanceP = document.getElementById('si-guidance');
-  const savingsPercentageInput = document.getElementById('savingsPercentage');
-  const savingsPercentageError = document.getElementById('savingsPercentageError');
-  const investmentsPercentageInput = document.getElementById('investmentsPercentage');
-  const investmentsPercentageError = document.getElementById('investmentsPercentageError');
+        // Update deductions display
+        document.getElementById('totalDeductions').textContent = formatCurrency(deductions.total);
+        document.getElementById('annualDisposable').textContent = formatCurrency(disposableIncome);
+        document.getElementById('monthlyDisposable').textContent = formatCurrency(monthlyDisposableIncome);
 
-  const finalSummarySection = document.getElementById('final-summary-section');
-  const finalSummaryContentDiv = document.getElementById('final-summary-content');
-
-  const calculator = new PersonalFinanceCalculator();
-  const livingExpenseCategories = [
-    'Mortgage/Rent', 'Transport', 'Insurance', 'Utilities', 'Groceries',
-    'Entertainment', 'Phone Bill', 'Internet Bill', 'Home Maintenance', 'Miscellaneous'
-  ];
-  const livingExpenses = {}; // Object to store current living expense values
-
-  // --- Dynamic Expense Input Generation ---
-  function createExpenseInputs() {
-    expenseInputsContainer.innerHTML = ''; // Clear existing
-    livingExpenseCategories.forEach(category => {
-      const id = category.toLowerCase().replace(/[\s/]/g, '_');
-      const div = document.createElement('div');
-      div.className = 'input-group';
-      div.innerHTML = `
-                    <label for="${id}">${category} ($)</label>
-                    <input type="number" id="${id}" class="input-field expense-input" placeholder="0" min="0">
-                    <p id="${id}Error" class="error-message"></p>
-                `;
-      expenseInputsContainer.appendChild(div);
-      livingExpenses[id] = 0; // Initialize expense to 0
+        // Show deductions section and enable expenses
+        showSection('deductions-section');
+        enableSection('expenses-section');
+      }
     });
 
-    // Add event listeners to newly created expense inputs
-    document.querySelectorAll('.expense-input').forEach(input => {
-      input.addEventListener('input', handleExpenseInput);
+    // Handle expense inputs
+    document.querySelectorAll('.expense-field').forEach(input => {
+      input.addEventListener('input', updateExpenses);
     });
-  }
 
-  // --- Event Handlers ---
-  annualIncomeInput.addEventListener('input', handleAnnualIncomeInput);
-  savingsPercentageInput.addEventListener('input', handleSavingsInvestmentsInput);
-  investmentsPercentageInput.addEventListener('input', handleSavingsInvestmentsInput);
+    function updateExpenses() {
+      totalMonthlyExpenses = 0;
+      document.querySelectorAll('.expense-field').forEach(input => {
+        totalMonthlyExpenses += parseFloat(input.value) || 0;
+      });
 
-  function handleAnnualIncomeInput() {
-    const incomeValue = parseFloat(annualIncomeInput.value);
-    annualIncomeError.textContent = '';
+      if (monthlyDisposableIncome > 0) {
+        const percentage = (totalMonthlyExpenses / monthlyDisposableIncome * 100).toFixed(1);
+        const remaining = monthlyDisposableIncome - totalMonthlyExpenses;
 
-    if (isNaN(incomeValue) || incomeValue < 0) {
-      annualIncomeError.textContent = 'Please enter a valid positive number.';
-      deductionsDisposableSection.classList.add('hidden');
-      livingExpensesSection.classList.add('opacity-50', 'pointer-events-none');
-      realtimeStatusSection.classList.add('hidden');
-      savingsInvestmentsSection.classList.add('opacity-50', 'pointer-events-none');
-      finalSummarySection.classList.add('hidden');
-      calculator.annualIncome = 0;
-      calculator.monthlyDisposableIncome = 0;
-      calculator.totalMonthlyExpensesEntered = 0;
-      // Reset all expense inputs
-      document.querySelectorAll('.expense-input').forEach(input => input.value = '');
-      for (const key in livingExpenses) {
-        livingExpenses[key] = 0;
+        // Update status display
+        document.getElementById('totalExpenses').textContent = formatCurrency(totalMonthlyExpenses);
+        document.getElementById('expensePercentage').textContent = percentage + '%';
+        document.getElementById('remaining').textContent = formatCurrency(remaining);
+
+        // Update budget zone
+        updateBudgetZone(percentage);
+
+        // Show status section and enable savings
+        showSection('status-section');
+        enableSection('savings-section');
       }
-      return;
     }
 
-    calculator.annualIncome = incomeValue;
-    const { deductions, totalDeductions } = calculator.calculateDeductions(incomeValue);
-    calculator.deductionsBreakdown = deductions;
-    calculator.totalDeductions = totalDeductions;
-    calculator.annualDisposable = incomeValue - totalDeductions;
-    calculator.monthlyDisposableIncome = calculator.annualDisposable / 12;
+    function updateBudgetZone(percentage) {
+      const zoneElement = document.getElementById('budgetZone');
+      let zoneClass = '';
+      let zoneText = '';
 
-    totalAnnualDeductionsSpan.textContent = `$${totalDeductions.toFixed(2)}`;
-    deductionsBreakdownList.innerHTML = '';
-    for (const type in deductions) {
-      const li = document.createElement('li');
-      li.textContent = `${type.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}: $${deductions[type].toFixed(2)}`;
-      deductionsBreakdownList.appendChild(li);
-    }
-    annualDisposableIncomeSpan.textContent = `$${calculator.annualDisposable.toFixed(2)}`;
-    monthlyDisposableIncomeSpan.textContent = `$${calculator.monthlyDisposableIncome.toFixed(2)}`;
-
-    deductionsDisposableSection.classList.remove('hidden');
-    livingExpensesSection.classList.remove('opacity-50', 'pointer-events-none');
-    realtimeStatusSection.classList.remove('hidden');
-    // Update real-time status with current (zero) expenses
-    updateRealtimeStatusDisplay();
-  }
-
-  function handleExpenseInput(event) {
-    const inputId = event.target.id;
-    const expenseError = document.getElementById(`${inputId}Error`);
-    const expenseValue = parseFloat(event.target.value);
-
-    if (isNaN(expenseValue) || expenseValue < 0) {
-      expenseError.textContent = 'Enter a valid positive number.';
-      livingExpenses[inputId] = 0;
-    } else {
-      expenseError.textContent = '';
-      livingExpenses[inputId] = expenseValue;
-    }
-
-    calculator.totalMonthlyExpensesEntered = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-    updateRealtimeStatusDisplay();
-  }
-
-  function handleSavingsInvestmentsInput(event) {
-    const inputId = event.target.id;
-    const errorElement = document.getElementById(`${inputId}Error`);
-    let value = event.target.value;
-
-    if (value === '') { // Allow empty string for clearing
-      errorElement.textContent = '';
-    } else {
-      const numValue = parseFloat(value);
-      if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-        errorElement.textContent = 'Percentage must be between 0 and 100.';
+      if (percentage <= 50) {
+        zoneClass = 'bg-green-500';
+        zoneText = 'Excellent';
+      } else if (percentage <= 70) {
+        zoneClass = 'bg-blue-500';
+        zoneText = 'Good';
+      } else if (percentage <= 90) {
+        zoneClass = 'bg-yellow-500';
+        zoneText = 'Caution';
       } else {
-        errorElement.textContent = '';
+        zoneClass = 'bg-red-500';
+        zoneText = 'Danger';
       }
+
+      zoneElement.className = `inline-flex px-3 py-1 rounded-full text-sm font-medium text-white ${zoneClass}`;
+      zoneElement.textContent = zoneText;
     }
 
-    updateFinalSummaryDisplay(); // Trigger final summary update on S/I input
-  }
+    // Handle savings and investment inputs
+    document.getElementById('savingsPercent').addEventListener('input', updateSummary);
+    document.getElementById('investmentPercent').addEventListener('input', updateSummary);
 
-  function updateRealtimeStatusDisplay() {
-    const currentTotalExpenses = calculator.totalMonthlyExpensesEntered;
-    const monthlyDisposable = calculator.monthlyDisposableIncome;
+    function updateSummary() {
+      const savingsPercent = parseFloat(document.getElementById('savingsPercent').value) || 10;
+      const investmentPercent = parseFloat(document.getElementById('investmentPercent').value) || 15;
 
-    currentTotalExpensesSpan.textContent = `$${currentTotalExpenses.toFixed(2)}`;
+      const monthlySavings = monthlyDisposableIncome * (savingsPercent / 100);
+      const monthlyInvestments = monthlyDisposableIncome * (investmentPercent / 100);
+      const totalAllocated = totalMonthlyExpenses + monthlySavings + monthlyInvestments;
+      const cashFlow = monthlyDisposableIncome - totalAllocated;
 
-    let currentExpensesPercentage = 0;
-    if (monthlyDisposable > 0) {
-      currentExpensesPercentage = (currentTotalExpenses / monthlyDisposable) * 100;
-    } else if (monthlyDisposable === 0 && currentTotalExpenses > 0) {
-      currentExpensesPercentage = Infinity; // Infinite percentage if expenses exist with no disposable income
-    }
-    currentExpensesPercentageSpan.textContent = `${currentExpensesPercentage.toFixed(1)}%`;
-
-    const [zone, statusMessage, canSaveInvest] = calculator.determineBudgetZone(currentExpensesPercentage);
-    currentBudgetZoneSpan.textContent = zone;
-    currentBudgetZoneSpan.className = `status-badge ${zone.toLowerCase()}-zone`;
-    currentZoneMessageP.textContent = statusMessage;
-
-    // Enable/disable savings/investments section based on zone
-    if (zone === "GREEN" && calculator.annualIncome > 0) { // Also check annual income for initial state
-      savingsInvestmentsSection.classList.remove('opacity-50', 'pointer-events-none');
-      siGuidanceP.textContent = "As you are in the 'Green Zone', you can set custom percentages for savings and investments. Leave blank to see our recommended allocation. We will ensure your 10% cash flow target is met regardless of your inputs.";
-    } else {
-      savingsInvestmentsSection.classList.add('opacity-50', 'pointer-events-none');
-      savingsPercentageInput.value = '';
-      investmentsPercentageInput.value = '';
-      savingsPercentageError.textContent = '';
-      investmentsPercentageError.textContent = '';
-      siGuidanceP.textContent = `Based on your expenses, you are in the '${zone}' zone. Custom savings and investment percentages are not applicable in this zone. Our system will use default allocation logic to prioritize financial stability.`;
-    }
-
-    // Always trigger final summary update, it handles visibility
-    updateFinalSummaryDisplay();
-  }
-
-  function updateFinalSummaryDisplay() {
-    if (calculator.annualIncome <= 0 || calculator.monthlyDisposableIncome <= 0) {
-      finalSummarySection.classList.add('hidden');
-      return;
-    }
-
-    const userSavingsPct = savingsPercentageInput.value === '' ? null : parseFloat(savingsPercentageInput.value);
-    const userInvestmentsPct = investmentsPercentageInput.value === '' ? null : parseFloat(investmentsPercentageInput.value);
-
-    const result = calculator.calculateBudget(
-            calculator.annualIncome,
-            livingExpenses,
-            userSavingsPct,
-            userInvestmentsPct
-    );
-
-    let htmlContent = `
-                <h3 class="text-xl font-semibold text-gray-800 mb-3">Overall Budget Status:</h3>
-                <p class="text-gray-700 mb-2"><strong>Zone:</strong> <span class="status-badge ${result.budget_zone.toLowerCase()}-zone">${result.budget_zone}</span></p>
-                <p class="text-gray-700 mb-4"><strong>Message:</strong> ${result.status_message}</p>
+      // Create comprehensive summary
+      const summaryHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl p-6 border border-green-500/30">
+                        <h4 class="text-green-400 font-semibold mb-2">Monthly Income</h4>
+                        <p class="text-2xl font-bold text-white">${formatCurrency(monthlyDisposableIncome)}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl p-6 border border-orange-500/30">
+                        <h4 class="text-orange-400 font-semibold mb-2">Monthly Expenses</h4>
+                        <p class="text-2xl font-bold text-white">${formatCurrency(totalMonthlyExpenses)}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl p-6 border border-blue-500/30">
+                        <h4 class="text-blue-400 font-semibold mb-2">Savings & Investments</h4>
+                        <p class="text-2xl font-bold text-white">${formatCurrency(monthlySavings + monthlyInvestments)}</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-6 border border-primary/30">
+                        <h4 class="text-primary font-semibold mb-2">Cash Flow</h4>
+                        <p class="text-2xl font-bold ${cashFlow >= 0 ? 'text-green-400' : 'text-red-400'}">${formatCurrency(cashFlow)}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10">
+                    <h4 class="text-xl font-bold text-white mb-4">Financial Health Score</h4>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1 bg-gray-700 rounded-full h-4">
+                            <div class="bg-gradient-to-r from-primary to-secondary h-4 rounded-full transition-all duration-500" 
+                                 style="width: ${Math.min(100, Math.max(0, (cashFlow / monthlyDisposableIncome * 100) + 50))}%"></div>
+                        </div>
+                        <span class="text-white font-semibold">${Math.round(Math.min(100, Math.max(0, (cashFlow / monthlyDisposableIncome * 100) + 50)))}%</span>
+                    </div>
+                    <p class="text-gray-300 mt-2 text-sm">
+                        ${cashFlow >= 0 ? 'Great job! You have positive cash flow.' : 'Consider reducing expenses or increasing income.'}
+                    </p>
+                </div>
             `;
 
-    if (result.can_save_invest) {
-      // --- Recommended Allocation ---
-      const recAlloc = result.recommended_allocations;
-      const recSavingsPct = (recAlloc.monthly_savings / result.monthly_disposable) * 100;
-      const recInvestmentsPct = (recAlloc.monthly_investments / result.monthly_disposable) * 100;
-      const recCashflowPct = (recAlloc.monthly_cashflow / result.monthly_disposable) * 100;
-
-      htmlContent += `
-                    <div class="border-t pt-4 mt-4">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Our Recommended Allocation:</h3>
-                        <p class="mb-1"><strong>Monthly Savings (${recSavingsPct.toFixed(1)}%):</strong> $${recAlloc.monthly_savings.toFixed(2)}</p>
-                        <p class="mb-1"><strong>Monthly Investments (${recInvestmentsPct.toFixed(1)}%):</strong> $${recAlloc.monthly_investments.toFixed(2)}</p>
-                        <p class="mb-3"><strong>Monthly Cashflow Buffer (${recCashflowPct.toFixed(1)}%):</strong> $${recAlloc.monthly_cashflow.toFixed(2)}</p>
-                        ${recAlloc.has_adequate_cashflow ?
-              `<p class="text-green-700 mb-2">✅ Good! You have an adequate cashflow buffer.</p>` :
-              `<p class="text-red-700 mb-2">❌ WARNING: Inadequate cashflow with recommendations! Target: $${recAlloc.target_cashflow_amount.toFixed(2)}, Actual: $${recAlloc.monthly_cashflow.toFixed(2)}</p>`
-      }
-                        ${Math.abs(recAlloc.remaining_unallocated) > 0.01 ?
-              `<p class="text-gray-700"><strong>Remaining Unallocated Funds:</strong> $${recAlloc.remaining_unallocated.toFixed(2)}<br><span class="text-sm italic">Consider putting this into additional savings or investments!</span></p>` :
-              `<p class="text-gray-700">All disposable income has been optimally allocated.</p>`
-      }
-                    </div>
-                `;
-
-      // --- Custom Allocation (if applicable) ---
-      if (result.custom_allocations) {
-        const customAlloc = result.custom_allocations;
-        const customSavingsPct = (customAlloc.monthly_savings / result.monthly_disposable) * 100;
-        const customInvestmentsPct = (customAlloc.monthly_investments / result.monthly_disposable) * 100;
-        const customCashflowPct = (customAlloc.monthly_cashflow / result.monthly_disposable) * 100;
-
-        htmlContent += `
-                        <div class="border-t pt-4 mt-4">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Your Custom Allocation Strategy:</h3>
-                            <p class="mb-1"><strong>Monthly Savings (${customSavingsPct.toFixed(1)}%):</strong> $${customAlloc.monthly_savings.toFixed(2)}</p>
-                            <p class="mb-1"><strong>Monthly Investments (${customInvestmentsPct.toFixed(1)}%):</strong> $${customAlloc.monthly_investments.toFixed(2)}</p>
-                            <p class="mb-3"><strong>Monthly Cashflow Buffer (${customCashflowPct.toFixed(1)}%):</strong> $${customAlloc.monthly_cashflow.toFixed(2)}</p>
-                            ${customAlloc.has_adequate_cashflow ?
-                `<p class="text-green-700 mb-2">✅ Good! Your custom strategy maintains an adequate cashflow buffer.</p>` :
-                `<p class="text-red-700 mb-2">❌ WARNING: Your custom strategy results in inadequate cashflow! Target: $${customAlloc.target_cashflow_amount.toFixed(2)}, Actual: $${customAlloc.monthly_cashflow.toFixed(2)}</p>`
-        }
-                            ${Math.abs(customAlloc.remaining_unallocated) > 0.01 ?
-                `<p class="text-gray-700"><strong>Remaining Unallocated Funds:</strong> $${customAlloc.remaining_unallocated.toFixed(2)}<br><span class="text-sm italic">This amount is available for additional savings, investments, or discretionary spending.</span></p>` :
-                `<p class="text-gray-700">All disposable income has been allocated based on your custom strategy.</p>`
-        }
-                        </div>
-                    `;
-      }
-    } else {
-      htmlContent += `
-                    <p class="text-red-700 text-base mt-4">❌ No meaningful savings, investments, or adequate cashflow possible due to high expenses!</p>
-                    <p class="text-gray-600 text-sm mt-2 italic">Please focus on reducing your monthly living expenses to improve your financial health.</p>
-                `;
+      document.getElementById('summaryContent').innerHTML = summaryHTML;
+      showSection('summary-section');
     }
-
-    finalSummaryContentDiv.innerHTML = htmlContent;
-    finalSummarySection.classList.remove('hidden');
-  }
-
-  // --- Initialization ---
-  document.addEventListener('DOMContentLoaded', () => {
-    createExpenseInputs();
-    // Initial state: sections for deductions, realtime status, savings/investments, and final summary are hidden/disabled
-    // This is handled by default hidden class and initial JS calls for annual income input
-  });
-
-</script>
+  </script>
 </body>
+
 </html>
