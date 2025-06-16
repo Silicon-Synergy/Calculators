@@ -1,561 +1,701 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Personal Finance Calculator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#6366f1',
-            secondary: '#8b5cf6',
-            accent: '#06b6d4',
-            dark: '#0f172a',
-            'dark-light': '#1e293b'
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Finance Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="./scripts.js" defer></script> -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6366f1",
+              secondary: "#8b5cf6",
+              accent: "#06b6d4",
+              dark: "#0f172a",
+              "dark-light": "#1e293b",
+            },
+            animation: {
+              "fade-in": "fadeIn 0.5s ease-in-out",
+              "slide-up": "slideUp 0.3s ease-out",
+              glow: "glow 2s ease-in-out infinite alternate",
+            },
           },
-          animation: {
-            'fade-in': 'fadeIn 0.5s ease-in-out',
-            'slide-up': 'slideUp 0.3s ease-out',
-            'glow': 'glow 2s ease-in-out infinite alternate'
-          }
+        },
+      };
+    </script>
+    <style>
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
-    }
-  </script>
-  <style>
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
       }
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+      @keyframes glow {
+        from {
+          box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
 
-    @keyframes slideUp {
-      from {
-        transform: translateY(30px);
-        opacity: 0;
+        to {
+          box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+        }
       }
 
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    @keyframes glow {
-      from {
-        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
 
-      to {
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       }
-    }
 
-    .glass-effect {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
+      .input-glow:focus {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1),
+          0 0 20px rgba(99, 102, 241, 0.2);
+      }
+    </style>
+  </head>
 
-    .gradient-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .input-glow:focus {
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 20px rgba(99, 102, 241, 0.2);
-    }
-  </style>
-</head>
-
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-  <!-- Navigation Header -->
-  <nav class="glass-effect border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-20">
-        <!-- Logo -->
-        <div class="flex items-center space-x-4">
-          <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center">
-            <span class="text-white font-bold text-lg">SW</span>
-          </div>
-          <div>
-            <h1 class="text-xl font-bold text-white">StewardWell Capital</h1>
-            <p class="text-sm text-gray-300">Personal Finance Calculator</p>
-          </div>
-        </div>
-
-        <!-- Navigation Links -->
-        <div class="hidden md:flex items-center space-x-8">
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center space-x-2">
-            <span class="w-2 h-2 bg-primary rounded-full"></span>
-            <span>Dashboard</span>
-          </a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Analytics</a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Projects</a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Team</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Hero Section -->
-    <div class="text-center mb-12 animate-fade-in">
-      <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
-        Take Control of Your
-        <span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Financial Future
-        </span>
-      </h1>
-      <p class="text-xl text-gray-300 max-w-2xl mx-auto">
-        Smart budgeting tools to help you achieve your financial goals with precision and confidence.
-      </p>
-    </div>
-
-    <!-- Income Section -->
-    <section class="mb-8">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Your Income</h2>
-        </div>
-
-        <div class="relative">
-          <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">
-            Annual Gross Income
-          </label>
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">$</span>
-            <input type="number" id="annualIncome" class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="60,000" min="0" />
-          </div>
-          <p id="annualIncomeError" class="text-red-400 text-sm mt-2 hidden"></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Income Overview (Hidden initially) -->
-    <section id="deductions-section" class="mb-8 hidden animate-slide-up">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <h3 class="text-xl font-bold text-white mb-6">Income & Deductions Overview</h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
-          <!-- Expense categories -->
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Federal Tax ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-3field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
+  <body
+    class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+  >
+    <!-- Navigation Header -->
+    <nav class="glass-effect border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo -->
+          <div class="flex items-center space-x-4">
+            <div
+              class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-xl flex items-center justify-center"
+            >
+              <span class="text-white font-bold text-lg">SW</span>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-white">StewardWell Capital</h1>
+              <p class="text-sm text-gray-300">Personal Finance Calculator</p>
             </div>
           </div>
 
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">State Tax ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Health Insurance ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Social Security ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Medical care ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Total Annual Deductions</p>
-            <p id="totalDeductions" class="text-2xl font-bold text-red-400">$0.00</p>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Annual Disposable Income</p>
-            <p id="annualDisposable" class="text-2xl font-bold text-green-400">$0.00</p>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Monthly Disposable Income</p>
-            <p id="monthlyDisposable" class="text-2xl font-bold text-primary">$0.00</p>
+          <!-- Navigation Links -->
+          <div class="hidden md:flex items-center space-x-8">
+            <a
+              href="#"
+              class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center space-x-2"
+            >
+              <span class="w-2 h-2 bg-primary rounded-full"></span>
+              <span>Dashboard</span>
+            </a>
+            <a
+              href="#"
+              class="text-gray-300 hover:text-white transition-colors duration-200"
+              >Analytics</a
+            >
+            <a
+              href="#"
+              class="text-gray-300 hover:text-white transition-colors duration-200"
+              >Projects</a
+            >
+            <a
+              href="#"
+              class="text-gray-300 hover:text-white transition-colors duration-200"
+              >Team</a
+            >
           </div>
         </div>
       </div>
-    </section>
+    </nav>
 
-    <!-- Monthly Expenses -->
-    <section id="expenses-section" class="mb-8 opacity-50 pointer-events-none transition-all duration-500">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Monthly Living Expenses</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <!-- Expense categories -->
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Mortgage/Rent</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Transport {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Insurance {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Utilities {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Groceries {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Entertainment {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Phone Bill ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Internet Bill {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Home Maintenance ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Miscellaneous ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0">
-            </div>
-          </div>
-        </div>
-        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-          <!-- the monthtly expense has to change -->
-          <p class="text-gray-400 text-sm mb-2">Total Monthly Expenses: $0.00 (0.0%)</p>
-          <!-- the field should change color based on the users spendind -->
-          <!-- change message based on the users spending-->
-          <p class="italic">You have a good financial flexibility</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Real-time Status -->
-    <section id="status-section" class="mb-8 hidden animate-slide-up">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <h3 class="text-xl font-bold text-white mb-6">Current Spending Snapshot</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Total Monthly Expenses</p>
-            <p id="totalExpenses" class="text-2xl font-bold text-orange-400">$0.00</p>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">% of Income</p>
-            <p id="expensePercentage" class="text-2xl font-bold text-yellow-400">0%</p>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Budget Zone</p>
-            <span id="budgetZone" class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-gray-500 text-white">N/A</span>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Remaining</p>
-            <p id="remaining" class="text-2xl font-bold text-green-400">$0.00</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Savings & Investments -->
-    <section id="savings-section" class="mb-8 opacity-50 pointer-events-none transition-all duration-500">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Savings & Investment Goals</h2>
-        </div>
-
-        <p class="text-gray-300 mb-6">
-          Set your desired savings and investment percentages. We'll ensure your financial targets are realistic and achievable.
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Hero Section -->
+      <div class="text-center mb-12 animate-fade-in">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+          Take Control of Your
+          <span
+            class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+          >
+            Financial Future
+          </span>
+        </h1>
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+          Smart budgeting tools to help you achieve your financial goals with
+          precision and confidence.
         </p>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Desired Monthly Savings % (10-15%)</label>
-            <div class="relative">
-              <input type="number" id="savingsPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="12" min="0" max="100">
-              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+      <!-- Income Section -->
+      <section class="mb-8">
+        <div
+          class="glass-effect rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300"
+        >
+          <div class="flex items-center space-x-3 mb-6">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                ></path>
+              </svg>
             </div>
+            <h2 class="text-2xl font-bold text-white">Your Income</h2>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Desired Monthly Investments % (10-20%)</label>
+          <div class="relative">
+            <label
+              for="annualIncome"
+              class="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Annual Gross Income
+            </label>
             <div class="relative">
-              <input type="number" id="investmentPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="15" min="0" max="100">
-              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+              <span
+                class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"
+                >$</span
+              >
+              <input
+                type="number"
+                id="annualIncome"
+                class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                placeholder="60,000"
+                min="0"
+              />
+            </div>
+            <p
+              id="annualIncomeError"
+              class="text-red-400 text-sm mt-2 hidden"
+            ></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Income Overview (Hidden initially) -->
+      <section id="deductions-section" class="mb-8 hidden animate-slide-up">
+        <div class="glass-effect rounded-3xl p-8 border border-white/10">
+          <h3 class="text-xl font-bold text-white mb-6">
+            Income & Deductions Overview
+          </h3>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8"
+          >
+            <!-- Expense categories -->
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Federal Tax ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-3field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                  id="federal-tax"
+                />
+              </div>
+            </div>
+
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >State Tax ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                  id="state-tax"
+                />
+              </div>
+            </div>
+
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Health Insurance ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                  id="health-insurance"
+                />
+              </div>
+            </div>
+
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Social Security ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                  id="social-security"
+                />
+              </div>
+            </div>
+
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Medical care ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                  id="medicare"
+                />
+              </div>
             </div>
           </div>
-
-
-          <!-- i haven't attached the logic for this yet so needs to be recalculated with others -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Calculated Monthly Cashflow ($)</label>
-            <div class="relative">
-              <input type="number" id="investmentPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="15" min="0" max="100">
-              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">Total Annual Deductions</p>
+              <p id="totalDeductions" class="text-2xl font-bold text-red-400">
+                $0.00
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">Annual Disposable Income</p>
+              <p
+                id="annualDisposable"
+                class="text-2xl font-bold text-green-400"
+              >
+                $0.00
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">
+                Monthly Disposable Income
+              </p>
+              <p id="monthlyDisposable" class="text-2xl font-bold text-primary">
+                $0.00
+              </p>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
+      <!-- Monthly Expenses -->
+      <section
+        id="expenses-section"
+        class="mb-8 opacity-50 pointer-events-none transition-all duration-500"
+      >
+        <div class="glass-effect rounded-3xl p-8 border border-white/10">
+          <div class="flex items-center space-x-3 mb-6">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white">
+              Monthly Living Expenses
+            </h2>
+          </div>
 
-  </div>
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          >
+            <!-- Expense categories -->
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Mortgage/Rent</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
 
-  <script>
-    // Modern Finance Calculator Logic
-    let annualIncome = 0;
-    let monthlyDisposableIncome = 0;
-    let totalMonthlyExpenses = 0;
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Transport {$}</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
 
-    // Income calculation with modern tax brackets (simplified)
-    function calculateDeductions(income) {
-      const federalTax = income * 0.22; // Simplified federal tax rate
-      const stateTax = income * 0.05; // Simplified state tax rate
-      const socialSecurity = Math.min(income * 0.062, 160200 * 0.062);
-      const medicare = income * 0.0145;
-      const totalDeductions = federalTax + stateTax + socialSecurity + medicare;
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Insurance {$}</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
 
-      return {
-        federal: federalTax,
-        state: stateTax,
-        socialSecurity: socialSecurity,
-        medicare: medicare,
-        total: totalDeductions
-      };
-    }
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Utilities {$}</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
 
-    // Format currency
-    function formatCurrency(amount) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-      }).format(amount);
-    }
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Groceries {$}</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
 
-    // Enable section with animation
-    function enableSection(sectionId) {
-      const section = document.getElementById(sectionId);
-      section.classList.remove('opacity-50', 'pointer-events-none');
-      section.classList.add('animate-slide-up');
-    }
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Entertainment {$}</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Phone Bill ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Internet Bill {$}</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Home Maintenance ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div class="expense-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Miscellaneous ($)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <!-- the monthtly expense has to change -->
+            <p class="text-gray-400 text-sm mb-2">
+              Total Monthly Expenses: $0.00 (0.0%)
+            </p>
+            <!-- the field should change color based on the users spendind -->
+            <!-- change message based on the users spending-->
+            <p class="italic">You have a good financial flexibility</p>
+          </div>
+        </div>
+      </section>
 
-    // Show section with animation
-    function showSection(sectionId) {
-      const section = document.getElementById(sectionId);
-      section.classList.remove('hidden');
-      section.classList.add('animate-fade-in');
-    }
+      <!-- Real-time Status -->
+      <section id="status-section" class="mb-8 hidden animate-slide-up">
+        <div class="glass-effect rounded-3xl p-8 border border-white/10">
+          <h3 class="text-xl font-bold text-white mb-6">
+            Current Spending Snapshot
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">Total Monthly Expenses</p>
+              <p id="totalExpenses" class="text-2xl font-bold text-orange-400">
+                $0.00
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">% of Income</p>
+              <p
+                id="expensePercentage"
+                class="text-2xl font-bold text-yellow-400"
+              >
+                0%
+              </p>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">Budget Zone</p>
+              <span
+                id="budgetZone"
+                class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-gray-500 text-white"
+                >N/A</span
+              >
+            </div>
+            <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <p class="text-gray-400 text-sm mb-2">Remaining</p>
+              <p id="remaining" class="text-2xl font-bold text-green-400">
+                $0.00
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    // Handle income input
-    document.getElementById('annualIncome').addEventListener('input', function(e) {
-      annualIncome = parseFloat(e.target.value) || 0;
+      <!-- Savings & Investments -->
+      <section
+        id="savings-section"
+        class="mb-8 opacity-50 pointer-events-none transition-all duration-500"
+      >
+        <div class="glass-effect rounded-3xl p-8 border border-white/10">
+          <div class="flex items-center space-x-3 mb-6">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center"
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white">
+              Savings & Investment Goals
+            </h2>
+          </div>
 
-      if (annualIncome > 0) {
-        const deductions = calculateDeductions(annualIncome);
-        const disposableIncome = annualIncome - deductions.total;
-        monthlyDisposableIncome = disposableIncome / 12;
+          <p class="text-gray-300 mb-6">
+            Set your desired savings and investment percentages. We'll ensure
+            your financial targets are realistic and achievable.
+          </p>
 
-        // Update deductions display
-        document.getElementById('totalDeductions').textContent = formatCurrency(deductions.total);
-        document.getElementById('annualDisposable').textContent = formatCurrency(disposableIncome);
-        document.getElementById('monthlyDisposable').textContent = formatCurrency(monthlyDisposableIncome);
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Desired Monthly Savings % (10-15%)</label
+              >
+              <div class="relative">
+                <input
+                  type="number"
+                  id="savingsPercent"
+                  class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="12"
+                  min="0"
+                  max="100"
+                />
+                <span
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >%</span
+                >
+              </div>
+            </div>
 
-        // Show deductions section and enable expenses
-        showSection('deductions-section');
-        enableSection('expenses-section');
-      }
-    });
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Desired Monthly Investments % (10-20%)</label
+              >
+              <div class="relative">
+                <input
+                  type="number"
+                  id="investmentPercent"
+                  class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="15"
+                  min="0"
+                  max="100"
+                />
+                <span
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >%</span
+                >
+              </div>
+            </div>
 
-    // Handle expense inputs
-    document.querySelectorAll('.expense-field').forEach(input => {
-      input.addEventListener('input', updateExpenses);
-    });
+            <!-- i haven't attached the logic for this yet so needs to be recalculated with others -->
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Calculated Monthly Cashflow ($)</label
+              >
+              <div class="relative">
+                <input
+                  type="number"
+                  id="investmentPercent"
+                  class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="15"
+                  min="0"
+                  max="100"
+                />
+                <span
+                  class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >%</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
-    function updateExpenses() {
-      totalMonthlyExpenses = 0;
-      document.querySelectorAll('.expense-field').forEach(input => {
-        totalMonthlyExpenses += parseFloat(input.value) || 0;
-      });
-
-      if (monthlyDisposableIncome > 0) {
-        const percentage = (totalMonthlyExpenses / monthlyDisposableIncome * 100).toFixed(1);
-        const remaining = monthlyDisposableIncome - totalMonthlyExpenses;
-
-        // Update status display
-        document.getElementById('totalExpenses').textContent = formatCurrency(totalMonthlyExpenses);
-        document.getElementById('expensePercentage').textContent = percentage + '%';
-        document.getElementById('remaining').textContent = formatCurrency(remaining);
-
-        // Update budget zone
-        updateBudgetZone(percentage);
-
-        // Show status section and enable savings
-        showSection('status-section');
-        enableSection('savings-section');
-      }
-    }
-
-    function updateBudgetZone(percentage) {
-      const zoneElement = document.getElementById('budgetZone');
-      let zoneClass = '';
-      let zoneText = '';
-
-      if (percentage <= 50) {
-        zoneClass = 'bg-green-500';
-        zoneText = 'Excellent';
-      } else if (percentage <= 70) {
-        zoneClass = 'bg-blue-500';
-        zoneText = 'Good';
-      } else if (percentage <= 90) {
-        zoneClass = 'bg-yellow-500';
-        zoneText = 'Caution';
-      } else {
-        zoneClass = 'bg-red-500';
-        zoneText = 'Danger';
-      }
-
-      zoneElement.className = `inline-flex px-3 py-1 rounded-full text-sm font-medium text-white ${zoneClass}`;
-      zoneElement.textContent = zoneText;
-    }
-
-    // Handle savings and investment inputs
-    document.getElementById('savingsPercent').addEventListener('input', updateSummary);
-    document.getElementById('investmentPercent').addEventListener('input', updateSummary);
-
-    function updateSummary() {
-      const savingsPercent = parseFloat(document.getElementById('savingsPercent').value) || 10;
-      const investmentPercent = parseFloat(document.getElementById('investmentPercent').value) || 15;
-
-      const monthlySavings = monthlyDisposableIncome * (savingsPercent / 100);
-      const monthlyInvestments = monthlyDisposableIncome * (investmentPercent / 100);
-      const totalAllocated = totalMonthlyExpenses + monthlySavings + monthlyInvestments;
-      const cashFlow = monthlyDisposableIncome - totalAllocated;
-
-      // Create comprehensive summary
-      const summaryHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl p-6 border border-green-500/30">
-                        <h4 class="text-green-400 font-semibold mb-2">Monthly Income</h4>
-                        <p class="text-2xl font-bold text-white">${formatCurrency(monthlyDisposableIncome)}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl p-6 border border-orange-500/30">
-                        <h4 class="text-orange-400 font-semibold mb-2">Monthly Expenses</h4>
-                        <p class="text-2xl font-bold text-white">${formatCurrency(totalMonthlyExpenses)}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl p-6 border border-blue-500/30">
-                        <h4 class="text-blue-400 font-semibold mb-2">Savings & Investments</h4>
-                        <p class="text-2xl font-bold text-white">${formatCurrency(monthlySavings + monthlyInvestments)}</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-6 border border-primary/30">
-                        <h4 class="text-primary font-semibold mb-2">Cash Flow</h4>
-                        <p class="text-2xl font-bold ${cashFlow >= 0 ? 'text-green-400' : 'text-red-400'}">${formatCurrency(cashFlow)}</p>
-                    </div>
-                </div>
-                
-                <div class="mt-8 p-6 bg-white/5 rounded-2xl border border-white/10">
-                    <h4 class="text-xl font-bold text-white mb-4">Financial Health Score</h4>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-1 bg-gray-700 rounded-full h-4">
-                            <div class="bg-gradient-to-r from-primary to-secondary h-4 rounded-full transition-all duration-500" 
-                                 style="width: ${Math.min(100, Math.max(0, (cashFlow / monthlyDisposableIncome * 100) + 50))}%"></div>
-                        </div>
-                        <span class="text-white font-semibold">${Math.round(Math.min(100, Math.max(0, (cashFlow / monthlyDisposableIncome * 100) + 50)))}%</span>
-                    </div>
-                    <p class="text-gray-300 mt-2 text-sm">
-                        ${cashFlow >= 0 ? 'Great job! You have positive cash flow.' : 'Consider reducing expenses or increasing income.'}
-                    </p>
-                </div>
-            `;
-
-      document.getElementById('summaryContent').innerHTML = summaryHTML;
-      showSection('summary-section');
-    }
-  </script>
-</body>
-
+    <script src="./scripts.js">
+      // Modern Finance Calculator Logic
+    </script>
+  </body>
 </html>
