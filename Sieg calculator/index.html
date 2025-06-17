@@ -61,6 +61,16 @@
         }
       }
 
+      input {
+        -moz-appearance: textfield; /* Firefox */
+      }
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none; /* Chrome, Safari, Edge */
+        margin: 0;
+      }
+
       .glass-effect {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
@@ -195,6 +205,18 @@
               id="annualIncomeError"
               class="text-red-400 text-sm mt-2 hidden"
             ></p>
+            <div class="input-group flex items-center mt-5">
+              <input
+                type="checkbox"
+                id="includeRetirement"
+                class="custom-checkbox p-4 mr-3"
+              />
+              <label
+                for="includeRetirement"
+                class="block text-sm font-medium text-gray-300"
+                >Include 10% Retirement Contribution?</label
+              >
+            </div>
           </div>
         </div>
       </section>
@@ -212,7 +234,7 @@
             <!-- Expense categories -->
             <div class="expense-input">
               <label class="block text-sm font-medium text-gray-300 mb-2"
-                >Federal Tax ($)</label
+                >Federal Tax (20%)</label
               >
               <div class="relative">
                 <span
@@ -224,6 +246,7 @@
                   class="expense-3field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
                   placeholder="0"
                   min="0"
+                  disabled
                   id="federal-tax"
                 />
               </div>
@@ -231,7 +254,7 @@
 
             <div class="expense-input">
               <label class="block text-sm font-medium text-gray-300 mb-2"
-                >State Tax ($)</label
+                >State Tax (8%)</label
               >
               <div class="relative">
                 <span
@@ -240,6 +263,7 @@
                 >
                 <input
                   type="number"
+                  disabled
                   class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
                   placeholder="0"
                   min="0"
@@ -250,7 +274,7 @@
 
             <div class="expense-input">
               <label class="block text-sm font-medium text-gray-300 mb-2"
-                >Health Insurance ($)</label
+                >Health Insurance (3%)</label
               >
               <div class="relative">
                 <span
@@ -260,6 +284,7 @@
                 <input
                   type="number"
                   class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  disabled
                   placeholder="0"
                   min="0"
                   id="health-insurance"
@@ -269,7 +294,7 @@
 
             <div class="expense-input">
               <label class="block text-sm font-medium text-gray-300 mb-2"
-                >Social Security ($)</label
+                >Social Security (6.2%)</label
               >
               <div class="relative">
                 <span
@@ -281,6 +306,7 @@
                   class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
                   placeholder="0"
                   min="0"
+                  disabled
                   id="social-security"
                 />
               </div>
@@ -288,7 +314,7 @@
 
             <div class="expense-input">
               <label class="block text-sm font-medium text-gray-300 mb-2"
-                >Medical care ($)</label
+                >Medical care (1.5%)</label
               >
               <div class="relative">
                 <span
@@ -300,7 +326,27 @@
                   class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
                   placeholder="0"
                   min="0"
+                  disabled
                   id="medicare"
+                />
+              </div>
+            </div>
+            <div class="expense-input" id="retirement-input">
+              <label class="block text-sm font-medium text-gray-300 mb-2"
+                >Retirement (10%)</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  >$</span
+                >
+                <input
+                  type="number"
+                  class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200"
+                  placeholder="0"
+                  min="0"
+                  disabled
+                  id="retirement"
                 />
               </div>
             </div>

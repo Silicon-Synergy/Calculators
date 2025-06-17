@@ -279,18 +279,44 @@
 // Calculate initial budget
 // calculateBudget();
 
+const includeRetirementCheckbox = document.getElementById("includeRetirement");
+const retirementInput = document.getElementById("retirement-input");
+const annualIncomeInput = document.getElementById("annualIncome");
+// const annualIncomeInput = document.getElementById("annualIncome").;
+annualIncomeInput.value = "";
+
 let annualIncome = 0;
 let monthlyDisposableIncome = 0;
 let totalMonthlyExpenses = 0;
 
 // Income calculation with modern tax brackets (simplified)
 function calculateDeductions(income) {
-  const federalTax = income * 0.22; // Simplified federal tax rate
-  const stateTax = income * 0.05; // Simplified state tax rate
-  const socialSecurity = Math.min(income * 0.062, 160200 * 0.062);
-  const medicare = income * 0.0145;
-  const healthInsurance = income * 0.03;
-  const totalDeductions = federalTax + stateTax + socialSecurity + medicare;
+  const deductionRates = {
+    federal_tax: 0.2,
+    state_tax: 0.08,
+    health_insurance: 0.03,
+    social_security: 0.062,
+    medicare: 0.015,
+    retirement: 0.1,
+  };
+  const federalTax = income * deductionRates.federal_tax; // Simplified federal tax rate
+  const stateTax = income * deductionRates.state_tax; // Simplified state tax rate
+  const socialSecurity = Math.min(
+    income * deductionRates.social_security,
+    160200 * 0.062
+  );
+
+  const medicare = income * deductionRates.medicare;
+  const healthInsurance = income * deductionRates.health_insurance;
+  const retirement = income * deductionRates.retirement;
+  const totalDeductions = includeRetirementCheckbox.checked
+    ? federalTax +
+      stateTax +
+      socialSecurity +
+      medicare +
+      healthInsurance +
+      retirement
+    : federalTax + stateTax + socialSecurity + medicare + healthInsurance;
 
   return {
     federal: federalTax,
@@ -298,9 +324,15 @@ function calculateDeductions(income) {
     socialSecurity: socialSecurity,
     medicare: medicare,
     healthInsurance,
+    retirement,
     total: totalDeductions,
   };
 }
+
+// Federal Tax
+// Provincial Tax (State Tax)
+// CPP (Canada Pension Plan)
+// Employment Retirement Account (ERA)
 
 // Format currency
 function formatCurrency(amount) {
@@ -324,23 +356,27 @@ function showSection(sectionId) {
   section.classList.add("animate-fade-in");
 }
 
-// Handle income input
-document.getElementById("annualIncome").addEventListener("input", function (e) {
+function fetchDeductionOverview(e) {
   annualIncome = parseFloat(e.target.value) || 0;
+  // const annualIncome = annualIncomeValue;
 
   if (annualIncome > 0) {
     const deductions = calculateDeductions(annualIncome);
     const disposableIncome = annualIncome - deductions.total;
     monthlyDisposableIncome = disposableIncome / 12;
 
-    document.getElementById("federal-tax").value = deductions.federal || 0;
-
-    document.getElementById("state-tax").value = deductions.state || 0;
-    document.getElementById("medicare").value = deductions.medicare || 0;
+    document.getElementById("federal-tax").value =
+      deductions.federal.toFixed(2) || 0;
+    document.getElementById("state-tax").value =
+      deductions.state.toFixed(2) || 0;
+    document.getElementById("medicare").value =
+      deductions.medicare.toFixed(2) || 0;
     document.getElementById("social-security").value =
-      deductions.socialSecurity || 0;
+      deductions.socialSecurity.toFixed(2) || 0;
     document.getElementById("health-insurance").value =
       deductions.healthInsurance.toFixed(2) || 0;
+    document.getElementById("retirement").value =
+      deductions.retirement.toFixed(2) || 0;
 
     // Update deductions display
     document.getElementById("totalDeductions").textContent = formatCurrency(
@@ -355,8 +391,20 @@ document.getElementById("annualIncome").addEventListener("input", function (e) {
     // Show deductions section and enable expenses
     showSection("deductions-section");
     enableSection("expenses-section");
+  } else {
+    document.getElementById("federal-tax").value = "00";
+    document.getElementById("state-tax").value = "00";
+    document.getElementById("medicare").value = "00";
+    document.getElementById("social-security").value = "00";
+    document.getElementById("health-insurance").value = "00";
+    document.getElementById("retirement").value = "00";
   }
-});
+}
+
+// Handle income input
+document
+  .getElementById("annualIncome")
+  .addEventListener("input", fetchDeductionOverview);
 
 // Handle expense inputs
 document.querySelectorAll(".expense-field").forEach((input) => {
@@ -502,3 +550,28 @@ function updateSummary() {
   document.getElementById("summaryContent").innerHTML = summaryHTML;
   showSection("summary-section");
 }
+
+const handleDisplayRetirementInput = () => {
+  const checked = includeRetirementCheckbox.checked;
+  if (checked) {
+    retirementInput.style.display = "block";
+  } else {
+    retirementInput.style.display = "none";
+  }
+  // fetchDeductionOverview();
+};
+
+includeRetirementCheckbox.addEventListener(
+  "click",
+  handleDisplayRetirementInput
+);
+const startUp = () => {
+  const annualIncomeValue = annualIncomeInput.value;
+
+  if (annualIncomeValue > 0) {
+    showSection("deductions-section");
+  }
+  handleDisplayRetirementInput();
+};
+
+startUp();
