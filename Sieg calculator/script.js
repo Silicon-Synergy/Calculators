@@ -1,232 +1,482 @@
-class PersonalFinanceCalculator {
-    constructor() {
-        this.deductionRates = {
-            'federal_tax': 0.20,
-            'state_tax': 0.08,
-            'health_insurance': 0.03,
-            'social_security': 0.062,
-            'medicare': 0.0145
-        };
-        this.optionalDeductions = {
-            'retirement': 0.10
-        };
-        this.annualIncome = 0.0;
-        this.monthlyDisposableIncome = 0.0;
-        this.totalMonthlyExpensesEntered = 0.0;
-        this.deductionsBreakdown = {};
-        this.annualDisposable = 0.0;
-        this.includeRetirement = false;
-    }
-
-    calculateDeductions(annualIncome, includeRetirement = false) {
-        const deductions = {};
-        let totalDeductions = 0;
-
-        // Mandatory deductions
-        for (const deductionType in this.deductionRates) {
-            const rate = this.deductionRates[deductionType];
-            const amount = annualIncome * rate;
-            deductions[deductionType] = { amount: amount, percentage: rate * 100 };
-            totalDeductions += amount;
-        }
-
-        // Optional retirement contribution
-        if (includeRetirement) {
-            for (const deductionType in this.optionalDeductions) {
-                const rate = this.optionalDeductions[deductionType];
-                const amount = annualIncome * rate;
-                deductions[deductionType] = { amount: amount, percentage: rate * 100 };
-                totalDeductions += amount;
+// ===================================================================================
+// TAX CONFIGURATION DATA
+// This object holds all the static data for tax brackets, CPP, and EI rates.
+// All calculations are based on the values in this configuration.
+// NOTE: This data is for a specific tax year and may need to be updated annually. The current year is 2025
+// ===================================================================================
+const TAX_CONFIG = {
+    canada: {
+        country: "Canada",
+        federal: {
+            name: "Federal Tax",
+            brackets: [
+                {min: 0, max: 57375, rate: 0.15},
+                {min: 57375, max: 114750, rate: 0.205},
+                {min: 114750, max: 177882, rate: 0.26},
+                {min: 177882, max: 253414, rate: 0.29},
+                {min: 253414, max: Infinity, rate: 0.33}
+            ]
+        },
+        cpp: {
+            name: "CPP",
+            maxEarnings: 71300,
+            basicExemption: 3500,
+            rate: 0.0595,
+            maxContribution: 4034.10
+        },
+        ei: {
+            name: "Employment Insurance",
+            rate: 0.0164,
+            maxEarnings: 65700,
+            maxContribution: 1077.48
+        },
+        provinces: {
+            "NL": {
+                name: "Newfoundland and Labrador",
+                brackets: [
+                    {min: 0, max: 44192, rate: 0.087},
+                    {min: 44192, max: 88382, rate: 0.145},
+                    {min: 88382, max: 157792, rate: 0.158},
+                    {min: 157792, max: 220910, rate: 0.178},
+                    {min: 220910, max: 282214, rate: 0.198},
+                    {min: 282214, max: 564429, rate: 0.208},
+                    {min: 564429, max: 1128858, rate: 0.213},
+                    {min: 1128858, max: Infinity, rate: 0.218}
+                ]
+            },
+            "PE": {
+                name: "Prince Edward Island",
+                brackets: [
+                    {min: 0, max: 33328, rate: 0.095},
+                    {min: 33328, max: 64656, rate: 0.1347},
+                    {min: 64656, max: 105000, rate: 0.166},
+                    {min: 105000, max: 140000, rate: 0.1762},
+                    {min: 140000, max: Infinity, rate: 0.19}
+                ]
+            },
+            "NS": {
+                name: "Nova Scotia",
+                brackets: [
+                    {min: 0, max: 30507, rate: 0.0879},
+                    {min: 30507, max: 61015, rate: 0.1495},
+                    {min: 61015, max: 95883, rate: 0.1667},
+                    {min: 95883, max: 154650, rate: 0.175},
+                    {min: 154650, max: Infinity, rate: 0.21}
+                ]
+            },
+            "NB": {
+                name: "New Brunswick",
+                brackets: [
+                    {min: 0, max: 51306, rate: 0.094},
+                    {min: 51306, max: 102614, rate: 0.14},
+                    {min: 102614, max: 190060, rate: 0.16},
+                    {min: 190060, max: Infinity, rate: 0.195}
+                ]
+            },
+            "QC": {
+                name: "Quebec",
+                brackets: [
+                    {min: 0, max: 53255, rate: 0.14},
+                    {min: 53255, max: 106495, rate: 0.19},
+                    {min: 106495, max: 129590, rate: 0.24},
+                    {min: 129590, max: Infinity, rate: 0.2575}
+                ]
+            },
+            "ON": {
+                name: "Ontario",
+                brackets: [
+                    {min: 0, max: 52886, rate: 0.0505},
+                    {min: 52886, max: 105775, rate: 0.0915},
+                    {min: 105775, max: 150000, rate: 0.1116},
+                    {min: 150000, max: 220000, rate: 0.1216},
+                    {min: 220000, max: Infinity, rate: 0.1316}
+                ]
+            },
+            "MB": {
+                name: "Manitoba",
+                brackets: [
+                    {min: 0, max: 47564, rate: 0.108},
+                    {min: 47564, max: 101200, rate: 0.1275},
+                    {min: 101200, max: Infinity, rate: 0.174}
+                ]
+            },
+            "SK": {
+                name: "Saskatchewan",
+                brackets: [
+                    {min: 0, max: 53463, rate: 0.105},
+                    {min: 53463, max: 152750, rate: 0.125},
+                    {min: 152750, max: Infinity, rate: 0.145}
+                ]
+            },
+            "AB": {
+                name: "Alberta",
+                brackets: [
+                    {min: 0, max: 60000, rate: 0.08}, // New bracket for 2025
+                    {min: 60000, max: 151234, rate: 0.10},
+                    {min: 151234, max: 181481, rate: 0.12},
+                    {min: 181481, max: 241974, rate: 0.13},
+                    {min: 241974, max: 362961, rate: 0.14},
+                    {min: 362961, max: Infinity, rate: 0.15}
+                ]
+            },
+            "BC": {
+                name: "British Columbia",
+                brackets: [
+                    {min: 0, max: 49279, rate: 0.0506},
+                    {min: 49279, max: 98560, rate: 0.077},
+                    {min: 98560, max: 113158, rate: 0.105},
+                    {min: 113158, max: 137407, rate: 0.1229},
+                    {min: 137407, max: 186306, rate: 0.147},
+                    {min: 186306, max: 259829, rate: 0.168},
+                    {min: 259829, max: Infinity, rate: 0.205}
+                ]
+            },
+            "YT": {
+                name: "Yukon",
+                brackets: [
+                    {min: 0, max: 57375, rate: 0.064},
+                    {min: 57375, max: 114750, rate: 0.09},
+                    {min: 114750, max: 177882, rate: 0.109},
+                    {min: 177882, max: 500000, rate: 0.128},
+                    {min: 500000, max: Infinity, rate: 0.15}
+                ]
+            },
+            "NT": {
+                name: "Northwest Territories",
+                brackets: [
+                    {min: 0, max: 51964, rate: 0.059},
+                    {min: 51964, max: 103930, rate: 0.086},
+                    {min: 103930, max: 168967, rate: 0.122},
+                    {min: 168967, max: Infinity, rate: 0.1405}
+                ]
+            },
+            "NU": {
+                name: "Nunavut",
+                brackets: [
+                    {min: 0, max: 54707, rate: 0.04},
+                    {min: 54707, max: 109413, rate: 0.07},
+                    {min: 109413, max: 177881, rate: 0.09},
+                    {min: 177881, max: Infinity, rate: 0.115}
+                ]
             }
         }
-        return { deductions, totalDeductions };
+    }
+};
+
+// ===================================================================================
+// APPLICATION STATE
+// These variables hold the dynamic state of the calculator as the user interacts.
+// ===================================================================================
+
+// An object to store the user-entered values for each living expense category.
+const livingExpenses = {};
+
+// A central object to hold the results of calculations to be used across different functions.
+const calculatorState = {
+    annualIncome: 0,
+    province: '',
+    retirementPercentage: 0,
+    monthlyDisposableIncome: 0,
+    totalMonthlyExpensesEntered: 0,
+    annualDisposable: 0,
+    isSavingsCustom: false, // Flag to check if user has manually edited savings
+    isInvestmentsCustom: false // Flag to check if user has manually edited investments
+};
+
+
+// ===================================================================================
+// CORE CALCULATION FUNCTIONS
+// These are pure functions responsible for the main tax and deduction calculations.
+// ===================================================================================
+
+/**
+ * Calculates tax based on a progressive (marginal) tax bracket system.
+ * @param {number} income - The taxable income amount.
+ * @param {Array<object>} brackets - An array of tax bracket objects {min, max, rate}.
+ * @returns {number} The total calculated tax.
+ */
+function calculateProgressiveTax(income, brackets) {
+    let totalTax = 0;
+    let remainingIncome = income;
+
+    for (const bracket of brackets) {
+        if (remainingIncome <= 0) break;
+
+        const taxableInThisBracket = Math.min(remainingIncome, bracket.max - bracket.min);
+        const taxInThisBracket = taxableInThisBracket * bracket.rate;
+        totalTax += taxInThisBracket;
+        remainingIncome -= taxableInThisBracket;
     }
 
-    _allocateFunds(monthlyDisposable, totalMonthlyExpenses, savingsPctDesired, investmentsPctDesired) {
-        let monthlySavings = 0;
-        let monthlyInvestments = 0;
-        let monthlyCashflow = 0;
+    return totalTax;
+}
 
-        const remainingAfterExpenses = monthlyDisposable - totalMonthlyExpenses;
-        const minCashflowPct = 0.10;
-        const minCashflowAmount = monthlyDisposable * minCashflowPct;
+/**
+ * Calculates the Canada Pension Plan (CPP) contribution.
+ * @param {number} income - The gross annual income.
+ * @param {object} cppConfig - The CPP configuration object from TAX_CONFIG.
+ * @returns {number} The calculated annual CPP contribution.
+ */
+function calculateCPP(income, cppConfig) {
+    const contributoryEarnings = Math.min(income, cppConfig.maxEarnings) - cppConfig.basicExemption;
+    const contribution = Math.max(0, contributoryEarnings * cppConfig.rate);
+    return Math.min(contribution, cppConfig.maxContribution);
+}
 
-        let hasAdequateCashflow = false;
+/**
+ * Calculates the Employment Insurance (EI) contribution.
+ * @param {number} income - The gross annual income.
+ * @param {object} eiConfig - The EI configuration object from TAX_CONFIG.
+ * @returns {number} The calculated annual EI contribution.
+ */
+function calculateEI(income, eiConfig) {
+    const contribution = Math.min(income, eiConfig.maxEarnings) * eiConfig.rate;
+    return Math.min(contribution, eiConfig.maxContribution);
+}
 
-        if (remainingAfterExpenses < minCashflowAmount) {
-            monthlyCashflow = remainingAfterExpenses;
-            hasAdequateCashflow = false;
-            monthlySavings = 0;
-            monthlyInvestments = 0;
-        } else {
-            monthlyCashflow = minCashflowAmount;
-            let availableForSI = remainingAfterExpenses - monthlyCashflow;
+/**
+ * Calculates all federal and provincial taxes, CPP, and EI deductions.
+ * @param {number} grossIncome - The user's gross annual income.
+ * @param {string} province - The two-letter province code (e.g., "NL").
+ * @param {number} [retirementPercentage=0] - The percentage of income contributed to retirement.
+ * @returns {{deductions: object, totalDeductions: number}} An object containing a detailed breakdown of deductions and the total amount.
+ */
+function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
+    const config = TAX_CONFIG.canada;
+    const retirementContribution = grossIncome * (retirementPercentage / 100);
+    const taxableIncome = grossIncome - retirementContribution;
+    const deductions = {};
 
-            // Define minimum 10% for S/I if they are being targeted (desired percentage > 0)
-            const minRequiredSavings = (savingsPctDesired > 0) ? (monthlyDisposable * 0.10) : 0;
-            const minRequiredInvestments = (investmentsPctDesired > 0) ? (monthlyDisposable * 0.10) : 0;
+    // Federal Tax
+    const federalTax = calculateProgressiveTax(taxableIncome, config.federal.brackets);
+    deductions.federal_tax = {
+        amount: federalTax,
+        percentage: (federalTax / grossIncome) * 100,
+        name: "Federal Tax"
+    };
 
-            const totalMinSIRequired = minRequiredSavings + minRequiredInvestments;
-
-            if (availableForSI >= totalMinSIRequired) {
-                monthlySavings = minRequiredSavings;
-                monthlyInvestments = minRequiredInvestments;
-                availableForSI -= totalMinSIRequired;
-
-                // Now, calculate remaining desired amounts (above minimums)
-                let remainingDesiredSavings = (monthlyDisposable * savingsPctDesired / 100) - monthlySavings;
-                let remainingDesiredInvestments = (monthlyDisposable * investmentsPctDesired / 100) - monthlyInvestments;
-
-                // Ensure remaining desired are not negative (already allocated more by min)
-                remainingDesiredSavings = Math.max(0, remainingDesiredSavings);
-                remainingDesiredInvestments = Math.max(0, remainingDesiredInvestments);
-
-                const totalRemainingDesired = remainingDesiredSavings + remainingDesiredInvestments;
-
-                if (totalRemainingDesired > 0 && availableForSI > 0) {
-                    // Distribute any remaining available funds proportionally up to desired amounts
-                    const scaleFactor = Math.min(1, availableForSI / totalRemainingDesired);
-                    monthlySavings += remainingDesiredSavings * scaleFactor;
-                    monthlyInvestments += remainingDesiredInvestments * scaleFactor;
-                } else if (availableForSI > 0) {
-                    monthlyCashflow += availableForSI;
-                }
-
-            } else {
-                const totalDesiredSIToScale = (monthlyDisposable * savingsPctDesired / 100) + (monthlyDisposable * investmentsPctDesired / 100);
-                if (totalDesiredSIToScale > 0) {
-                    const scaleFactor = availableForSI / totalDesiredSIToScale;
-                    monthlySavings = (monthlyDisposable * savingsPctDesired / 100) * scaleFactor;
-                    monthlyInvestments = (monthlyDisposable * investmentsPctDesired / 100) * scaleFactor;
-                } else {
-                    monthlySavings = 0;
-                    monthlyInvestments = 0;
-                }
-                // Cashflow remains at minCashflowAmount
-            }
-
-            // Final check on cashflow to ensure it captures any residual from S/I allocation adjustments
-            monthlyCashflow = monthlyDisposable - totalMonthlyExpenses - monthlySavings - monthlyInvestments;
-            hasAdequateCashflow = monthlyCashflow >= minCashflowAmount;
-        }
-
-        return {
-            monthly_savings: Math.max(0, monthlySavings),
-            monthly_investments: Math.max(0, monthlyInvestments),
-            monthly_cashflow: Math.max(0, monthlyCashflow),
-            has_adequate_cashflow: hasAdequateCashflow,
-            min_cashflow_amount: minCashflowAmount,
-            remaining_unallocated: 0 // Cashflow absorbs all excess
+    // Provincial Tax
+    if (province && config.provinces[province]) {
+        const provincialTax = calculateProgressiveTax(taxableIncome, config.provinces[province].brackets);
+        deductions.provincial_tax = {
+            amount: provincialTax,
+            percentage: (provincialTax / grossIncome) * 100,
+            name: `${config.provinces[province].name} Tax`
         };
     }
 
-    calculateBudget(annualIncome, livingExpenses, includeRetirement = false, userSavingsPct = null, userInvestmentsPct = null) {
-        const { deductions, totalDeductions } = this.calculateDeductions(annualIncome, includeRetirement);
-        const annualDisposable = annualIncome - totalDeductions;
-        const monthlyDisposable = annualDisposable / 12;
-        const totalMonthlyExpenses = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
+    // CPP (on gross income)
+    const cppContribution = calculateCPP(grossIncome, config.cpp);
+    deductions.cpp = {
+        amount: cppContribution,
+        percentage: (cppContribution / grossIncome) * 100,
+        name: "CPP"
+    };
 
-        const expensesPercentage = monthlyDisposable <= 0 ? Infinity : (totalMonthlyExpenses / monthlyDisposable) * 100;
-        const [zone, status, savingsAllowed, investmentsAllowed] = this.determineBudgetZoneAndOptions(expensesPercentage);
+    // EI (on gross income)
+    const eiContribution = calculateEI(grossIncome, config.ei);
+    deductions.ei = {
+        amount: eiContribution,
+        percentage: (eiContribution / grossIncome) * 100,
+        name: "Employment Insurance"
+    };
 
-        const recommendedSavingsPct = 12; // Default recommendation
-        const recommendedInvestmentsPct = 15; // Default recommendation
-
-        // Calculate allocation based on recommended percentages (only if allowed in current zone)
-        const effectiveRecSavingsPct = savingsAllowed ? recommendedSavingsPct : 0;
-        const effectiveRecInvestmentsPct = investmentsAllowed ? recommendedInvestmentsPct : 0;
-
-        const recommendedAllocations = this._allocateFunds(
-            monthlyDisposable, totalMonthlyExpenses, effectiveRecSavingsPct, effectiveRecInvestmentsPct
-        );
-
-        let customAllocations = null;
-        // Only consider custom input if savings/investments are allowed in the current zone
-        if ((savingsAllowed && userSavingsPct !== null) || (investmentsAllowed && userInvestmentsPct !== null)) {
-            const userSavingsPctValidated = savingsAllowed && userSavingsPct !== null ? this.validateSavingsPercentage(userSavingsPct) : null;
-            const userInvestmentsPctValidated = investmentsAllowed && userInvestmentsPct !== null ? this.validateInvestmentsPercentage(userInvestmentsPct) : null;
-
-            // Only create a custom scenario if user provided valid input within the allowed ranges
-            // and at least one of the inputs is not null (meaning user actually typed something valid)
-            if ( (userSavingsPctValidated !== null && userSavingsPctValidated >= 10 && userSavingsPctValidated <= 15) ||
-                (userInvestmentsPctValidated !== null && userInvestmentsPctValidated >= 10 && userInvestmentsPctValidated <= 20) )
-            {
-                // Use validated percentages, defaulting to 0 if a specific percentage wasn't provided or was invalid for that category
-                const finalCustomSavingsPct = userSavingsPctValidated !== null ? userSavingsPctValidated : 0;
-                const finalCustomInvestmentsPct = userInvestmentsPctValidated !== null ? userInvestmentsPctValidated : 0;
-
-                // Ensure at least one percentage is positive to create a custom allocation
-                if (finalCustomSavingsPct > 0 || finalCustomInvestmentsPct > 0) {
-                    customAllocations = this._allocateFunds(
-                        monthlyDisposable, totalMonthlyExpenses, finalCustomSavingsPct, finalCustomInvestmentsPct
-                    );
-                }
-            }
-        }
-
-        return {
-            annual_income: annualIncome,
-            deductions: deductions,
-            total_deductions: totalDeductions,
-            annual_disposable: annualDisposable,
-            monthly_disposable: monthlyDisposable,
-            living_expenses: livingExpenses,
-            total_monthly_expenses: totalMonthlyExpenses,
-            expenses_percentage: expensesPercentage,
-            budget_zone: zone,
-            status_message: status,
-            savings_allowed: savingsAllowed,
-            investments_allowed: investmentsAllowed,
-            recommended_allocations: recommendedAllocations,
-            custom_allocations: customAllocations,
-            include_retirement: includeRetirement
+    // Retirement Contribution
+    if (retirementPercentage > 0) {
+        deductions.retirement = {
+            amount: retirementContribution,
+            percentage: retirementPercentage,
+            name: "Retirement Contribution"
         };
     }
 
-    determineBudgetZoneAndOptions(expensesPercentage) {
-        if (expensesPercentage <= 70) {
-            return ["GREEN", "You have good financial flexibility.", true, true]; // Savings and Investments allowed
-        } else if (expensesPercentage <= 80) {
-            return ["MODERATE", "Focus on savings and maintaining cashflow.", true, false]; // Savings allowed, Investments NOT
-        } else {
-            return ["RED", "Prioritize cashflow and expense reduction.", false, false]; // Neither allowed
-        }
-    }
+    const totalDeductions = Object.values(deductions).reduce((sum, deduction) => sum + deduction.amount, 0);
 
-    validateSavingsPercentage(value) {
-        const val = parseFloat(value);
-        // Returns the value only if it's within 10-15, otherwise null (invalid)
-        if (isNaN(val) || val < 10 || val > 15) {
-            return null;
-        }
-        return val;
-    }
+    return {deductions, totalDeductions};
+}
 
-    validateInvestmentsPercentage(value) {
-        const val = parseFloat(value);
-        // Returns the value only if it's within 10-20, otherwise null (invalid)
-        if (isNaN(val) || val < 10 || val > 20) {
-            return null;
-        }
-        return val;
+
+// ===================================================================================
+// BUDGETING AND ALLOCATION FUNCTIONS
+// Functions related to budgeting, fund allocation, and financial health status.
+// ===================================================================================
+
+/**
+ * Determines the user's budget "zone" (Green, Moderate, Red) based on their expense ratio.
+ * @param {number} expensesPercentage - The percentage of disposable income that goes to expenses.
+ * @returns {Array<string|boolean>} An array containing [zone, statusMessage, savingsAllowed, investmentsAllowed].
+ */
+function determineBudgetZoneAndOptions(expensesPercentage) {
+    if (expensesPercentage <= 70) {
+        return ["GREEN", "You have excellent financial flexibility.", true, true];
+    } else if (expensesPercentage <= 80) {
+        return ["MODERATE", "Focus on savings and maintaining cashflow.", true, false];
+    } else {
+        return ["RED", "Prioritize cashflow and expense reduction.", false, false];
     }
 }
 
-// --- DOM Elements ---
+/**
+ * Allocates funds to savings, investments, and cashflow based on desired percentages and available income.
+ * This is a private helper function for the main budget calculation.
+ * @param {number} monthlyDisposable - The monthly income after all taxes and deductions.
+ * @param {number} totalMonthlyExpenses - The total of all user-entered living expenses.
+ * @param {number} savingsPctDesired - The desired percentage to allocate to savings.
+ * @param {number} investmentsPctDesired - The desired percentage to allocate to investments.
+ * @returns {object} An object with the calculated monthly allocations.
+ */
+function allocateFunds(monthlyDisposable, totalMonthlyExpenses, savingsPctDesired, investmentsPctDesired) {
+    let monthlySavings = 0;
+    let monthlyInvestments = 0;
+    let monthlyCashflow = 0;
+
+    const remainingAfterExpenses = monthlyDisposable - totalMonthlyExpenses;
+    const minCashflowPct = 0.10;
+    const minCashflowAmount = monthlyDisposable * minCashflowPct;
+    let hasAdequateCashflow = false;
+
+    if (remainingAfterExpenses < minCashflowAmount) {
+        monthlyCashflow = remainingAfterExpenses;
+        hasAdequateCashflow = false;
+        monthlySavings = 0;
+        monthlyInvestments = 0;
+    } else {
+        monthlyCashflow = minCashflowAmount;
+        let availableForSI = remainingAfterExpenses - monthlyCashflow;
+        const minRequiredSavings = (savingsPctDesired > 0) ? (monthlyDisposable * 0.10) : 0;
+        const minRequiredInvestments = (investmentsPctDesired > 0) ? (monthlyDisposable * 0.10) : 0;
+        const totalMinSIRequired = minRequiredSavings + minRequiredInvestments;
+
+        if (availableForSI >= totalMinSIRequired) {
+            monthlySavings = minRequiredSavings;
+            monthlyInvestments = minRequiredInvestments;
+            availableForSI -= totalMinSIRequired;
+
+            let remainingDesiredSavings = (monthlyDisposable * savingsPctDesired / 100) - monthlySavings;
+            let remainingDesiredInvestments = (monthlyDisposable * investmentsPctDesired / 100) - monthlyInvestments;
+            remainingDesiredSavings = Math.max(0, remainingDesiredSavings);
+            remainingDesiredInvestments = Math.max(0, remainingDesiredInvestments);
+            const totalRemainingDesired = remainingDesiredSavings + remainingDesiredInvestments;
+
+            if (totalRemainingDesired > 0 && availableForSI > 0) {
+                const scaleFactor = Math.min(1, availableForSI / totalRemainingDesired);
+                monthlySavings += remainingDesiredSavings * scaleFactor;
+                monthlyInvestments += remainingDesiredInvestments * scaleFactor;
+            } else if (availableForSI > 0) {
+                monthlyCashflow += availableForSI;
+            }
+        } else {
+            const totalDesiredSIToScale = (monthlyDisposable * savingsPctDesired / 100) + (monthlyDisposable * investmentsPctDesired / 100);
+            if (totalDesiredSIToScale > 0) {
+                const scaleFactor = availableForSI / totalDesiredSIToScale;
+                monthlySavings = (monthlyDisposable * savingsPctDesired / 100) * scaleFactor;
+                monthlyInvestments = (monthlyDisposable * investmentsPctDesired / 100) * scaleFactor;
+            } else {
+                monthlySavings = 0;
+                monthlyInvestments = 0;
+            }
+        }
+
+        monthlyCashflow = monthlyDisposable - totalMonthlyExpenses - monthlySavings - monthlyInvestments;
+        hasAdequateCashflow = monthlyCashflow >= minCashflowAmount;
+    }
+
+    return {
+        monthly_savings: Math.max(0, monthlySavings),
+        monthly_investments: Math.max(0, monthlyInvestments),
+        monthly_cashflow: Math.max(0, monthlyCashflow),
+        has_adequate_cashflow: hasAdequateCashflow,
+        min_cashflow_amount: minCashflowAmount,
+        remaining_unallocated: 0
+    };
+}
+
+
+/**
+ * Orchestrates all calculations to produce a complete budget summary.
+ * @param {number} annualIncome - Gross annual income.
+ * @param {string} province - Two-letter province code.
+ * @param {object} livingExpenses - Object with all living expense values.
+ * @param {number} [retirementPercentage=0] - Retirement contribution percentage.
+ * @param {number|null} userSavingsPct - User-defined savings percentage.
+ * @param {number|null} userInvestmentsPct - User-defined investments percentage.
+ * @returns {object} A comprehensive budget object with all calculated details.
+ */
+function calculateBudget(annualIncome, province, livingExpenses, retirementPercentage = 0, userSavingsPct = null, userInvestmentsPct = null) {
+    const {deductions, totalDeductions} = calculateTaxes(annualIncome, province, retirementPercentage);
+    const annualDisposable = annualIncome - totalDeductions;
+    const monthlyDisposable = annualDisposable / 12;
+    const totalMonthlyExpenses = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
+    const expensesPercentage = monthlyDisposable <= 0 ? Infinity : (totalMonthlyExpenses / monthlyDisposable) * 100;
+
+    const [zone, status, savingsAllowed, investmentsAllowed] = determineBudgetZoneAndOptions(expensesPercentage);
+
+    const recommendedSavingsPct = 12;
+    const recommendedInvestmentsPct = 15;
+    const effectiveRecSavingsPct = savingsAllowed ? recommendedSavingsPct : 0;
+    const effectiveRecInvestmentsPct = investmentsAllowed ? recommendedInvestmentsPct : 0;
+
+    const recommendedAllocations = allocateFunds(monthlyDisposable, totalMonthlyExpenses, effectiveRecSavingsPct, effectiveRecInvestmentsPct);
+
+    let customAllocations = null;
+    if ((savingsAllowed && userSavingsPct !== null) || (investmentsAllowed && userInvestmentsPct !== null)) {
+        const userSavingsPctValidated = savingsAllowed && userSavingsPct !== null ? validateSavingsPercentage(userSavingsPct, true) : null;
+        const userInvestmentsPctValidated = investmentsAllowed && userInvestmentsPct !== null ? validateInvestmentsPercentage(userInvestmentsPct, true) : null;
+
+        if ((userSavingsPctValidated !== null && userSavingsPctValidated >= 10 && userSavingsPctValidated <= 15) ||
+            (userInvestmentsPctValidated !== null && userInvestmentsPctValidated >= 10 && userInvestmentsPctValidated <= 20)) {
+            const finalCustomSavingsPct = userSavingsPctValidated !== null ? userSavingsPctValidated : 0;
+            const finalCustomInvestmentsPct = userInvestmentsPctValidated !== null ? userInvestmentsPctValidated : 0;
+            if (finalCustomSavingsPct > 0 || finalCustomInvestmentsPct > 0) {
+                customAllocations = allocateFunds(monthlyDisposable, totalMonthlyExpenses, finalCustomSavingsPct, finalCustomInvestmentsPct);
+            }
+        }
+    }
+
+    return {
+        annual_income: annualIncome,
+        province: province,
+        deductions: deductions,
+        total_deductions: totalDeductions,
+        annual_disposable: annualDisposable,
+        monthly_disposable: monthlyDisposable,
+        living_expenses: livingExpenses,
+        total_monthly_expenses: totalMonthlyExpenses,
+        expenses_percentage: expensesPercentage,
+        budget_zone: zone,
+        status_message: status,
+        savings_allowed: savingsAllowed,
+        investments_allowed: investmentsAllowed,
+        recommended_allocations: recommendedAllocations,
+        custom_allocations: customAllocations,
+        retirement_percentage: retirementPercentage
+    };
+}
+
+
+// ===================================================================================
+// DOM ELEMENTS
+// Cached references to all the necessary HTML elements to avoid repeated queries.
+// ===================================================================================
 const mainCalculatorCard = document.getElementById('main-calculator-card');
 const annualIncomeInput = document.getElementById('annualIncome');
+const provinceSelect = document.getElementById('provinceSelect');
 const annualIncomeError = document.getElementById('annualIncomeError');
-const includeRetirementCheckbox = document.getElementById('includeRetirement'); // New checkbox
+const provinceError = document.getElementById('provinceError');
+const includeRetirementCheckbox = document.getElementById('includeRetirement');
+const retirementPercentageSection = document.getElementById('retirement-percentage-section');
+const retirementPercentageInput = document.getElementById('retirementPercentage');
+const retirementPercentageError = document.getElementById('retirementPercentageError');
 
 const deductionsDisposableSection = document.getElementById('deductions-disposable-section');
 const totalAnnualDeductionsSpan = document.getElementById('totalAnnualDeductions');
-const deductionInputsContainer = document.getElementById('deduction-inputs-container'); // New container for deduction fields
+const deductionInputsContainer = document.getElementById('deduction-inputs-container');
 const annualDisposableIncomeSpan = document.getElementById('annualDisposableIncome');
 const monthlyDisposableIncomeSpan = document.getElementById('monthlyDisposableIncome');
 
-const livingExpensesSection = document.getElementById('living-expenses-section'); // Target for background color change
+const livingExpensesSection = document.getElementById('living-expenses-section');
 const expenseInputsContainer = document.getElementById('expense-inputs-container');
-const integratedExpenseSummary = document.getElementById('integrated-expense-summary'); // New element for integrated status
+const integratedExpenseSummary = document.getElementById('integrated-expense-summary');
 const currentTotalExpensesSpan = document.getElementById('currentTotalExpenses');
 const currentExpensesPercentageSpan = document.getElementById('currentExpensesPercentage');
 const currentBudgetZoneSpan = document.getElementById('currentBudgetZone');
@@ -238,406 +488,515 @@ const savingsPercentageInput = document.getElementById('savingsPercentage');
 const savingsPercentageError = document.getElementById('savingsPercentageError');
 const investmentsPercentageInput = document.getElementById('investmentsPercentage');
 const investmentsPercentageError = document.getElementById('investmentsPercentageError');
-const cashflowAmountInput = document.getElementById('cashflowAmount'); // New cashflow input field
+const cashflowAmountInput = document.getElementById('cashflowAmount');
 
 const finalSummarySection = document.getElementById('final-summary-section');
 const finalSummaryContentDiv = document.getElementById('final-summary-content');
 
-const calculator = new PersonalFinanceCalculator();
 const livingExpenseCategories = [
     'Mortgage/Rent', 'Transport', 'Insurance', 'Utilities', 'Groceries',
     'Entertainment', 'Phone Bill', 'Internet Bill', 'Home Maintenance', 'Miscellaneous'
 ];
-const livingExpenses = {}; // Object to store current living expense values
 
-// --- Dynamic Expense Input Generation ---
-function createExpenseInputs() {
-    expenseInputsContainer.innerHTML = ''; // Clear existing
-    livingExpenseCategories.forEach(category => {
-        const id = category.toLowerCase().replace(/[\s/]/g, '_');
-        const div = document.createElement('div');
-        div.className = 'input-group';
-        div.innerHTML = `
-            <label for="${id}">${category} ($)</label>
-            <input type="number" id="${id}" class="input-field expense-input" placeholder="0" min="0">
-            <p id="${id}Error" class="error-message"></p>
-            <p class="text-xs text-gray-500 mt-1">
-                <span id="${id}Percentage" class="font-medium">0.0%</span> of disposable income
-            </p>
-        `;
-        expenseInputsContainer.appendChild(div);
-        livingExpenses[id] = 0; // Initialize expense to 0
-    });
 
-    // Add event listeners to newly created expense inputs
-    document.querySelectorAll('.expense-input').forEach(input => {
-        input.addEventListener('input', handleExpenseInput);
+// ===================================================================================
+// INITIALIZATION AND DOM MANIPULATION FUNCTIONS
+// Functions responsible for setting up the initial state of the UI.
+// ===================================================================================
+
+/**
+ * Populates the province dropdown from the TAX_CONFIG object.
+ */
+function initializeProvinceDropdown() {
+    const provinces = TAX_CONFIG.canada.provinces;
+    Object.keys(provinces).forEach(code => {
+        const option = document.createElement('option');
+        option.value = code;
+        option.textContent = provinces[code].name;
+        provinceSelect.appendChild(option);
     });
 }
 
-// --- Event Handlers ---
-annualIncomeInput.addEventListener('input', handleAnnualIncomeInput);
-includeRetirementCheckbox.addEventListener('change', handleAnnualIncomeInput); // Listen for checkbox change
+/**
+ * Dynamically creates the input fields for all living expense categories.
+ */
+function createExpenseInputs() {
+    expenseInputsContainer.innerHTML = '';
+    livingExpenseCategories.forEach(category => {
+        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
 
-savingsPercentageInput.addEventListener('input', handleSavingsInvestmentsInput);
-investmentsPercentageInput.addEventListener('input', handleSavingsInvestmentsInput);
+        const label = document.createElement('label');
+        label.setAttribute('for', `${categoryId}-input`);
+        // Add a span inside the label to hold the percentage
+        label.innerHTML = `${category.replace(/([A-Z])/g, ' $1').trim()} (CAD $) <span id="percentage-${categoryId}" class="text-sm font-normal text-gray-500"></span>`;
 
-function handleAnnualIncomeInput() {
-    const incomeValue = parseFloat(annualIncomeInput.value);
-    annualIncomeError.textContent = '';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = `${categoryId}-input`;
+        input.className = 'input-field';
+        input.placeholder = 'e.g., 500';
+        input.min = '0';
+        input.step = '0.01';
 
-    // Update retirement flag
-    calculator.includeRetirement = includeRetirementCheckbox.checked;
+        const errorP = document.createElement('p');
+        errorP.className = 'error-message';
+        errorP.id = `${categoryId}-error`;
 
-    if (isNaN(incomeValue) || incomeValue < 0) {
-        annualIncomeError.textContent = 'Please enter a valid positive number.';
-        // Hide/reset sections if income is invalid
-        deductionsDisposableSection.classList.add('hidden');
-        livingExpensesSection.classList.add('opacity-50', 'pointer-events-none');
-        integratedExpenseSummary.classList.add('hidden'); // Hide integrated status box
-        savingsInvestmentsSection.classList.add('opacity-50', 'pointer-events-none');
-        finalSummarySection.classList.add('hidden');
+        inputGroup.appendChild(label);
+        inputGroup.appendChild(input);
+        inputGroup.appendChild(errorP);
+        expenseInputsContainer.appendChild(inputGroup);
 
-        // Ensure living expenses section background is reset if income becomes invalid
-        livingExpensesSection.classList.remove('green-zone-bg', 'moderate-zone-bg', 'red-zone-bg');
+        livingExpenses[category] = 0;
 
-
-        calculator.annualIncome = 0;
-        calculator.monthlyDisposableIncome = 0;
-        calculator.totalMonthlyExpensesEntered = 0;
-        // Reset all expense inputs and values
-        document.querySelectorAll('.expense-input').forEach(input => {
-            input.value = '';
-            document.getElementById(`${input.id}Percentage`).textContent = `0.0%`;
-            input.classList.remove('green-border', 'moderate-border', 'red-border'); // Remove colored borders
-            input.style.borderColor = ''; // Reset to default Tailwind border color
-            input.style.boxShadow = ''; // Reset focus shadow
+        input.addEventListener('input', () => {
+            const value = parseFloat(input.value) || 0;
+            livingExpenses[category] = value;
+            updateExpenseSummary();
+            updateFinalCalculations();
+            updateExpensePercentageLabels(); // Update percentages on each expense input
         });
-        for (const key in livingExpenses) {
-            livingExpenses[key] = 0;
-        }
-        // Also reset cashflow input
-        cashflowAmountInput.value = '';
+    });
+}
 
-        updateDeductionsDisplay(0, false); // Clear deductions display
-        updateRealtimeStatusDisplay(); // This will help reset other elements
+
+/**
+ * Updates the percentage display next to each expense label.
+ */
+function updateExpensePercentageLabels() {
+    if (calculatorState.monthlyDisposableIncome <= 0) {
+        // If there's no income, clear all percentage labels
+        livingExpenseCategories.forEach(category => {
+            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+            const percentageSpan = document.getElementById(`percentage-${categoryId}`);
+            if (percentageSpan) percentageSpan.textContent = '';
+        });
         return;
     }
 
-    calculator.annualIncome = incomeValue;
-    const { deductions, totalDeductions } = calculator.calculateDeductions(incomeValue, calculator.includeRetirement);
-    calculator.deductionsBreakdown = deductions;
-    calculator.totalDeductions = totalDeductions;
-    calculator.annualDisposable = incomeValue - totalDeductions;
-    calculator.monthlyDisposableIncome = calculator.annualDisposable / 12;
-
-    totalAnnualDeductionsSpan.textContent = `$${totalDeductions.toFixed(2)}`;
-    annualDisposableIncomeSpan.textContent = `$${calculator.annualDisposable.toFixed(2)}`;
-    monthlyDisposableIncomeSpan.textContent = `$${calculator.monthlyDisposableIncome.toFixed(2)}`;
-
-    deductionsDisposableSection.classList.remove('hidden');
-    livingExpensesSection.classList.remove('opacity-50', 'pointer-events-none');
-    integratedExpenseSummary.classList.remove('hidden'); // Show integrated status box
-
-    // Update deductions display
-    updateDeductionsDisplay(incomeValue, calculator.includeRetirement);
-    // Update real-time status with current (zero) expenses and update card/input colors
-    updateRealtimeStatusDisplay();
-}
-
-function updateDeductionsDisplay(annualIncome, includeRetirement) {
-    const { deductions, totalDeductions } = calculator.calculateDeductions(annualIncome, includeRetirement);
-    deductionInputsContainer.innerHTML = ''; // Clear previous deductions
-
-    const deductionOrder = [
-        'federal_tax', 'state_tax', 'health_insurance',
-        'social_security', 'medicare'
-    ];
-    // Add retirement to order if included
-    if (includeRetirement) {
-        deductionOrder.push('retirement');
-    }
-
-    deductionOrder.forEach(type => {
-        if (deductions[type]) {
-            const deduction = deductions[type];
-            const id = type.replace('_', '-'); // e.g., federal-tax
-            const div = document.createElement('div');
-            div.className = 'input-group';
-            div.innerHTML = `
-                <label for="deduction-${id}">${type.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} ($)</label>
-                <input type="text" id="deduction-${id}" class="input-field" value="$${deduction.amount.toFixed(2)} (${deduction.percentage.toFixed(1)}%)" readonly>
-            `;
-            deductionInputsContainer.appendChild(div);
+    // Update each label with the new percentage
+    Object.entries(livingExpenses).forEach(([category, value]) => {
+        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
+        const percentageSpan = document.getElementById(`percentage-${categoryId}`);
+        if (percentageSpan) {
+            if (value > 0) {
+                const percentage = (value / calculatorState.monthlyDisposableIncome) * 100;
+                percentageSpan.textContent = `(${percentage.toFixed(1)}%)`;
+            } else {
+                percentageSpan.textContent = ''; // Clear if value is zero
+            }
         }
     });
 }
 
 
-function handleExpenseInput(event) {
-    const inputId = event.target.id;
-    const expenseError = document.getElementById(`${inputId}Error`);
-    const expensePercentageSpan = document.getElementById(`${inputId}Percentage`);
-    const expenseValue = parseFloat(event.target.value);
+/**
+ * Creates read-only input fields to display the breakdown of tax deductions.
+ * @param {object} deductions - The deductions object from the calculateTaxes function.
+ */
+function createDeductionInputs(deductions) {
+    deductionInputsContainer.innerHTML = '';
+    Object.entries(deductions).forEach(([key, deduction]) => {
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
 
-    if (isNaN(expenseValue) || expenseValue < 0) {
-        expenseError.textContent = 'Enter a valid positive number.';
-        livingExpenses[inputId] = 0;
-        expensePercentageSpan.textContent = `0.0%`;
-    } else {
-        expenseError.textContent = '';
-        livingExpenses[inputId] = expenseValue;
-        if (calculator.monthlyDisposableIncome > 0) {
-            const pct = (expenseValue / calculator.monthlyDisposableIncome) * 100;
-            expensePercentageSpan.textContent = `${pct.toFixed(1)}%`;
-        } else {
-            expensePercentageSpan.textContent = `N/A`;
-        }
-    }
+        const label = document.createElement('label');
 
-    calculator.totalMonthlyExpensesEntered = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-    updateRealtimeStatusDisplay(); // This also triggers final summary update
-}
-
-function handleSavingsInvestmentsInput(event) {
-    const inputId = event.target.id;
-    const errorElement = document.getElementById(`${inputId}Error`);
-    let value = event.target.value;
-
-    const isSavingsInput = (inputId === 'savingsPercentage');
-    const minVal = isSavingsInput ? 10 : 10;
-    const maxVal = isSavingsInput ? 15 : 20;
-
-    if (value === '') { // Allow empty string for clearing input (means use default for custom scenario)
-        errorElement.textContent = '';
-    } else {
-        const numValue = parseFloat(value);
-        if (isNaN(numValue) || numValue < minVal || numValue > maxVal) {
-            errorElement.textContent = `Percentage must be between ${minVal}% and ${maxVal}%.`;
-        } else {
-            errorElement.textContent = '';
-        }
-    }
-
-    updateRealtimeStatusDisplay(); // Now correctly calls this which handles cashflow update
-    updateFinalSummaryDisplay(); // Trigger final summary update on S/I input
-}
-
-function updateRealtimeStatusDisplay() {
-    const currentTotalExpenses = calculator.totalMonthlyExpensesEntered;
-    const monthlyDisposable = calculator.monthlyDisposableIncome;
-
-    currentTotalExpensesSpan.textContent = `$${currentTotalExpenses.toFixed(2)}`;
-
-    let currentExpensesPercentage = 0;
-    if (monthlyDisposable > 0) {
-        currentExpensesPercentage = (currentTotalExpenses / monthlyDisposable) * 100;
-    } else if (monthlyDisposable === 0 && currentTotalExpenses > 0) {
-        currentExpensesPercentage = Infinity; // Infinite if expenses exist with no disposable income
-    }
-    currentExpensesPercentageSpan.textContent = `${currentExpensesPercentage.toFixed(1)}%`;
-
-    const [zone, statusMessage, savingsAllowed, investmentsAllowed] = calculator.determineBudgetZoneAndOptions(currentExpensesPercentage);
-    currentBudgetZoneSpan.textContent = zone;
-    currentBudgetZoneSpan.className = `status-badge ${zone.toLowerCase()}-zone`;
-    currentZoneMessageP.textContent = statusMessage;
-
-    // Update ONLY the living expenses section background color based on zone
-    livingExpensesSection.classList.remove('green-zone-bg', 'moderate-zone-bg', 'red-zone-bg');
-    livingExpensesSection.classList.add(`${zone.toLowerCase()}-zone-bg`);
-
-
-    // Update individual expense input field colors and percentages
-    document.querySelectorAll('.expense-input').forEach(input => {
-        input.classList.remove('green-border', 'moderate-border', 'red-border');
-        input.style.borderColor = ''; // Reset border for default
-        input.style.boxShadow = ''; // Reset box-shadow for focus
-
-        // Apply new border color class based on zone
-        if (zone === "GREEN") {
-            input.classList.add('green-border');
-        } else if (zone === "MODERATE") {
-            input.classList.add('moderate-border');
-        } else { // RED
-            input.classList.add('red-border');
+        // Add tooltip messages based on deduction type
+        let tooltipMessage = '';
+        if (key === 'federal_tax') {
+            tooltipMessage = 'Effective federal tax rate (marginal system)';
+        } else if (key === 'provincial_tax') {
+            tooltipMessage = 'Effective provincial tax rate (marginal system)';
+        } else if (key === 'cpp') {
+            const config = TAX_CONFIG.canada.cpp;
+            const isAtMax = deduction.amount >= config.maxContribution;
+            tooltipMessage = isAtMax ?
+                `CPP rate capped at max contribution of $${config.maxContribution.toFixed(2)}` :
+                `CPP rate on contributory earnings (${(config.rate * 100).toFixed(2)}% on income above $${config.basicExemption})`;
+        } else if (key === 'ei') {
+            const config = TAX_CONFIG.canada.ei;
+            const isAtMax = deduction.amount >= config.maxContribution;
+            tooltipMessage = isAtMax ?
+                `EI rate capped at max contribution of $${config.maxContribution.toFixed(2)}` :
+                `EI rate (${(config.rate * 100).toFixed(2)}% on insurable earnings)`;
+        } else if (key === 'retirement') {
+            tooltipMessage = 'Pre-tax retirement contribution reduces taxable income';
         }
 
-        // Update individual expense percentage display
-        const expensePercentageSpan = document.getElementById(`${input.id}Percentage`);
-        const expenseValue = parseFloat(input.value);
-        if (!isNaN(expenseValue) && expenseValue >= 0 && monthlyDisposable > 0) {
-            const pct = (expenseValue / monthlyDisposable) * 100;
-            expensePercentageSpan.textContent = `${pct.toFixed(1)}%`;
-        } else {
-            expensePercentageSpan.textContent = `0.0%`;
-        }
+        label.innerHTML = `${deduction.name} (${deduction.percentage.toFixed(2)}%) <span class="text-xs text-gray-500 font-normal">- ${tooltipMessage}</span>`;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-field font-semibold text-gray-700';
+        input.value = `$${deduction.amount.toFixed(2)}`;
+        input.readOnly = true;
+
+        inputGroup.appendChild(label);
+        inputGroup.appendChild(input);
+        deductionInputsContainer.appendChild(inputGroup);
     });
+}
 
-    // --- Update cashflow input field dynamically based on current user inputs ---
-    // Get current values from S/I inputs
-    const userSavingsPct = savingsPercentageInput.value === '' ? null : parseFloat(savingsPercentageInput.value);
-    const userInvestmentsPct = investmentsPercentageInput.value === '' ? null : parseFloat(investmentsPercentageInput.value);
+// ===================================================================================
+// VALIDATION AND HELPER FUNCTIONS
+// Small utility functions for validation and formatting.
+// ===================================================================================
 
-    // Calculate budget with current user S/I inputs to get the resulting cashflow
-    const currentBudgetResult = calculator.calculateBudget(
-        calculator.annualIncome,
-        livingExpenses,
-        calculator.includeRetirement,
-        userSavingsPct, // Pass current user S/I values
-        userInvestmentsPct
+function validateAnnualIncome() { /* Unchanged */
+    const value = parseFloat(annualIncomeInput.value);
+    if (isNaN(value) || value <= 0) {
+        showError(annualIncomeError, 'Please enter a valid annual income.');
+        return false;
+    }
+    if (value > 10000000) {
+        showError(annualIncomeError, 'Annual income seems unrealistic. Please check.');
+        return false;
+    }
+    clearError(annualIncomeError);
+    return true;
+}
+
+function validateProvince() { /* Unchanged */
+    if (!provinceSelect.value) {
+        showError(provinceError, 'Please select your province.');
+        return false;
+    }
+    clearError(provinceError);
+    return true;
+}
+
+function validateRetirementPercentage() {
+    if (!includeRetirementCheckbox.checked) {
+        clearError(retirementPercentageError);
+        return true;
+    }
+
+    const value = parseFloat(retirementPercentageInput.value);
+
+    // If the input is empty, treat it as 0 and allow it
+    if (retirementPercentageInput.value === '' || isNaN(value)) {
+        clearError(retirementPercentageError);
+        return true;
+    }
+
+    if (value < 0 || value > 10) {
+        showError(retirementPercentageError, 'Retirement contribution must be between 0% and 10%.');
+        return false;
+    }
+
+    clearError(retirementPercentageError);
+    return true;
+}
+
+/**
+ * Validates the user-entered savings percentage.
+ * @param {number|string} value - The input value.
+ * @param {boolean} [returnNull=false] - If true, returns the parsed value or null. Otherwise, returns boolean for DOM validation.
+ * @returns {boolean|number|null}
+ */
+function validateSavingsPercentage(value, returnNull = false) {
+    const val = parseFloat(value);
+    const isValid = !isNaN(val) && val >= 10 && val <= 15;
+    if (returnNull) return isValid ? val : null;
+
+    if (savingsPercentageInput.value !== '' && !isValid) {
+        showError(savingsPercentageError, 'Savings percentage must be between 10% and 15%.');
+        return false;
+    }
+    clearError(savingsPercentageError);
+    return true;
+}
+
+/**
+ * Validates the user-entered investments percentage.
+ * @param {number|string} value - The input value.
+ * @param {boolean} [returnNull=false] - If true, returns the parsed value or null. Otherwise, returns boolean for DOM validation.
+ * @returns {boolean|number|null}
+ */
+function validateInvestmentsPercentage(value, returnNull = false) {
+    const val = parseFloat(value);
+    const isValid = !isNaN(val) && val >= 10 && val <= 20;
+    if (returnNull) return isValid ? val : null;
+
+    if (investmentsPercentageInput.value !== '' && !isValid) {
+        showError(investmentsPercentageError, 'Investments percentage must be between 10% and 20%.');
+        return false;
+    }
+    clearError(investmentsPercentageError);
+    return true;
+}
+
+function showError(element, message) {
+    element.textContent = message;
+    element.style.display = 'block';
+}
+
+function clearError(element) {
+    element.textContent = '';
+    element.style.display = 'none';
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-CA', {style: 'currency', currency: 'CAD'}).format(amount);
+}
+
+function formatPercentage(percentage) {
+    return `${percentage.toFixed(1)}%`;
+}
+
+
+// ===================================================================================
+// UI UPDATE AND EVENT HANDLER FUNCTIONS
+// These functions are called by event listeners to update the UI in response to user input.
+// ===================================================================================
+
+/**
+ * Main handler for income/province/retirement changes.
+ * It re-calculates taxes and disposable income, and updates the UI and application state.
+ */
+function updateIncomeCalculations() {
+    if (!validateAnnualIncome() || !validateProvince() || !validateRetirementPercentage()) {
+        return;
+    }
+
+    // Read inputs from DOM and update state
+    calculatorState.annualIncome = parseFloat(annualIncomeInput.value);
+    calculatorState.province = provinceSelect.value;
+    calculatorState.retirementPercentage = includeRetirementCheckbox.checked ? (parseFloat(retirementPercentageInput.value) || 0) : 0;
+
+    // Perform calculations
+    const {deductions, totalDeductions} = calculateTaxes(
+        calculatorState.annualIncome,
+        calculatorState.province,
+        calculatorState.retirementPercentage
     );
 
-    // Determine which allocation (custom or recommended) to use for the cashflow display
-    let currentCashflowAllocation;
-    if (currentBudgetResult.custom_allocations) { // If custom allocation was successfully generated
-        currentCashflowAllocation = currentBudgetResult.custom_allocations;
-    } else { // Fallback to recommended allocation
-        currentCashflowAllocation = currentBudgetResult.recommended_allocations;
-    }
+    // Update state with calculation results
+    calculatorState.annualDisposable = calculatorState.annualIncome - totalDeductions;
+    calculatorState.monthlyDisposableIncome = calculatorState.annualDisposable / 12;
 
-    const cashflowAmount = currentCashflowAllocation.monthly_cashflow;
-    const cashflowPct = (cashflowAmount / monthlyDisposable) * 100 || 0;
-    cashflowAmountInput.value = `$${cashflowAmount.toFixed(2)} (${cashflowPct.toFixed(1)}%)`;
+    // Update UI
+    createDeductionInputs(deductions);
+    totalAnnualDeductionsSpan.textContent = formatCurrency(totalDeductions);
+    annualDisposableIncomeSpan.textContent = formatCurrency(calculatorState.annualDisposable);
+    monthlyDisposableIncomeSpan.textContent = formatCurrency(calculatorState.monthlyDisposableIncome);
 
-
-    // Enable/disable savings/investments section and update guidance based on zone
-    if (calculator.annualIncome > 0 && monthlyDisposable > 0) { // Only enable if income is valid
-        savingsInvestmentsSection.classList.remove('opacity-50', 'pointer-events-none');
-        if (savingsAllowed) {
-            savingsPercentageInput.disabled = false;
-        } else {
-            savingsPercentageInput.disabled = true;
-            savingsPercentageInput.value = ''; // Clear input if disabled
-            savingsPercentageError.textContent = '';
-        }
-        if (investmentsAllowed) {
-            investmentsPercentageInput.disabled = false;
-        } else {
-            investmentsPercentageInput.disabled = true;
-            investmentsPercentageInput.value = ''; // Clear input if disabled
-            investmentsPercentageError.textContent = '';
-        }
-
-        if (zone === "GREEN") {
-            siGuidanceP.innerHTML = "As you are in the <strong class='green-status-text'>Green Zone</strong>, you can set custom percentages for savings (10-15%) and investments (10-20%). Leave blank to use our recommendations.<br>We will ensure your 10% cash flow target is met regardless of your inputs.";
-        } else if (zone === "MODERATE") {
-            siGuidanceP.innerHTML = "You are in the <strong class='moderate-status-text'>Moderate Zone</strong>. You can set custom savings (10-15%), but investments are restricted due to current spending levels.<br>Focus on maintaining cashflow and optimizing expenses.";
-        } else { // RED Zone
-            siGuidanceP.innerHTML = "You are in the <strong class='red-status-text'>Red Zone</strong>. Both savings and investments are restricted due to high spending.<br>Urgent action is needed to free up funds and prioritize cashflow!";
-        }
-    } else { // If no valid income, keep S/I section disabled
-        savingsInvestmentsSection.classList.add('opacity-50', 'pointer-events-none');
-        savingsPercentageInput.disabled = true;
-        investmentsPercentageInput.disabled = true;
-        savingsPercentageInput.value = '';
-        investmentsPercentageInput.value = '';
-        savingsPercentageError.textContent = '';
-        siGuidanceP.textContent = "Please enter your annual income to unlock financial allocation goals.";
-    }
-
-    // Always trigger final summary update, it handles visibility
-    updateFinalSummaryDisplay();
+    // Show/enable subsequent sections
+    deductionsDisposableSection.classList.remove('hidden');
+    enableLivingExpensesSection();
+    updateExpenseSummary(); // This now also handles setting S&I recommendations
+    updateFinalCalculations();
+    updateExpensePercentageLabels(); // Update percentages based on new income
 }
 
-function updateFinalSummaryDisplay() {
-    // Only show summary if annual income is valid and disposable income is positive
-    if (calculator.annualIncome <= 0 || calculator.monthlyDisposableIncome <= 0) {
-        finalSummarySection.classList.add('hidden');
-        return;
+/**
+ * Enables and animates the living expenses section.
+ */
+function enableLivingExpensesSection() {
+    livingExpensesSection.classList.remove('opacity-50', 'pointer-events-none');
+    livingExpensesSection.classList.add('animate-fade-in');
+}
+
+/**
+ * Updates the expense summary box with totals, percentages, and the budget zone.
+ * It also sets the recommended values for savings and investments if not manually edited.
+ */
+function updateExpenseSummary() {
+    if (calculatorState.monthlyDisposableIncome <= 0) return;
+
+    // Calculate totals and percentages
+    calculatorState.totalMonthlyExpensesEntered = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
+    const expensesPercentage = calculatorState.monthlyDisposableIncome <= 0 ?
+        Infinity : (calculatorState.totalMonthlyExpensesEntered / calculatorState.monthlyDisposableIncome) * 100;
+
+    const [zone, status, savingsAllowed, investmentsAllowed] = determineBudgetZoneAndOptions(expensesPercentage);
+
+    // Set recommended savings/investments if user hasn't edited them
+    if (!calculatorState.isSavingsCustom) {
+        savingsPercentageInput.value = savingsAllowed ? 12 : '';
+    }
+    if (!calculatorState.isInvestmentsCustom) {
+        investmentsPercentageInput.value = investmentsAllowed ? 15 : '';
     }
 
-    const userSavingsPct = savingsPercentageInput.value === '' ? null : parseFloat(savingsPercentageInput.value);
-    const userInvestmentsPct = investmentsPercentageInput.value === '' ? null : parseFloat(investmentsPercentageInput.value);
+    // Update summary UI
+    currentTotalExpensesSpan.textContent = formatCurrency(calculatorState.totalMonthlyExpensesEntered);
+    currentExpensesPercentageSpan.textContent = formatPercentage(expensesPercentage);
 
-    const result = calculator.calculateBudget(
-        calculator.annualIncome,
+    // Update budget zone badge and styling
+    currentBudgetZoneSpan.className = 'status-badge'; // Reset classes
+    currentBudgetZoneSpan.textContent = zone;
+    currentZoneMessageP.textContent = status;
+
+    if (zone === 'GREEN') {
+        currentBudgetZoneSpan.classList.add('green-zone');
+        integratedExpenseSummary.className = 'expense-summary-box mt-8 animate-slide-up green-zone-bg green-border';
+    } else if (zone === 'MODERATE') {
+        currentBudgetZoneSpan.classList.add('moderate-zone');
+        integratedExpenseSummary.className = 'expense-summary-box mt-8 animate-slide-up moderate-zone-bg moderate-border';
+    } else {
+        currentBudgetZoneSpan.classList.add('red-zone');
+        integratedExpenseSummary.className = 'expense-summary-box mt-8 animate-slide-up red-zone-bg red-border';
+    }
+
+    integratedExpenseSummary.classList.remove('hidden');
+
+    if (calculatorState.totalMonthlyExpensesEntered > 0) {
+        enableSavingsInvestmentsSection(zone);
+    }
+}
+
+
+/**
+ * Enables and configures the savings/investments section based on the budget zone.
+ * @param {string} budgetZone - The current budget zone ('GREEN', 'MODERATE', or 'RED').
+ */
+function enableSavingsInvestmentsSection(budgetZone) {
+    savingsInvestmentsSection.classList.remove('opacity-50', 'pointer-events-none');
+    savingsInvestmentsSection.classList.add('animate-fade-in');
+
+    if (budgetZone === 'GREEN') {
+        siGuidanceP.textContent = 'Great! You have room for both savings and investments.';
+        savingsPercentageInput.disabled = false;
+        investmentsPercentageInput.disabled = false;
+    } else if (budgetZone === 'MODERATE') {
+        siGuidanceP.textContent = 'Focus on savings first. Investments can wait until your budget improves.';
+        savingsPercentageInput.disabled = false;
+        investmentsPercentageInput.disabled = true;
+    } else {
+        siGuidanceP.textContent = 'Focus on reducing expenses and building emergency cashflow first.';
+        savingsPercentageInput.disabled = true;
+        investmentsPercentageInput.disabled = true;
+    }
+}
+
+/**
+ * Triggers the final budget calculation and displays the comprehensive summary.
+ */
+function updateFinalCalculations() {
+    if (calculatorState.monthlyDisposableIncome <= 0) return;
+
+    const userSavingsPct = savingsPercentageInput.value ? parseFloat(savingsPercentageInput.value) : null;
+    const userInvestmentsPct = investmentsPercentageInput.value ? parseFloat(investmentsPercentageInput.value) : null;
+
+    const budget = calculateBudget(
+        calculatorState.annualIncome,
+        calculatorState.province,
         livingExpenses,
-        calculator.includeRetirement,
+        calculatorState.retirementPercentage,
         userSavingsPct,
         userInvestmentsPct
     );
 
-    let htmlContent = ``; // Start with empty content
+    // Update cashflow display
+    const allocations = budget.custom_allocations || budget.recommended_allocations;
+    const cashflowPercentage = calculatorState.monthlyDisposableIncome <= 0 ? 0 :
+        (allocations.monthly_cashflow / calculatorState.monthlyDisposableIncome) * 100;
 
-    // --- Allocations Section (Side-by-Side or Cashflow Focus) ---
-    // This section only appears if savings OR investments are allowed in the current zone
-    if (result.savings_allowed || result.investments_allowed) {
-        let recommendedHtml = '';
-        let customHtml = '';
+    cashflowAmountInput.value = `${formatCurrency(allocations.monthly_cashflow)} (${formatPercentage(cashflowPercentage)})`;
 
-        // Recommended Allocation Content
-        const recAlloc = result.recommended_allocations;
-        const recSavingsPct = (recAlloc.monthly_savings / result.monthly_disposable) * 100;
-        const recInvestmentsPct = (recAlloc.monthly_investments / result.monthly_disposable) * 100;
-        const recCashflowPct = (recAlloc.monthly_cashflow / result.monthly_disposable) * 100;
+    displayFinalSummary(budget);
+}
 
-        recommendedHtml = `
-            <div class="allocation-box">
-                <h4 class="text-base font-semibold text-gray-800 mb-2">Our Recommended Allocation:</h4>
-                ${result.savings_allowed ? `<p class="mb-1"><strong>Savings (${recSavingsPct.toFixed(1)}%):</strong> $${recAlloc.monthly_savings.toFixed(2)}</p>` : '<p class="mb-1 text-gray-500">Savings: <span class="red-status-text">N/A (Restricted)</span></p>'}
-                ${result.investments_allowed ? `<p class="mb-1"><strong>Investments (${recInvestmentsPct.toFixed(1)}%):</strong> $${recAlloc.monthly_investments.toFixed(2)}</p>` : '<p class="mb-1 text-gray-500">Investments: <span class="red-status-text">N/A (Restricted)</span></p>'}
-                <p class="mb-3"><strong>Cashflow Buffer (${recCashflowPct.toFixed(1)}%):</strong> $${recAlloc.monthly_cashflow.toFixed(2)}</p>
-                ${recAlloc.has_adequate_cashflow ?
-            `<p class="text-green-700 text-sm">✅ Adequate cashflow maintained (min: $${recAlloc.min_cashflow_amount.toFixed(2)})</p>` :
-            `<p class="text-red-700 text-sm">❌ Inadequate cashflow! Min needed: $${recAlloc.min_cashflow_amount.toFixed(2)}</p>`
-        }
-            </div>
-        `;
+/**
+ * Renders the final summary section with all the budget details.
+ * @param {object} budget - The final, comprehensive budget object.
+ */
+function displayFinalSummary(budget) {
+    const allocations = budget.custom_allocations || budget.recommended_allocations;
 
-        // Custom Allocation Content (if applicable)
-        if (result.custom_allocations) {
-            const customAlloc = result.custom_allocations;
-            const customSavingsPct = (customAlloc.monthly_savings / result.monthly_disposable) * 100;
-            const customInvestmentsPct = (customAlloc.monthly_investments / result.monthly_disposable) * 100;
-            const customCashflowPct = (customAlloc.monthly_cashflow / result.monthly_disposable) * 100;
-
-            customHtml = `
-                <div class="allocation-box">
-                    <h4 class="text-base font-semibold text-gray-800 mb-2">Your Custom Allocation Strategy:</h4>
-                    ${result.savings_allowed && customAlloc.monthly_savings > 0 ? `<p class="mb-1"><strong>Savings (${customSavingsPct.toFixed(1)}%):</strong> $${customAlloc.monthly_savings.toFixed(2)}</p>` : '<p class="mb-1 text-gray-500">Savings: <span class="red-status-text">N/A (Restricted or Zero)</span></p>'}
-                    ${result.investments_allowed && customAlloc.monthly_investments > 0 ? `<p class="mb-1"><strong>Investments (${customInvestmentsPct.toFixed(1)}%):</strong> $${customAlloc.monthly_investments.toFixed(2)}</p>` : '<p class="mb-1 text-gray-500">Investments: <span class="red-status-text">N/A (Restricted or Zero)</span></p>'}
-                    <p class="mb-3"><strong>Cashflow Buffer (${customCashflowPct.toFixed(1)}%):</strong> $${customAlloc.monthly_cashflow.toFixed(2)}</p>
-                    ${customAlloc.has_adequate_cashflow ?
-                `<p class="text-green-700 text-sm">✅ Your strategy maintains adequate cashflow (min: $${customAlloc.min_cashflow_amount.toFixed(2)}).</p>` :
-                `<p class="text-red-700 text-sm">❌ Your strategy results in inadequate cashflow!</p>`
-            }
+    const summaryHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Income & Taxes</h3>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Annual Gross Income:</strong> ${formatCurrency(budget.annual_income)}</p>
+                    <p><strong>Total Tax Deductions:</strong> ${formatCurrency(budget.total_deductions)}</p>
+                    <p><strong>Monthly Take-Home:</strong> <span class="text-blue-600 font-bold">${formatCurrency(budget.monthly_disposable)}</span></p>
                 </div>
-            `;
-        } else if (result.budget_zone === "GREEN") { // If in GREEN but no custom input (or invalid), show a message
-            customHtml = `
-                <div class="allocation-box">
-                    <h4 class="text-base font-semibold text-gray-800 mb-2">Your Custom Allocation Strategy:</h4>
-                    <p class="text-gray-600 text-sm">Enter your desired percentages above to see your custom allocation strategy.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Monthly Allocation</h3>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Living Expenses:</strong> ${formatCurrency(budget.total_monthly_expenses)} (${formatPercentage(budget.expenses_percentage)})</p>
+                    <p><strong>Savings:</strong> ${formatCurrency(allocations.monthly_savings)}</p>
+                    <p><strong>Investments:</strong> ${formatCurrency(allocations.monthly_investments)}</p>
+                    <p><strong>Cashflow:</strong> <span class="text-green-600 font-bold">${formatCurrency(allocations.monthly_cashflow)}</span></p>
                 </div>
-             `;
-        }
-
-
-        htmlContent += `
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                ${recommendedHtml}
-                ${customHtml}
             </div>
-        `;
-    } else { // Neither savings nor investments allowed (RED Zone)
-        const currentZoneResult = calculator.calculateBudget(calculator.annualIncome, livingExpenses, calculator.includeRetirement, 0, 0); // Get result without S/I
-        const remainingAfterExpenses = currentZoneResult.monthly_disposable - currentZoneResult.total_monthly_expenses;
-        const cashflowPct = (remainingAfterExpenses / currentZoneResult.monthly_disposable) * 100;
-
-        htmlContent += `
-            <div class="border-t pt-4 mt-4">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Cashflow Allocation:</h3>
-                <p class="mb-3">All remaining funds go to Cashflow (${cashflowPct.toFixed(1)}% of disposable): <strong>$${remainingAfterExpenses.toFixed(2)}</strong></p>
-                <p class="red-status-text text-base">💡 Focus on reducing your monthly living expenses to unlock savings and investment opportunities!</p>
+        </div>
+        
+        <div class="mt-6 p-4 rounded-lg ${budget.budget_zone === 'GREEN' ? 'bg-green-50 border border-green-200' :
+        budget.budget_zone === 'MODERATE' ? 'bg-yellow-50 border border-yellow-200' : 'bg-red-50 border border-red-200'}">
+            <div class="flex items-center mb-2">
+                <span class="status-badge ${budget.budget_zone === 'GREEN' ? 'green-zone' :
+        budget.budget_zone === 'MODERATE' ? 'moderate-zone' : 'red-zone'}">${budget.budget_zone}</span>
             </div>
-        `;
-    }
+            <p class="text-sm ${budget.budget_zone === 'GREEN' ? 'text-green-700' :
+        budget.budget_zone === 'MODERATE' ? 'text-yellow-700' : 'text-red-700'}">${budget.status_message}</p>
+        </div>
+    `;
 
-    finalSummaryContentDiv.innerHTML = htmlContent;
+    finalSummaryContentDiv.innerHTML = summaryHTML;
     finalSummarySection.classList.remove('hidden');
 }
 
-// --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-    createExpenseInputs();
+
+// ===================================================================================
+// EVENT LISTENERS
+// Attaching the handler functions to the DOM elements.
+// ===================================================================================
+
+annualIncomeInput.addEventListener('input', updateIncomeCalculations);
+provinceSelect.addEventListener('change', updateIncomeCalculations);
+
+includeRetirementCheckbox.addEventListener('change', () => {
+    if (includeRetirementCheckbox.checked) {
+        retirementPercentageSection.classList.remove('hidden');
+    } else {
+        retirementPercentageSection.classList.add('hidden');
+        retirementPercentageInput.value = '';
+    }
+    updateIncomeCalculations();
 });
+
+retirementPercentageInput.addEventListener('input', () => {
+    if (validateRetirementPercentage()) {
+        updateIncomeCalculations();
+    }
+});
+
+savingsPercentageInput.addEventListener('input', () => {
+    calculatorState.isSavingsCustom = true; // Mark as custom on user input
+    if (validateSavingsPercentage(savingsPercentageInput.value)) {
+        updateFinalCalculations();
+    }
+});
+
+investmentsPercentageInput.addEventListener('input', () => {
+    calculatorState.isInvestmentsCustom = true; // Mark as custom on user input
+    if (validateInvestmentsPercentage(investmentsPercentageInput.value)) {
+        updateFinalCalculations();
+    }
+});
+
+
+// ===================================================================================
+// APP INITIALIZATION
+// The main function to kick off the application.
+// ===================================================================================
+
+/**
+ * Initializes the application by setting up the UI components.
+ */
+function initializeApp() {
+    initializeProvinceDropdown();
+    createExpenseInputs();
+}
+
+// Start the application once the script loads.
+initializeApp();
