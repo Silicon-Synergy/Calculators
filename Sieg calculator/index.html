@@ -174,24 +174,27 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <ul id="dropdownList" class="glass-effect top-full left-0 w-full  text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto">
+                <ul id="dropdownList" class="glass-effect p-2 top-full left-0 w-full  text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto">
                 </ul>
               </div>
 
             </div>
           </div>
+
+         
           <div class="mt-5 ">
             <div class="flex gap-x-3">
-            <p class="text-sm font-medium text-gray-300">Contribution to work retirement?</p>
+              <p class="text-sm font-medium text-gray-300">Contribution to work retirement?</p>
               <div class="flex items-center gap-3 text-sm text-gray-200">
                 <label class="flex items-center gap-2">
-                  <input type="radio" name="retirementOption" value="yes" class="accent-green-500" />
+                  <input id="includeRetirement" type="radio" name="retirementOption" value="yes" class="accent-green-500" />
                   Yes
                 </label>
                 <label class="flex items-center gap-2">
-                  <input type="radio" name="retirementOption" value="no" class="accent-red-500" />
+                  <input id="excludeRetirementCheckbox" type="radio" name="retirementOption" value="no" class="accent-red-500" />
                   No
                 </label>
+
               </div>
             </div>
 
@@ -201,6 +204,8 @@
               <input type="number" id="retirementPercent" name="retirementPercent" step="0.01" max="0.1" placeholder="e.g. 0.05" class="w-full px-3 py-2 rounded-md glass-effect border-0 outline-none text-white" />
             </div>
           </div>
+
+    
 
     </section>
 
@@ -475,5 +480,6 @@
 </body>
 
 <script src="./scripts.js"></script>
+<!-- <script src="./script2.js"></script> -->
 
 </html>
