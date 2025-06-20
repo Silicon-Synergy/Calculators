@@ -282,7 +282,7 @@
 const includeRetirementCheckbox = document.getElementById("includeRetirement");
 const retirementInput = document.getElementById("retireqment-input");
 const annualIncomeInput = document.getElementById("annualIncome");
-const provinceSelect = document.getElementById('dropdownList');
+const provinceSelect = document.getElementById("dropdownList");
 
 const TAX_CONFIG = {
   canada: {
@@ -464,15 +464,16 @@ function initializeProvinceDropdown() {
     li.className = "py-2 px-4 hover:bg-white/10 cursor-pointer";
 
     li.addEventListener("click", () => {
-      document.getElementById("dropdownSelected").textContent = provinces[code].name;
+      document.getElementById("dropdownSelected").textContent =
+        provinces[code].name;
       // Store selected value somewhere, maybe in a hidden input:
       document.getElementById("selectedProvince").value = code;
+      dropdownList.classList.add("hidden");
     });
 
     dropdownList.appendChild(li);
   });
 }
-
 
 document.addEventListener("click", (e) => {
   if (!dropdownBtn.contains(e.target) && !dropdownList.contains(e.target)) {
