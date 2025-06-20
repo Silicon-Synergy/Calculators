@@ -280,8 +280,76 @@
 // calculateBudget();
 
 const includeRetirementCheckbox = document.getElementById("includeRetirement");
-const retirementInput = document.getElementById("retirement-input");
+const retirementInput = document.getElementById("retireqment-input");
 const annualIncomeInput = document.getElementById("annualIncome");
+
+const provinces = [
+  { code: "NL", name: "Newfoundland and Labrador" },
+  { code: "PE", name: "Prince Edward Island" },
+  { code: "NS", name: "Nova Scotia" },
+  { code: "NB", name: "New Brunswick" },
+  { code: "QC", name: "Quebec" },
+  { code: "ON", name: "Ontario" },
+  { code: "MB", name: "Manitoba" },
+  { code: "SK", name: "Saskatchewan" },
+  { code: "AB", name: "Alberta" },
+  { code: "BC", name: "British Columbia" },
+  { code: "YT", name: "Yukon" },
+  { code: "NT", name: "Northwest Territories" },
+  { code: "NU", name: "Nunavut" },
+];
+
+const dropdownBtn = document.getElementById("dropdownBtn");
+const dropdownList = document.getElementById("dropdownList");
+const dropdownSelected = document.getElementById("dropdownSelected");
+
+dropdownBtn.addEventListener("click", () => {
+  dropdownList.classList.toggle("hidden");
+});
+
+// Populate dropdown list
+provinces.forEach((province) => {
+  const li = document.createElement("li");
+  li.textContent = province.name;
+  li.dataset.value = province.code;
+  li.className = "px-4 py-2 hover:bg-white/20 cursor-pointer transition";
+  li.addEventListener("click", () => {
+    dropdownSelected.textContent = province.name;
+    dropdownList.classList.add("hidden");
+  });
+  dropdownList.appendChild(li);
+});
+
+document.addEventListener("click", (e) => {
+  if (!dropdownBtn.contains(e.target) && !dropdownList.contains(e.target)) {
+    dropdownList.classList.add("hidden");
+  }
+});
+
+const radios = document.getElementsByName("retirementOption");
+const retirement = document.getElementById("retirementInput");
+const inputField = document.getElementById("retirementPercent");
+
+radios.forEach((radio) => {
+  radio.addEventListener("change", () => {
+    if (radio.value === "yes") {
+      retirement.classList.remove("max-h-0", "opacity-0");
+      retirement.classList.add("max-h-40", "opacity-100");
+    } else {
+      retirement.classList.add("max-h-0", "opacity-0");
+      retirement.classList.remove("max-h-40", "opacity-100");
+      inputField.value = "";
+    }
+  });
+});
+
+inputField.addEventListener("input", () => {
+  const value = parseFloat(inputField.value);
+  if (value > 0.1) {
+    inputField.value = "0.1";
+  }
+});
+
 // const annualIncomeInput = document.getElementById("annualIncome").;
 annualIncomeInput.value = "";
 
