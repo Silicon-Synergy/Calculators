@@ -108,17 +108,6 @@
             <p class="text-sm text-gray-300">Personal Finance Calculator</p>
           </div>
         </div>
-
-        <!-- Navigation Links -->
-        <div class="hidden md:flex items-center space-x-8">
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center space-x-2">
-            <span class="w-2 h-2 bg-primary rounded-full"></span>
-            <span>Dashboard</span>
-          </a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Analytics</a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Projects</a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Team</a>
-        </div>
       </div>
     </div>
   </nav>
@@ -190,7 +179,7 @@
               <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Annual Gross Income (CAD $)</label>
               <div class="relative">
                 <!-- <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">$</span> -->
-                <input type="number" id="annualIncome" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="e.g., 75,000" min="0">
+                <input type="number" id="annualIncome" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="e.g., 75000" min="0">
                 <p id="annualIncomeError" class="error-message text-red-500 mt-2 mr-2"></p>
               </div>
             </div>
@@ -223,6 +212,7 @@
             </div>
           </div>
         </div>
+      </div>
     </section>
 
     <!-- start here -->
@@ -322,15 +312,14 @@
 
         <div class="input-group col-span-full md:col-span-1 space-y-1">
           <label for="cashflowAmount" class="block text-sm font-medium text-white/80">
-            Calculated Monthly Cashflow <span class="text-gray-400">(CAD $)</span>
+            Calculated Monthly Cashflow
           </label>
           <input type="text" id="cashflowAmount" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" readonly placeholder="$0.00 (0.0%)" />
         </div>
       </div>
     </section>
     </div>
-  </div>
-  <!-- JavaScript File -->
+
   <script src="script.js"></script>
 </body>
 

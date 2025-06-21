@@ -1,0 +1,13 @@
+Fix the retirement limit, make sure its limit is capped at 10%
+The placeholders in the monthly living expenses are too white or vibrant and they make the users think it is filled, either remove them make them less visible
+Make sure that as the colors of the MLE container changes, every text including the percentages are readable so perhaps give the colors some white shade or opacity
+Perhaps above the savings, put a message to let the users know they wont be able to allocate savings and investments if they dont enter their living expenses.
+Also the messages displayed in MLE e.g. Total Monthly Expenses: $4,234.00 (70.4%), Budget Zone: MODERATE, Focus on savings and maintaining cashflow.. Make them look like those important containers in Tax Deductions and overview.
+Also in front the messages in MLE e.g. Focus on savings and maintaining cashflow.., add a talk to expert call to action button in front of it which takes them to the contact us page on the StewardWell Capital website.
+Also add this message "Your cashflow percentage is ...% which is $......, You have a good cashflow blah blah blah, and then add a talk to expert button as well. Use different messages for different budget zone o
+Add the calculator dropdown on the navbar. Please o we have to start integrating this into the main website
+Also let the color of this message in Savings and Investments e.g. Focus on savings first. Investments can wait until your budget improves. change as the color of the MLE container changes when the user input their expenses
+Also in the MLE container, let the tax deduction details slide in and slide out same thing goes for the retirement form bro, give it some interactiveness na
+Change the color of the message for retirement when the 10% percentage is crossed
+Abeg use the same color background as their website na🥺. At least we have almost reached completion, we should start putting it into the website already, dont forget the drop down list and the menu we are adding to the navbar call it calculators and this first one is Budget calculator
+Thank you
