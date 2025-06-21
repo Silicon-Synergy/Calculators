@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Personal Finance Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- <script src="./scripts.js" defer></script> -->
   <script>
     tailwind.config = {
       theme: {
@@ -91,7 +90,10 @@
   </style>
 </head>
 
+
+
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+
   <!-- Navigation Header -->
   <nav class="glass-effect border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,8 +123,10 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+
+  <div id="main-calculator-card" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
     <!-- Hero Section -->
     <div class="text-center mb-12 animate-fade-in">
       <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -137,9 +141,13 @@
       </p>
     </div>
 
-    <!-- Income Section -->
-    <section class="mb-8">
+
+
+
+    <!-- Annual Income Input -->
+    <section id="annual-income-section" class="mb-10">
       <div class="glass-effect rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300">
+
         <div class="flex items-center space-x-3 mb-6">
           <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,333 +157,181 @@
           <h2 class="text-2xl font-bold text-white">Your Income</h2>
         </div>
 
+
         <div class="relative">
-          <!-- the field is not worlking -->
-          <div class="flex max-sm:flex-col w-[100%] border-2 justify-between gap-x-20">
-            <div class="max-sm:w-[50%] w-[100%] border-2">
-              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">
-                Annual Gross Income
-              </label>
+
+          <div class="input-group flex max-sm:flex-col w-[100%] justify-between max-sm:gap-y-5 gap-x-20 ">
+
+            <!-- now i am starting from here -->
+            <!-- <div class="input-group flex w-[50%] max-sm:w-[100%] flex max-sm:flex-col w-[100%] items-center justify-between">
+              </div> -->
+            <!-- Hidden real select -->
+            <select id="provinceSelect" class="hidden">
+              <option value="">Choose your province...</option>
+            </select>
+
+            <!-- Custom dropdown UI -->
+            <div class="relative w-[50%]">
+              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Select your province</label>
+              <p id="provinceError" class="error-message text-white"></p>
+              <button id="dropdownBtn" type="button" class="w-[100%] pl-8 pr-4 flex justify-between py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
+                <span id="dropdownSelected">Choose your province</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <ul id="customProvinceOptions" class="glass-effect p-2 t w-full text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto ">
+                <!-- dynamic <li>s will be injected here -->
+              </ul>
+            </div>
+
+            <div class="w-[50%] max-sm:w-[100%]">
+              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Annual Gross Income (CAD $)</label>
               <div class="relative">
-                <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">$</span>
-                <input type="number" id="annualIncome" class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="60,000" min="0" />
+                <!-- <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">$</span> -->
+                <input type="number" id="annualIncome" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="e.g., 75,000" min="0">
+                <p id="annualIncomeError" class="error-message text-red-500 mt-2 mr-2"></p>
               </div>
-            </div>
-
-            <div class="w-[50%] max-smw-[100%]">
-              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">
-                Annual Gross Income
-              </label>
-              <div class="relative w-full max-w-md mx-auto">
-                <button id="dropdownBtn" class="w-full pl-8 pr-4 flex justify-between py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
-                  <span id="dropdownSelected">Choose your province</span>
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <ul id="dropdownList" class="glass-effect top-full left-0 w-full  text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto">
-                </ul>
-              </div>
-
             </div>
           </div>
-          <p id="annualIncomeError" class="text-red-400 text-sm mt-2 hidden"></p>
+
           <div class="mt-5">
-            <p class="text-sm font-medium text-gray-300 mb-2">Contribution to work retirement?</p>
+            <div class="flex gap-x-3">
+              <p class="text-sm font-medium text-gray-300">Contribution to work retirement?</p>
+              <div class="flex items-center gap-3 text-sm text-gray-200">
+                <label class="flex items-center gap-2">
+                  <input id="includeRetirement" type="radio" name="retirementOption" value="yes" class="accent-green-500" />
+                  Yes
+                </label>
+                <label class="flex items-center gap-2">
+                  <input id="excludeRetirement" type="radio" name="retirementOption" value="no" class="accent-red-500" />
+                  No
+                </label>
 
-            <div class="flex items-center gap-6 text-gray-200">
-              <label class="flex items-center gap-2">
-                <input type="radio" name="retirementOption" value="yes" class="accent-green-500" />
-                Yes
-              </label>
-              <label class="flex items-center gap-2">
-                <input type="radio" name="retirementOption" value="no" class="accent-red-500" />
-                No
-              </label>
+              </div>
             </div>
 
-            <!-- Retirement input field, hidden initially -->
-            <div id="retirementInput" class="mt-4 overflow-hidden transition-all duration-300 max-h-0 opacity-0">
-              <label for="retirementPercent" class="block text-sm text-gray-300 mb-1">Enter contribution (Max 10%):</label>
-              <input type="number" id="retirementPercent" name="retirementPercent" step="0.01" max="0.1" placeholder="e.g. 0.05" class="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-800 text-white" />
-            </div>
-          </div>
 
-    </section>
-
-    <!-- Income Overview (Hidden initially) -->
-    <section id="deductions-section" class="mb-8 hidden animate-slide-up">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <h3 class="text-xl font-bold text-white mb-6">
-          Income & Deductions Overview
-        </h3>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
-          <!-- Expense categories -->
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Federal Tax (20%)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-3field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" disabled id="federal-tax" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">State Tax (8%)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" disabled class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" id="state-tax" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Health Insurance (3%)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" disabled placeholder="0" min="0" id="health-insurance" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Social Security (6.2%)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" disabled id="social-security" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Medical care (1.5%)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" disabled id="medicare" />
-            </div>
-          </div>
-          <div class="expense-input" id="retirement-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Retirement (10%)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" disabled id="retirement" />
+            <div id="retirement-percentage-section" class="flex flex-col input-group mt-4 hidden">
+              <label for="retirementPercentage" class="text-white text-sm">Annual Retirement Contribution Percentage (0-10%)</label>
+              <div>
+                <input type="number" min="0" max="10" step="0.1" id="retirementPercentage" class="input-field input-field w-[20%] pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl mt-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="e.g., 5 (for 5%)">
+                <p id="retirementPercentageError" class="error-message"></p>
+                <p class="text-xs text-gray-500 mt-1">Enter percentage of gross income (maximum 10%)</p>
+              </div>
             </div>
           </div>
         </div>
+    </section>
+
+    <!-- start here -->
+
+    <!-- Deductions and Disposable Income Display -->
+    <section id="deductions-disposable-section" class=" glass-effect rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300 result-box hidden animate-slide-up">
+      <h2 class="text-xl text-white font-semibold text-white mb-4">Tax Deductions & Income Overview</h2>
+
+      <button id="deduction-toggle" class="w-full flex items-center justify-between p-4 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-200 mb-4" onclick="toggleDeductionInputs()">
+        <span class="font-medium">Deduction Details</span>
+        <svg class="w-5 h-5 dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+
+      <div id="deduction-inputs-container" class="grid grid-cols-1 hidden md:grid-cols-2 gap-x-6 gap-y-4 mb-6 text-white">
+
+      </div>
+
+      <!-- i will come back to this -->
+      <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Total Annual Deductions</p>
-            <p id="totalDeductions" class="text-2xl font-bold text-red-400">
-              $0.00
-            </p>
+          <!-- Total Annual Deductions Card -->
+          <div class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
+            <h3 class="text-white/80 text-sm font-medium mb-2">Total Annual Deductions</h3>
+            <p id="totalAnnualDeductions" class="text-red-400 text-3xl font-bold">$4.26</p>
           </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Annual Disposable Income</p>
-            <p id="annualDisposable" class="text-2xl font-bold text-green-400">
-              $0.00
-            </p>
+
+          <!-- Annual Disposable Income Card -->
+          <div class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
+            <h3 class="text-white/80 text-sm font-medium mb-2">Annual Disposable Income</h3>
+            <p id="annualDisposableIncome" class="text-green-400 text-3xl font-bold">$6.74</p>
           </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">
-              Monthly Disposable Income
-            </p>
-            <p id="monthlyDisposable" class="text-2xl font-bold text-primary">
-              $0.00
-            </p>
+
+          <!-- Monthly Disposable Income Card -->
+          <div class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
+            <h3 class="text-white/80 text-sm font-medium mb-2">Monthly Disposable Income</h3>
+            <p id="monthlyDisposableIncome" class="text-blue-400 text-3xl font-bold">$0.56</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Monthly Expenses -->
-    <section id="expenses-section" class="mb-8 opacity-50 pointer-events-none transition-all duration-500">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-white">
-            Monthly Living Expenses
-          </h2>
+    <!-- end here -->
+
+    <!-- Monthly Living Expenses Input -->
+    <section id="living-expenses-section" class="mt-10 glass-effect opacity-50 pointer-events-none rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out">
+      <div class="flex items-center space-x-3 mb-6">
+        <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
         </div>
+        <h2 class="text-2xl font-bold text-white">
+          Monthly Living Expenses
+        </h2>
+      </div>
+      <div id="expense-inputs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+        <!-- Expense inputs will be dynamically generated here by JS -->
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <!-- Expense categories -->
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Mortgage/Rent</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Transport {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Insurance {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Utilities {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Groceries {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Entertainment {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Phone Bill ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Internet Bill {$}</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Home Maintenance ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
-          <div class="expense-input">
-            <label class="block text-sm font-medium text-gray-300 mb-2">Miscellaneous ($)</label>
-            <div class="relative">
-              <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-              <input type="number" class="expense-field w-full pl-8 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="0" min="0" />
-            </div>
-          </div>
+      <!-- Integrated Current Spending Snapshot -->
+      <div id="integrated-expense-summary" class="mt-8 glass-effect p-4 rounded-xl text-white animate-slide-up">
+        <p class="mb-2 text-lg font-medium"><strong>Total Monthly Expenses:</strong> <span id="currentTotalExpenses">$0.00</span> (<span id="currentExpensesPercentage">0.0%</span>)</p>
+        <div class="flex items-center ">
+          <p class="mr-3 text-lg font-medium"><strong>Budget Zone:</strong></p>
+          <span id="currentBudgetZone" class="status-badge">N/A</span>
         </div>
-
-
-        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-          <!-- the monthtly expense has to change -->
-          <p class="text-red-200 text-sm mb-2">
-            Total Monthly Expenses: $0.00 (0.0%)
-          </p>
-          <!-- the field should change color based on the users spendind -->
-          <!-- change message based on the users spending-->
-          <p class="italic">You have a good financial flexibility</p>
-        </div>
-
+        <p id="currentZoneMessage" class="status-message mt-3 text-white text-base italic"></p>
       </div>
     </section>
 
-    <!-- Real-time Status -->
-    <section id="status-section" class="mb-8 hidden animate-slide-up">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <h3 class="text-xl font-bold text-white mb-6">
-          Current Spending Snapshot
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Total Monthly Expenses</p>
-            <p id="totalExpenses" class="text-2xl font-bold text-orange-400">
-              $0.00
-            </p>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">% of Income</p>
-            <p id="expensePercentage" class="text-2xl font-bold text-yellow-400">
-              0%
-            </p>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Budget Zone</p>
-            <span id="budgetZone" class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-gray-500 text-white">N/A</span>
-          </div>
-          <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
-            <p class="text-gray-400 text-sm mb-2">Remaining</p>
-            <p id="remaining" class="text-2xl font-bold text-green-400">
-              $0.00
-            </p>
-          </div>
+    <!-- Savings & Investments Input -->
+    <section id="savings-investments-section" class="mt-10 opacity-50 pointer-events-none glass-effect rounded-3xl p-8 text-white border border-white/10 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm shadow-lg">
+      <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 pb-4 border-gray-300">
+        💰 Savings & Investments Goals
+      </h2>
+      <p id="si-guidance" class="text-white/90 text-base mb-8 leading-relaxed">
+        This section will guide you based on your spending habits. You can customize how much you want to save or invest each month.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="input-group space-y-1">
+          <label for="savingsPercentage" class="block text-sm font-medium text-white/80">
+            Desired Monthly Savings % <span class="text-gray-400">(10–15%)</span>
+          </label>
+          <input type="number" id="savingsPercentage" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="e.g., 12 (for 12%)" min="10" max="15" />
+          <p id="savingsPercentageError" class="error-message text-sm text-red-400"></p>
+        </div>
+
+        <div class="input-group space-y-1">
+          <label for="investmentsPercentage" class="block text-sm font-medium text-white/80">
+            Desired Monthly Investments % <span class="text-gray-400">(10–20%)</span>
+          </label>
+          <input type="number" id="investmentsPercentage" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="e.g., 15 (for 15%)" min="10" max="20" />
+          <p id="investmentsPercentageError" class="error-message text-sm text-red-400"></p>
+        </div>
+
+        <div class="input-group col-span-full md:col-span-1 space-y-1">
+          <label for="cashflowAmount" class="block text-sm font-medium text-white/80">
+            Calculated Monthly Cashflow <span class="text-gray-400">(CAD $)</span>
+          </label>
+          <input type="text" id="cashflowAmount" class="input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" readonly placeholder="$0.00 (0.0%)" />
         </div>
       </div>
     </section>
-
-    <!-- Savings & Investments -->
-    <section id="savings-section" class="mb-8 opacity-50 pointer-events-none transition-all duration-500">
-      <div class="glass-effect rounded-3xl p-8 border border-white/10">
-        <div class="flex items-center space-x-3 mb-6">
-          <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-            </svg>
-          </div>
-          <h2 class="text-2xl font-bold text-white">
-            Savings & Investment Goals
-          </h2>
-        </div>
-
-        <p class="text-gray-300 mb-6">
-          Set your desired savings and investment percentages. We'll ensure
-          your financial targets are realistic and achievable.
-        </p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Desired Monthly Savings % (10-15%)</label>
-            <div class="relative">
-              <input type="number" id="savingsPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="12" min="0" max="100" />
-              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Desired Monthly Investments % (10-20%)</label>
-            <div class="relative">
-              <input type="number" id="investmentPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="15" min="0" max="100" />
-              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
-            </div>
-          </div>
-
-          <!-- i haven't attached the logic for this yet so needs to be recalculated with others -->
-          <div>
-            <label class="block text-sm font-medium text-gray-300 mb-2">Calculated Monthly Cashflow ($)</label>
-            <div class="relative">
-              <input type="number" id="investmentPercent" class="w-full pl-4 pr-8 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-all duration-200" placeholder="15" min="0" max="100" />
-              <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </div>
-
-
+  <!-- JavaScript File -->
+  <script src="script.js"></script>
 </body>
-
-<script src="./scripts.js"></script>
 
 </html>

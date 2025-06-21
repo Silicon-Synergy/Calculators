@@ -544,6 +544,7 @@ const provinceSelect = document.getElementById("provinceSelect");
 const annualIncomeError = document.getElementById("annualIncomeError");
 const provinceError = document.getElementById("provinceError");
 const includeRetirementCheckbox = document.getElementById("includeRetirement");
+const deductonToggle = document.getElementById("deduction-toggle");
 const excludeRetirementCheckbox = document.getElementById("excludeRetirement");
 const retirementPercentageSection = document.getElementById(
   "retirement-percentage-section"
@@ -571,9 +572,7 @@ const monthlyDisposableIncomeSpan = document.getElementById(
   "monthlyDisposableIncome"
 );
 
-const livingExpensesSection = document.getElementById(
-  "living-expenses-section"
-);
+
 const expenseInputsContainer = document.getElementById(
   "expense-inputs-container"
 );
@@ -599,6 +598,9 @@ const savingsPercentageError = document.getElementById(
 );
 const investmentsPercentageInput = document.getElementById(
   "investmentsPercentage"
+);
+const livingExpensesSection = document.getElementById(
+  "living-expenses-section"
 );
 const investmentsPercentageError = document.getElementById(
   "investmentsPercentageError"
@@ -629,15 +631,73 @@ const livingExpenseCategories = [
 /**
  * Populates the province dropdown from the TAX_CONFIG object.
  */
-function initializeProvinceDropdown() {
+
+const taxConfig = TAX_CONFIG.canada.provinces;
+
+// hidden <select>
+const dropdownList = document.getElementById("customProvinceOptions"); // <ul>
+const dropdownSelected = document.getElementById("dropdownSelected");
+const dropdownBtn = document.getElementById("dropdownBtn");
+
+ function initializeProvinceDropdown() {
   const provinces = TAX_CONFIG.canada.provinces;
-  Object.keys(provinces).forEach((code) => {
+//   Object.keys(provinces).forEach((code) => {
+//     const option = document.createElement("option");
+//     option.value = code;
+//     option.textContent = provinces[code].name;
+//     provinceSelect.appendChild(option);
+//   });
+// }
+
+ provinceSelect.innerHTML = '<option value="">Choose your province...</option>';
+  dropdownList.innerHTML = "";
+
+  for (const provinceCode in taxConfig) {
+    const province = taxConfig[provinceCode];
+
+    // Add to hidden <select>
     const option = document.createElement("option");
-    option.value = code;
-    option.textContent = provinces[code].name;
+    option.value = provinceCode;
+    option.textContent = province.name;
     provinceSelect.appendChild(option);
-  });
+
+    // Add to custom dropdown
+    const li = document.createElement("li");
+    li.textContent = province.name;
+    li.setAttribute("data-value", provinceCode);
+    li.className = "cursor-pointer px-4 py-2 hover:bg-white/10 rounded-lg";
+
+    li.addEventListener("click", () => {
+      // Set visual text
+      dropdownSelected.textContent = province.name;
+
+      // Sync hidden <select> value
+      provinceSelect.value = provinceCode;
+      provinceSelect.dispatchEvent(new Event("change"));
+
+      // Hide dropdown
+      dropdownList.classList.add("hidden");
+    });
+
+    dropdownList.appendChild(li);
+  }
 }
+
+// Toggle custom dropdown
+dropdownBtn.addEventListener("click", () => {
+  dropdownList.classList.toggle("hidden");
+});
+
+
+
+
+
+
+
+
+document.getElementById("dropdownBtn").addEventListener("click", () => {
+  customOptions.classList.toggle("hidden");
+});
 
 /// hey hey hey hey hey hey hey
 
@@ -697,7 +757,7 @@ function createExpenseInputs() {
     input.type = "number";
     input.id = `${categoryId}-input`;
     input.className =
-      "input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
+      "input-field w-full pl-8 pr-4 px-2 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white focus:outline-none focus:border-primary input-glow transition-all duration-200";
     input.placeholder = "e.g., 500";
     input.min = "0";
     input.step = "0.01";
@@ -818,7 +878,7 @@ function createDeductionInputs(deductions) {
     const input = document.createElement("input");
     input.type = "text";
     input.className =
-      "input-field font-semibold text-gray-700 w-full pl-7 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
+      "input-field font-semibold w-full pl-7 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200 text-white";
     input.value = deduction.amount.toFixed(2); // no $ here
     input.readOnly = true;
 
@@ -1061,15 +1121,22 @@ function updateExpenseSummary() {
   if (zone === "GREEN") {
     currentBudgetZoneSpan.classList.add("green-zone");
     integratedExpenseSummary.className =
-      "expense-summary-box mt-8 animate-slide-up green-zone-bg green-border";
+      "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-green-500 text-white animate-slide-up";
+    livingExpensesSection.className = 
+    "bg-green-500 rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
   } else if (zone === "MODERATE") {
     currentBudgetZoneSpan.classList.add("moderate-zone");
     integratedExpenseSummary.className =
-      "expense-summary-box mt-8 animate-slide-up moderate-zone-bg moderate-border";
+      "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-yellow-500 text-white animate-slide-up ";
+       livingExpensesSection.className = 
+    "bg-yellow-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
+      
   } else {
     currentBudgetZoneSpan.classList.add("red-zone");
     integratedExpenseSummary.className =
-      "expense-summary-box mt-8 animate-slide-up red-zone-bg red-border";
+      "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-red-500 text-white animate-slide-up";
+       livingExpensesSection.className = 
+    "bg-red-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
   }
 
   integratedExpenseSummary.classList.remove("hidden");
@@ -1217,8 +1284,8 @@ function displayFinalSummary(budget) {
         </div>
     `;
 
-  finalSummaryContentDiv.innerHTML = summaryHTML;
-  finalSummarySection.classList.remove("hidden");
+  // finalSummaryContentDiv.innerHTML = summaryHTML;
+  // finalSummarySection.classList.remove("hidden");
 }
 
 // ===================================================================================
@@ -1268,6 +1335,13 @@ investmentsPercentageInput.addEventListener("input", () => {
 // APP INITIALIZATION
 // The main function to kick off the application.
 // ===================================================================================
+
+// new code i write
+const toggleDeductionInputs = () => {
+  deductonToggle.addEventListener("click", () => {
+    deductionInputsContainer.classList.toggle("hidden");
+  });
+};
 
 /**
  * Initializes the application by setting up the UI components.
