@@ -151,9 +151,9 @@
 
         <div class="relative">
           <!-- the field is not worlking -->
-          <div class="flex max-sm:flex-col w-[100%]justify-between max-sm:gap-y-5 gap-x-20 ">
-            <div class="w-[50%] max-sm:w-[100%]">
-              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2 ">
+          <div class="flex max-sm:flex-col w-[100%] border-2 justify-between gap-x-20">
+            <div class="max-sm:w-[50%] w-[100%] border-2">
+              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">
                 Annual Gross Income
               </label>
               <div class="relative">
@@ -161,11 +161,10 @@
                 <input type="number" id="annualIncome" class="w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="60,000" min="0" />
               </div>
             </div>
-            <p id="annualIncomeError" class="text-red-400 text-sm mt-2 hidden"></p>
 
-            <div class="w-[50%] max-sm:w-[100%]">
-              <label for="" class="block text-sm font-medium text-gray-300 mb-2 ml-4">
-                Province
+            <div class="w-[50%] max-smw-[100%]">
+              <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">
+                Annual Gross Income
               </label>
               <div class="relative w-full max-w-md mx-auto">
                 <button id="dropdownBtn" class="w-full pl-8 pr-4 flex justify-between py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
@@ -174,39 +173,33 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                <ul id="dropdownList" class="glass-effect p-2 top-full left-0 w-full  text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto">
+                <ul id="dropdownList" class="glass-effect top-full left-0 w-full  text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto">
                 </ul>
               </div>
-              <input type="hidden" id="selectedProvince" name="province" />
 
             </div>
           </div>
+          <p id="annualIncomeError" class="text-red-400 text-sm mt-2 hidden"></p>
+          <div class="mt-5">
+            <p class="text-sm font-medium text-gray-300 mb-2">Contribution to work retirement?</p>
 
-
-          <div class="mt-5 ">
-            <div class="flex gap-x-3">
-              <p class="text-sm font-medium text-gray-300">Contribution to work retirement?</p>
-              <div class="flex items-center gap-3 text-sm text-gray-200">
-                <label class="flex items-center gap-2">
-                  <input id="includeRetirement" type="radio" name="retirementOption" value="yes" class="accent-green-500" />
-                  Yes
-                </label>
-                <label class="flex items-center gap-2">
-                  <input id="excludeRetirementCheckbox" type="radio" name="retirementOption" value="no" class="accent-red-500" />
-                  No
-                </label>
-
-              </div>
+            <div class="flex items-center gap-6 text-gray-200">
+              <label class="flex items-center gap-2">
+                <input type="radio" name="retirementOption" value="yes" class="accent-green-500" />
+                Yes
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="retirementOption" value="no" class="accent-red-500" />
+                No
+              </label>
             </div>
 
             <!-- Retirement input field, hidden initially -->
-            <div id="retirementInput" class="mt-4 overflow-hidden transition-all  rounded-md  duration-300 max-h-0 opacity-0 w-[20%]  ">
+            <div id="retirementInput" class="mt-4 overflow-hidden transition-all duration-300 max-h-0 opacity-0">
               <label for="retirementPercent" class="block text-sm text-gray-300 mb-1">Enter contribution (Max 10%):</label>
-              <input type="number" id="retirementPercent" name="retirementPercent" step="0.01" max="0.1" placeholder="e.g. 0.05" class="w-full px-3 py-2 rounded-md glass-effect border-0 outline-none text-white" />
+              <input type="number" id="retirementPercent" name="retirementPercent" step="0.01" max="0.1" placeholder="e.g. 0.05" class="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-800 text-white" />
             </div>
           </div>
-
-
 
     </section>
 
@@ -383,15 +376,18 @@
             </div>
           </div>
         </div>
+
+
         <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
           <!-- the monthtly expense has to change -->
-          <p class="text-gray-400 text-sm mb-2">
+          <p class="text-red-200 text-sm mb-2">
             Total Monthly Expenses: $0.00 (0.0%)
           </p>
           <!-- the field should change color based on the users spendind -->
           <!-- change message based on the users spending-->
           <p class="italic">You have a good financial flexibility</p>
         </div>
+
       </div>
     </section>
 
@@ -481,6 +477,5 @@
 </body>
 
 <script src="./scripts.js"></script>
-<!-- <script src="./script2.js"></script> -->
 
 </html>

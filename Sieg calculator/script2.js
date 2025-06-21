@@ -5,162 +5,162 @@
 // NOTE: This data is for a specific tax year and may need to be updated annually. The current year is 2025
 // ===================================================================================
 const TAX_CONFIG = {
-    canada: {
-        country: "Canada",
-        federal: {
-            name: "Federal Tax",
-            brackets: [
-                {min: 0, max: 57375, rate: 0.15},
-                {min: 57375, max: 114750, rate: 0.205},
-                {min: 114750, max: 177882, rate: 0.26},
-                {min: 177882, max: 253414, rate: 0.29},
-                {min: 253414, max: Infinity, rate: 0.33}
-            ]
-        },
-        cpp: {
-            name: "CPP",
-            maxEarnings: 71300,
-            basicExemption: 3500,
-            rate: 0.0595,
-            maxContribution: 4034.10
-        },
-        ei: {
-            name: "Employment Insurance",
-            rate: 0.0164,
-            maxEarnings: 65700,
-            maxContribution: 1077.48
-        },
-        provinces: {
-            "NL": {
-                name: "Newfoundland and Labrador",
-                brackets: [
-                    {min: 0, max: 44192, rate: 0.087},
-                    {min: 44192, max: 88382, rate: 0.145},
-                    {min: 88382, max: 157792, rate: 0.158},
-                    {min: 157792, max: 220910, rate: 0.178},
-                    {min: 220910, max: 282214, rate: 0.198},
-                    {min: 282214, max: 564429, rate: 0.208},
-                    {min: 564429, max: 1128858, rate: 0.213},
-                    {min: 1128858, max: Infinity, rate: 0.218}
-                ]
-            },
-            "PE": {
-                name: "Prince Edward Island",
-                brackets: [
-                    {min: 0, max: 33328, rate: 0.095},
-                    {min: 33328, max: 64656, rate: 0.1347},
-                    {min: 64656, max: 105000, rate: 0.166},
-                    {min: 105000, max: 140000, rate: 0.1762},
-                    {min: 140000, max: Infinity, rate: 0.19}
-                ]
-            },
-            "NS": {
-                name: "Nova Scotia",
-                brackets: [
-                    {min: 0, max: 30507, rate: 0.0879},
-                    {min: 30507, max: 61015, rate: 0.1495},
-                    {min: 61015, max: 95883, rate: 0.1667},
-                    {min: 95883, max: 154650, rate: 0.175},
-                    {min: 154650, max: Infinity, rate: 0.21}
-                ]
-            },
-            "NB": {
-                name: "New Brunswick",
-                brackets: [
-                    {min: 0, max: 51306, rate: 0.094},
-                    {min: 51306, max: 102614, rate: 0.14},
-                    {min: 102614, max: 190060, rate: 0.16},
-                    {min: 190060, max: Infinity, rate: 0.195}
-                ]
-            },
-            "QC": {
-                name: "Quebec",
-                brackets: [
-                    {min: 0, max: 53255, rate: 0.14},
-                    {min: 53255, max: 106495, rate: 0.19},
-                    {min: 106495, max: 129590, rate: 0.24},
-                    {min: 129590, max: Infinity, rate: 0.2575}
-                ]
-            },
-            "ON": {
-                name: "Ontario",
-                brackets: [
-                    {min: 0, max: 52886, rate: 0.0505},
-                    {min: 52886, max: 105775, rate: 0.0915},
-                    {min: 105775, max: 150000, rate: 0.1116},
-                    {min: 150000, max: 220000, rate: 0.1216},
-                    {min: 220000, max: Infinity, rate: 0.1316}
-                ]
-            },
-            "MB": {
-                name: "Manitoba",
-                brackets: [
-                    {min: 0, max: 47564, rate: 0.108},
-                    {min: 47564, max: 101200, rate: 0.1275},
-                    {min: 101200, max: Infinity, rate: 0.174}
-                ]
-            },
-            "SK": {
-                name: "Saskatchewan",
-                brackets: [
-                    {min: 0, max: 53463, rate: 0.105},
-                    {min: 53463, max: 152750, rate: 0.125},
-                    {min: 152750, max: Infinity, rate: 0.145}
-                ]
-            },
-            "AB": {
-                name: "Alberta",
-                brackets: [
-                    {min: 0, max: 60000, rate: 0.08}, // New bracket for 2025
-                    {min: 60000, max: 151234, rate: 0.10},
-                    {min: 151234, max: 181481, rate: 0.12},
-                    {min: 181481, max: 241974, rate: 0.13},
-                    {min: 241974, max: 362961, rate: 0.14},
-                    {min: 362961, max: Infinity, rate: 0.15}
-                ]
-            },
-            "BC": {
-                name: "British Columbia",
-                brackets: [
-                    {min: 0, max: 49279, rate: 0.0506},
-                    {min: 49279, max: 98560, rate: 0.077},
-                    {min: 98560, max: 113158, rate: 0.105},
-                    {min: 113158, max: 137407, rate: 0.1229},
-                    {min: 137407, max: 186306, rate: 0.147},
-                    {min: 186306, max: 259829, rate: 0.168},
-                    {min: 259829, max: Infinity, rate: 0.205}
-                ]
-            },
-            "YT": {
-                name: "Yukon",
-                brackets: [
-                    {min: 0, max: 57375, rate: 0.064},
-                    {min: 57375, max: 114750, rate: 0.09},
-                    {min: 114750, max: 177882, rate: 0.109},
-                    {min: 177882, max: 500000, rate: 0.128},
-                    {min: 500000, max: Infinity, rate: 0.15}
-                ]
-            },
-            "NT": {
-                name: "Northwest Territories",
-                brackets: [
-                    {min: 0, max: 51964, rate: 0.059},
-                    {min: 51964, max: 103930, rate: 0.086},
-                    {min: 103930, max: 168967, rate: 0.122},
-                    {min: 168967, max: Infinity, rate: 0.1405}
-                ]
-            },
-            "NU": {
-                name: "Nunavut",
-                brackets: [
-                    {min: 0, max: 54707, rate: 0.04},
-                    {min: 54707, max: 109413, rate: 0.07},
-                    {min: 109413, max: 177881, rate: 0.09},
-                    {min: 177881, max: Infinity, rate: 0.115}
-                ]
-            }
-        }
-    }
+  canada: {
+    country: "Canada",
+    federal: {
+      name: "Federal Tax",
+      brackets: [
+        { min: 0, max: 57375, rate: 0.15 },
+        { min: 57375, max: 114750, rate: 0.205 },
+        { min: 114750, max: 177882, rate: 0.26 },
+        { min: 177882, max: 253414, rate: 0.29 },
+        { min: 253414, max: Infinity, rate: 0.33 },
+      ],
+    },
+    cpp: {
+      name: "CPP",
+      maxEarnings: 71300,
+      basicExemption: 3500,
+      rate: 0.0595,
+      maxContribution: 4034.1,
+    },
+    ei: {
+      name: "Employment Insurance",
+      rate: 0.0164,
+      maxEarnings: 65700,
+      maxContribution: 1077.48,
+    },
+    provinces: {
+      NL: {
+        name: "Newfoundland and Labrador",
+        brackets: [
+          { min: 0, max: 44192, rate: 0.087 },
+          { min: 44192, max: 88382, rate: 0.145 },
+          { min: 88382, max: 157792, rate: 0.158 },
+          { min: 157792, max: 220910, rate: 0.178 },
+          { min: 220910, max: 282214, rate: 0.198 },
+          { min: 282214, max: 564429, rate: 0.208 },
+          { min: 564429, max: 1128858, rate: 0.213 },
+          { min: 1128858, max: Infinity, rate: 0.218 },
+        ],
+      },
+      PE: {
+        name: "Prince Edward Island",
+        brackets: [
+          { min: 0, max: 33328, rate: 0.095 },
+          { min: 33328, max: 64656, rate: 0.1347 },
+          { min: 64656, max: 105000, rate: 0.166 },
+          { min: 105000, max: 140000, rate: 0.1762 },
+          { min: 140000, max: Infinity, rate: 0.19 },
+        ],
+      },
+      NS: {
+        name: "Nova Scotia",
+        brackets: [
+          { min: 0, max: 30507, rate: 0.0879 },
+          { min: 30507, max: 61015, rate: 0.1495 },
+          { min: 61015, max: 95883, rate: 0.1667 },
+          { min: 95883, max: 154650, rate: 0.175 },
+          { min: 154650, max: Infinity, rate: 0.21 },
+        ],
+      },
+      NB: {
+        name: "New Brunswick",
+        brackets: [
+          { min: 0, max: 51306, rate: 0.094 },
+          { min: 51306, max: 102614, rate: 0.14 },
+          { min: 102614, max: 190060, rate: 0.16 },
+          { min: 190060, max: Infinity, rate: 0.195 },
+        ],
+      },
+      QC: {
+        name: "Quebec",
+        brackets: [
+          { min: 0, max: 53255, rate: 0.14 },
+          { min: 53255, max: 106495, rate: 0.19 },
+          { min: 106495, max: 129590, rate: 0.24 },
+          { min: 129590, max: Infinity, rate: 0.2575 },
+        ],
+      },
+      ON: {
+        name: "Ontario",
+        brackets: [
+          { min: 0, max: 52886, rate: 0.0505 },
+          { min: 52886, max: 105775, rate: 0.0915 },
+          { min: 105775, max: 150000, rate: 0.1116 },
+          { min: 150000, max: 220000, rate: 0.1216 },
+          { min: 220000, max: Infinity, rate: 0.1316 },
+        ],
+      },
+      MB: {
+        name: "Manitoba",
+        brackets: [
+          { min: 0, max: 47564, rate: 0.108 },
+          { min: 47564, max: 101200, rate: 0.1275 },
+          { min: 101200, max: Infinity, rate: 0.174 },
+        ],
+      },
+      SK: {
+        name: "Saskatchewan",
+        brackets: [
+          { min: 0, max: 53463, rate: 0.105 },
+          { min: 53463, max: 152750, rate: 0.125 },
+          { min: 152750, max: Infinity, rate: 0.145 },
+        ],
+      },
+      AB: {
+        name: "Alberta",
+        brackets: [
+          { min: 0, max: 60000, rate: 0.08 }, // New bracket for 2025
+          { min: 60000, max: 151234, rate: 0.1 },
+          { min: 151234, max: 181481, rate: 0.12 },
+          { min: 181481, max: 241974, rate: 0.13 },
+          { min: 241974, max: 362961, rate: 0.14 },
+          { min: 362961, max: Infinity, rate: 0.15 },
+        ],
+      },
+      BC: {
+        name: "British Columbia",
+        brackets: [
+          { min: 0, max: 49279, rate: 0.0506 },
+          { min: 49279, max: 98560, rate: 0.077 },
+          { min: 98560, max: 113158, rate: 0.105 },
+          { min: 113158, max: 137407, rate: 0.1229 },
+          { min: 137407, max: 186306, rate: 0.147 },
+          { min: 186306, max: 259829, rate: 0.168 },
+          { min: 259829, max: Infinity, rate: 0.205 },
+        ],
+      },
+      YT: {
+        name: "Yukon",
+        brackets: [
+          { min: 0, max: 57375, rate: 0.064 },
+          { min: 57375, max: 114750, rate: 0.09 },
+          { min: 114750, max: 177882, rate: 0.109 },
+          { min: 177882, max: 500000, rate: 0.128 },
+          { min: 500000, max: Infinity, rate: 0.15 },
+        ],
+      },
+      NT: {
+        name: "Northwest Territories",
+        brackets: [
+          { min: 0, max: 51964, rate: 0.059 },
+          { min: 51964, max: 103930, rate: 0.086 },
+          { min: 103930, max: 168967, rate: 0.122 },
+          { min: 168967, max: Infinity, rate: 0.1405 },
+        ],
+      },
+      NU: {
+        name: "Nunavut",
+        brackets: [
+          { min: 0, max: 54707, rate: 0.04 },
+          { min: 54707, max: 109413, rate: 0.07 },
+          { min: 109413, max: 177881, rate: 0.09 },
+          { min: 177881, max: Infinity, rate: 0.115 },
+        ],
+      },
+    },
+  },
 };
 
 // ===================================================================================
@@ -173,16 +173,15 @@ const livingExpenses = {};
 
 // A central object to hold the results of calculations to be used across different functions.
 const calculatorState = {
-    annualIncome: 0,
-    province: '',
-    retirementPercentage: 0,
-    monthlyDisposableIncome: 0,
-    totalMonthlyExpensesEntered: 0,
-    annualDisposable: 0,
-    isSavingsCustom: false, // Flag to check if user has manually edited savings
-    isInvestmentsCustom: false // Flag to check if user has manually edited investments
+  annualIncome: 0,
+  province: "",
+  retirementPercentage: 0,
+  monthlyDisposableIncome: 0,
+  totalMonthlyExpensesEntered: 0,
+  annualDisposable: 0,
+  isSavingsCustom: false, // Flag to check if user has manually edited savings
+  isInvestmentsCustom: false, // Flag to check if user has manually edited investments
 };
-
 
 // ===================================================================================
 // CORE CALCULATION FUNCTIONS
@@ -195,20 +194,24 @@ const calculatorState = {
  * @param {Array<object>} brackets - An array of tax bracket objects {min, max, rate}.
  * @returns {number} The total calculated tax.
  */
+
 function calculateProgressiveTax(income, brackets) {
-    let totalTax = 0;
-    let remainingIncome = income;
+  let totalTax = 0;
+  let remainingIncome = income;
 
-    for (const bracket of brackets) {
-        if (remainingIncome <= 0) break;
+  for (const bracket of brackets) {
+    if (remainingIncome <= 0) break;
 
-        const taxableInThisBracket = Math.min(remainingIncome, bracket.max - bracket.min);
-        const taxInThisBracket = taxableInThisBracket * bracket.rate;
-        totalTax += taxInThisBracket;
-        remainingIncome -= taxableInThisBracket;
-    }
+    const taxableInThisBracket = Math.min(
+      remainingIncome,
+      bracket.max - bracket.min
+    );
+    const taxInThisBracket = taxableInThisBracket * bracket.rate;
+    totalTax += taxInThisBracket;
+    remainingIncome -= taxableInThisBracket;
+  }
 
-    return totalTax;
+  return totalTax;
 }
 
 /**
@@ -218,9 +221,10 @@ function calculateProgressiveTax(income, brackets) {
  * @returns {number} The calculated annual CPP contribution.
  */
 function calculateCPP(income, cppConfig) {
-    const contributoryEarnings = Math.min(income, cppConfig.maxEarnings) - cppConfig.basicExemption;
-    const contribution = Math.max(0, contributoryEarnings * cppConfig.rate);
-    return Math.min(contribution, cppConfig.maxContribution);
+  const contributoryEarnings =
+    Math.min(income, cppConfig.maxEarnings) - cppConfig.basicExemption;
+  const contribution = Math.max(0, contributoryEarnings * cppConfig.rate);
+  return Math.min(contribution, cppConfig.maxContribution);
 }
 
 /**
@@ -230,8 +234,8 @@ function calculateCPP(income, cppConfig) {
  * @returns {number} The calculated annual EI contribution.
  */
 function calculateEI(income, eiConfig) {
-    const contribution = Math.min(income, eiConfig.maxEarnings) * eiConfig.rate;
-    return Math.min(contribution, eiConfig.maxContribution);
+  const contribution = Math.min(income, eiConfig.maxEarnings) * eiConfig.rate;
+  return Math.min(contribution, eiConfig.maxContribution);
 }
 
 /**
@@ -242,59 +246,67 @@ function calculateEI(income, eiConfig) {
  * @returns {{deductions: object, totalDeductions: number}} An object containing a detailed breakdown of deductions and the total amount.
  */
 function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
-    const config = TAX_CONFIG.canada;
-    const retirementContribution = grossIncome * (retirementPercentage / 100);
-    const taxableIncome = grossIncome - retirementContribution;
-    const deductions = {};
+  const config = TAX_CONFIG.canada;
+  const retirementContribution = grossIncome * (retirementPercentage / 100);
+  const taxableIncome = grossIncome - retirementContribution;
+  const deductions = {};
 
-    // Federal Tax
-    const federalTax = calculateProgressiveTax(taxableIncome, config.federal.brackets);
-    deductions.federal_tax = {
-        amount: federalTax,
-        percentage: (federalTax / grossIncome) * 100,
-        name: "Federal Tax"
+  // Federal Tax
+  const federalTax = calculateProgressiveTax(
+    taxableIncome,
+    config.federal.brackets
+  );
+  deductions.federal_tax = {
+    amount: federalTax,
+    percentage: (federalTax / grossIncome) * 100,
+    name: "Federal Tax",
+  };
+
+  // Provincial Tax
+  if (province && config.provinces[province]) {
+    const provincialTax = calculateProgressiveTax(
+      taxableIncome,
+      config.provinces[province].brackets
+    );
+    deductions.provincial_tax = {
+      amount: provincialTax,
+      percentage: (provincialTax / grossIncome) * 100,
+      name: `${config.provinces[province].name} Tax`,
     };
+  }
 
-    // Provincial Tax
-    if (province && config.provinces[province]) {
-        const provincialTax = calculateProgressiveTax(taxableIncome, config.provinces[province].brackets);
-        deductions.provincial_tax = {
-            amount: provincialTax,
-            percentage: (provincialTax / grossIncome) * 100,
-            name: `${config.provinces[province].name} Tax`
-        };
-    }
+  // CPP (on gross income)
+  const cppContribution = calculateCPP(grossIncome, config.cpp);
+  deductions.cpp = {
+    amount: cppContribution,
+    percentage: (cppContribution / grossIncome) * 100,
+    name: "CPP",
+  };
 
-    // CPP (on gross income)
-    const cppContribution = calculateCPP(grossIncome, config.cpp);
-    deductions.cpp = {
-        amount: cppContribution,
-        percentage: (cppContribution / grossIncome) * 100,
-        name: "CPP"
+  // EI (on gross income)
+  const eiContribution = calculateEI(grossIncome, config.ei);
+  deductions.ei = {
+    amount: eiContribution,
+    percentage: (eiContribution / grossIncome) * 100,
+    name: "Employment Insurance",
+  };
+
+  // Retirement Contribution
+  if (retirementPercentage > 0) {
+    deductions.retirement = {
+      amount: retirementContribution,
+      percentage: retirementPercentage,
+      name: "Retirement Contribution",
     };
+  }
 
-    // EI (on gross income)
-    const eiContribution = calculateEI(grossIncome, config.ei);
-    deductions.ei = {
-        amount: eiContribution,
-        percentage: (eiContribution / grossIncome) * 100,
-        name: "Employment Insurance"
-    };
+  const totalDeductions = Object.values(deductions).reduce(
+    (sum, deduction) => sum + deduction.amount,
+    0
+  );
 
-    // Retirement Contribution
-    if (retirementPercentage > 0) {
-        deductions.retirement = {
-            amount: retirementContribution,
-            percentage: retirementPercentage,
-            name: "Retirement Contribution"
-        };
-    }
-
-    const totalDeductions = Object.values(deductions).reduce((sum, deduction) => sum + deduction.amount, 0);
-
-    return {deductions, totalDeductions};
+  return { deductions, totalDeductions };
 }
-
 
 // ===================================================================================
 // BUDGETING AND ALLOCATION FUNCTIONS
@@ -307,13 +319,18 @@ function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
  * @returns {Array<string|boolean>} An array containing [zone, statusMessage, savingsAllowed, investmentsAllowed].
  */
 function determineBudgetZoneAndOptions(expensesPercentage) {
-    if (expensesPercentage <= 70) {
-        return ["GREEN", "You have excellent financial flexibility.", true, true];
-    } else if (expensesPercentage <= 80) {
-        return ["MODERATE", "Focus on savings and maintaining cashflow.", true, false];
-    } else {
-        return ["RED", "Prioritize cashflow and expense reduction.", false, false];
-    }
+  if (expensesPercentage <= 70) {
+    return ["GREEN", "You have excellent financial flexibility.", true, true];
+  } else if (expensesPercentage <= 80) {
+    return [
+      "MODERATE",
+      "Focus on savings and maintaining cashflow.",
+      true,
+      false,
+    ];
+  } else {
+    return ["RED", "Prioritize cashflow and expense reduction.", false, false];
+  }
 }
 
 /**
@@ -325,72 +342,89 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
  * @param {number} investmentsPctDesired - The desired percentage to allocate to investments.
  * @returns {object} An object with the calculated monthly allocations.
  */
-function allocateFunds(monthlyDisposable, totalMonthlyExpenses, savingsPctDesired, investmentsPctDesired) {
-    let monthlySavings = 0;
-    let monthlyInvestments = 0;
-    let monthlyCashflow = 0;
+function allocateFunds(
+  monthlyDisposable,
+  totalMonthlyExpenses,
+  savingsPctDesired,
+  investmentsPctDesired
+) {
+  let monthlySavings = 0;
+  let monthlyInvestments = 0;
+  let monthlyCashflow = 0;
 
-    const remainingAfterExpenses = monthlyDisposable - totalMonthlyExpenses;
-    const minCashflowPct = 0.10;
-    const minCashflowAmount = monthlyDisposable * minCashflowPct;
-    let hasAdequateCashflow = false;
+  const remainingAfterExpenses = monthlyDisposable - totalMonthlyExpenses;
+  const minCashflowPct = 0.1;
+  const minCashflowAmount = monthlyDisposable * minCashflowPct;
+  let hasAdequateCashflow = false;
 
-    if (remainingAfterExpenses < minCashflowAmount) {
-        monthlyCashflow = remainingAfterExpenses;
-        hasAdequateCashflow = false;
+  if (remainingAfterExpenses < minCashflowAmount) {
+    monthlyCashflow = remainingAfterExpenses;
+    hasAdequateCashflow = false;
+    monthlySavings = 0;
+    monthlyInvestments = 0;
+  } else {
+    monthlyCashflow = minCashflowAmount;
+    let availableForSI = remainingAfterExpenses - monthlyCashflow;
+    const minRequiredSavings =
+      savingsPctDesired > 0 ? monthlyDisposable * 0.1 : 0;
+    const minRequiredInvestments =
+      investmentsPctDesired > 0 ? monthlyDisposable * 0.1 : 0;
+    const totalMinSIRequired = minRequiredSavings + minRequiredInvestments;
+
+    if (availableForSI >= totalMinSIRequired) {
+      monthlySavings = minRequiredSavings;
+      monthlyInvestments = minRequiredInvestments;
+      availableForSI -= totalMinSIRequired;
+
+      let remainingDesiredSavings =
+        (monthlyDisposable * savingsPctDesired) / 100 - monthlySavings;
+      let remainingDesiredInvestments =
+        (monthlyDisposable * investmentsPctDesired) / 100 - monthlyInvestments;
+      remainingDesiredSavings = Math.max(0, remainingDesiredSavings);
+      remainingDesiredInvestments = Math.max(0, remainingDesiredInvestments);
+      const totalRemainingDesired =
+        remainingDesiredSavings + remainingDesiredInvestments;
+
+      if (totalRemainingDesired > 0 && availableForSI > 0) {
+        const scaleFactor = Math.min(1, availableForSI / totalRemainingDesired);
+        monthlySavings += remainingDesiredSavings * scaleFactor;
+        monthlyInvestments += remainingDesiredInvestments * scaleFactor;
+      } else if (availableForSI > 0) {
+        monthlyCashflow += availableForSI;
+      }
+    } else {
+      const totalDesiredSIToScale =
+        (monthlyDisposable * savingsPctDesired) / 100 +
+        (monthlyDisposable * investmentsPctDesired) / 100;
+      if (totalDesiredSIToScale > 0) {
+        const scaleFactor = availableForSI / totalDesiredSIToScale;
+        monthlySavings =
+          ((monthlyDisposable * savingsPctDesired) / 100) * scaleFactor;
+        monthlyInvestments =
+          ((monthlyDisposable * investmentsPctDesired) / 100) * scaleFactor;
+      } else {
         monthlySavings = 0;
         monthlyInvestments = 0;
-    } else {
-        monthlyCashflow = minCashflowAmount;
-        let availableForSI = remainingAfterExpenses - monthlyCashflow;
-        const minRequiredSavings = (savingsPctDesired > 0) ? (monthlyDisposable * 0.10) : 0;
-        const minRequiredInvestments = (investmentsPctDesired > 0) ? (monthlyDisposable * 0.10) : 0;
-        const totalMinSIRequired = minRequiredSavings + minRequiredInvestments;
-
-        if (availableForSI >= totalMinSIRequired) {
-            monthlySavings = minRequiredSavings;
-            monthlyInvestments = minRequiredInvestments;
-            availableForSI -= totalMinSIRequired;
-
-            let remainingDesiredSavings = (monthlyDisposable * savingsPctDesired / 100) - monthlySavings;
-            let remainingDesiredInvestments = (monthlyDisposable * investmentsPctDesired / 100) - monthlyInvestments;
-            remainingDesiredSavings = Math.max(0, remainingDesiredSavings);
-            remainingDesiredInvestments = Math.max(0, remainingDesiredInvestments);
-            const totalRemainingDesired = remainingDesiredSavings + remainingDesiredInvestments;
-
-            if (totalRemainingDesired > 0 && availableForSI > 0) {
-                const scaleFactor = Math.min(1, availableForSI / totalRemainingDesired);
-                monthlySavings += remainingDesiredSavings * scaleFactor;
-                monthlyInvestments += remainingDesiredInvestments * scaleFactor;
-            } else if (availableForSI > 0) {
-                monthlyCashflow += availableForSI;
-            }
-        } else {
-            const totalDesiredSIToScale = (monthlyDisposable * savingsPctDesired / 100) + (monthlyDisposable * investmentsPctDesired / 100);
-            if (totalDesiredSIToScale > 0) {
-                const scaleFactor = availableForSI / totalDesiredSIToScale;
-                monthlySavings = (monthlyDisposable * savingsPctDesired / 100) * scaleFactor;
-                monthlyInvestments = (monthlyDisposable * investmentsPctDesired / 100) * scaleFactor;
-            } else {
-                monthlySavings = 0;
-                monthlyInvestments = 0;
-            }
-        }
-
-        monthlyCashflow = monthlyDisposable - totalMonthlyExpenses - monthlySavings - monthlyInvestments;
-        hasAdequateCashflow = monthlyCashflow >= minCashflowAmount;
+      }
     }
 
-    return {
-        monthly_savings: Math.max(0, monthlySavings),
-        monthly_investments: Math.max(0, monthlyInvestments),
-        monthly_cashflow: Math.max(0, monthlyCashflow),
-        has_adequate_cashflow: hasAdequateCashflow,
-        min_cashflow_amount: minCashflowAmount,
-        remaining_unallocated: 0
-    };
-}
+    monthlyCashflow =
+      monthlyDisposable -
+      totalMonthlyExpenses -
+      monthlySavings -
+      monthlyInvestments;
+    hasAdequateCashflow = monthlyCashflow >= minCashflowAmount;
+  }
 
+  return {
+    monthly_savings: Math.max(0, monthlySavings),
+    monthly_investments: Math.max(0, monthlyInvestments),
+    monthly_cashflow: Math.max(0, monthlyCashflow),
+    has_adequate_cashflow: hasAdequateCashflow,
+    min_cashflow_amount: minCashflowAmount,
+    remaining_unallocated: 0,
+  };
+}
 
 /**
  * Orchestrates all calculations to produce a complete budget summary.
@@ -402,102 +436,190 @@ function allocateFunds(monthlyDisposable, totalMonthlyExpenses, savingsPctDesire
  * @param {number|null} userInvestmentsPct - User-defined investments percentage.
  * @returns {object} A comprehensive budget object with all calculated details.
  */
-function calculateBudget(annualIncome, province, livingExpenses, retirementPercentage = 0, userSavingsPct = null, userInvestmentsPct = null) {
-    const {deductions, totalDeductions} = calculateTaxes(annualIncome, province, retirementPercentage);
-    const annualDisposable = annualIncome - totalDeductions;
-    const monthlyDisposable = annualDisposable / 12;
-    const totalMonthlyExpenses = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-    const expensesPercentage = monthlyDisposable <= 0 ? Infinity : (totalMonthlyExpenses / monthlyDisposable) * 100;
+function calculateBudget(
+  annualIncome,
+  province,
+  livingExpenses,
+  retirementPercentage = 0,
+  userSavingsPct = null,
+  userInvestmentsPct = null
+) {
+  const { deductions, totalDeductions } = calculateTaxes(
+    annualIncome,
+    province,
+    retirementPercentage
+  );
+  const annualDisposable = annualIncome - totalDeductions;
+  const monthlyDisposable = annualDisposable / 12;
+  const totalMonthlyExpenses = Object.values(livingExpenses).reduce(
+    (sum, val) => sum + val,
+    0
+  );
+  const expensesPercentage =
+    monthlyDisposable <= 0
+      ? Infinity
+      : (totalMonthlyExpenses / monthlyDisposable) * 100;
 
-    const [zone, status, savingsAllowed, investmentsAllowed] = determineBudgetZoneAndOptions(expensesPercentage);
+  const [zone, status, savingsAllowed, investmentsAllowed] =
+    determineBudgetZoneAndOptions(expensesPercentage);
 
-    const recommendedSavingsPct = 12;
-    const recommendedInvestmentsPct = 15;
-    const effectiveRecSavingsPct = savingsAllowed ? recommendedSavingsPct : 0;
-    const effectiveRecInvestmentsPct = investmentsAllowed ? recommendedInvestmentsPct : 0;
+  const recommendedSavingsPct = 12;
+  const recommendedInvestmentsPct = 15;
+  const effectiveRecSavingsPct = savingsAllowed ? recommendedSavingsPct : 0;
+  const effectiveRecInvestmentsPct = investmentsAllowed
+    ? recommendedInvestmentsPct
+    : 0;
 
-    const recommendedAllocations = allocateFunds(monthlyDisposable, totalMonthlyExpenses, effectiveRecSavingsPct, effectiveRecInvestmentsPct);
+  const recommendedAllocations = allocateFunds(
+    monthlyDisposable,
+    totalMonthlyExpenses,
+    effectiveRecSavingsPct,
+    effectiveRecInvestmentsPct
+  );
 
-    let customAllocations = null;
-    if ((savingsAllowed && userSavingsPct !== null) || (investmentsAllowed && userInvestmentsPct !== null)) {
-        const userSavingsPctValidated = savingsAllowed && userSavingsPct !== null ? validateSavingsPercentage(userSavingsPct, true) : null;
-        const userInvestmentsPctValidated = investmentsAllowed && userInvestmentsPct !== null ? validateInvestmentsPercentage(userInvestmentsPct, true) : null;
+  let customAllocations = null;
+  if (
+    (savingsAllowed && userSavingsPct !== null) ||
+    (investmentsAllowed && userInvestmentsPct !== null)
+  ) {
+    const userSavingsPctValidated =
+      savingsAllowed && userSavingsPct !== null
+        ? validateSavingsPercentage(userSavingsPct, true)
+        : null;
+    const userInvestmentsPctValidated =
+      investmentsAllowed && userInvestmentsPct !== null
+        ? validateInvestmentsPercentage(userInvestmentsPct, true)
+        : null;
 
-        if ((userSavingsPctValidated !== null && userSavingsPctValidated >= 10 && userSavingsPctValidated <= 15) ||
-            (userInvestmentsPctValidated !== null && userInvestmentsPctValidated >= 10 && userInvestmentsPctValidated <= 20)) {
-            const finalCustomSavingsPct = userSavingsPctValidated !== null ? userSavingsPctValidated : 0;
-            const finalCustomInvestmentsPct = userInvestmentsPctValidated !== null ? userInvestmentsPctValidated : 0;
-            if (finalCustomSavingsPct > 0 || finalCustomInvestmentsPct > 0) {
-                customAllocations = allocateFunds(monthlyDisposable, totalMonthlyExpenses, finalCustomSavingsPct, finalCustomInvestmentsPct);
-            }
-        }
+    if (
+      (userSavingsPctValidated !== null &&
+        userSavingsPctValidated >= 10 &&
+        userSavingsPctValidated <= 15) ||
+      (userInvestmentsPctValidated !== null &&
+        userInvestmentsPctValidated >= 10 &&
+        userInvestmentsPctValidated <= 20)
+    ) {
+      const finalCustomSavingsPct =
+        userSavingsPctValidated !== null ? userSavingsPctValidated : 0;
+      const finalCustomInvestmentsPct =
+        userInvestmentsPctValidated !== null ? userInvestmentsPctValidated : 0;
+      if (finalCustomSavingsPct > 0 || finalCustomInvestmentsPct > 0) {
+        customAllocations = allocateFunds(
+          monthlyDisposable,
+          totalMonthlyExpenses,
+          finalCustomSavingsPct,
+          finalCustomInvestmentsPct
+        );
+      }
     }
+  }
 
-    return {
-        annual_income: annualIncome,
-        province: province,
-        deductions: deductions,
-        total_deductions: totalDeductions,
-        annual_disposable: annualDisposable,
-        monthly_disposable: monthlyDisposable,
-        living_expenses: livingExpenses,
-        total_monthly_expenses: totalMonthlyExpenses,
-        expenses_percentage: expensesPercentage,
-        budget_zone: zone,
-        status_message: status,
-        savings_allowed: savingsAllowed,
-        investments_allowed: investmentsAllowed,
-        recommended_allocations: recommendedAllocations,
-        custom_allocations: customAllocations,
-        retirement_percentage: retirementPercentage
-    };
+  return {
+    annual_income: annualIncome,
+    province: province,
+    deductions: deductions,
+    total_deductions: totalDeductions,
+    annual_disposable: annualDisposable,
+    monthly_disposable: monthlyDisposable,
+    living_expenses: livingExpenses,
+    total_monthly_expenses: totalMonthlyExpenses,
+    expenses_percentage: expensesPercentage,
+    budget_zone: zone,
+    status_message: status,
+    savings_allowed: savingsAllowed,
+    investments_allowed: investmentsAllowed,
+    recommended_allocations: recommendedAllocations,
+    custom_allocations: customAllocations,
+    retirement_percentage: retirementPercentage,
+  };
 }
-
 
 // ===================================================================================
 // DOM ELEMENTS
 // Cached references to all the necessary HTML elements to avoid repeated queries.
 // ===================================================================================
-const mainCalculatorCard = document.getElementById('main-calculator-card');
-const annualIncomeInput = document.getElementById('annualIncome');
-const provinceSelect = document.getElementById('provinceSelect');
-const annualIncomeError = document.getElementById('annualIncomeError');
-const provinceError = document.getElementById('provinceError');
-const includeRetirementCheckbox = document.getElementById('includeRetirement');
-const retirementPercentageSection = document.getElementById('retirement-percentage-section');
-const retirementPercentageInput = document.getElementById('retirementPercentage');
-const retirementPercentageError = document.getElementById('retirementPercentageError');
+// const mainCalculatorCard = document.getElementById('main-calculator-card');
+const annualIncomeInput = document.getElementById("annualIncome");
+const provinceSelect = document.getElementById("provinceSelect");
+const annualIncomeError = document.getElementById("annualIncomeError");
+const provinceError = document.getElementById("provinceError");
+const includeRetirementCheckbox = document.getElementById("includeRetirement");
+const excludeRetirementCheckbox = document.getElementById("excludeRetirement");
+const retirementPercentageSection = document.getElementById(
+  "retirement-percentage-section"
+);
+const retirementPercentageInput = document.getElementById(
+  "retirementPercentage"
+);
+const retirementPercentageError = document.getElementById(
+  "retirementPercentageError"
+);
 
-const deductionsDisposableSection = document.getElementById('deductions-disposable-section');
-const totalAnnualDeductionsSpan = document.getElementById('totalAnnualDeductions');
-const deductionInputsContainer = document.getElementById('deduction-inputs-container');
-const annualDisposableIncomeSpan = document.getElementById('annualDisposableIncome');
-const monthlyDisposableIncomeSpan = document.getElementById('monthlyDisposableIncome');
+const deductionsDisposableSection = document.getElementById(
+  "deductions-disposable-section"
+);
+const totalAnnualDeductionsSpan = document.getElementById(
+  "totalAnnualDeductions"
+);
+const deductionInputsContainer = document.getElementById(
+  "deduction-inputs-container"
+);
+const annualDisposableIncomeSpan = document.getElementById(
+  "annualDisposableIncome"
+);
+const monthlyDisposableIncomeSpan = document.getElementById(
+  "monthlyDisposableIncome"
+);
 
-const livingExpensesSection = document.getElementById('living-expenses-section');
-const expenseInputsContainer = document.getElementById('expense-inputs-container');
-const integratedExpenseSummary = document.getElementById('integrated-expense-summary');
-const currentTotalExpensesSpan = document.getElementById('currentTotalExpenses');
-const currentExpensesPercentageSpan = document.getElementById('currentExpensesPercentage');
-const currentBudgetZoneSpan = document.getElementById('currentBudgetZone');
-const currentZoneMessageP = document.getElementById('currentZoneMessage');
+const livingExpensesSection = document.getElementById(
+  "living-expenses-section"
+);
+const expenseInputsContainer = document.getElementById(
+  "expense-inputs-container"
+);
+const integratedExpenseSummary = document.getElementById(
+  "integrated-expense-summary"
+);
+const currentTotalExpensesSpan = document.getElementById(
+  "currentTotalExpenses"
+);
+const currentExpensesPercentageSpan = document.getElementById(
+  "currentExpensesPercentage"
+);
+const currentBudgetZoneSpan = document.getElementById("currentBudgetZone");
+const currentZoneMessageP = document.getElementById("currentZoneMessage");
 
-const savingsInvestmentsSection = document.getElementById('savings-investments-section');
-const siGuidanceP = document.getElementById('si-guidance');
-const savingsPercentageInput = document.getElementById('savingsPercentage');
-const savingsPercentageError = document.getElementById('savingsPercentageError');
-const investmentsPercentageInput = document.getElementById('investmentsPercentage');
-const investmentsPercentageError = document.getElementById('investmentsPercentageError');
-const cashflowAmountInput = document.getElementById('cashflowAmount');
+const savingsInvestmentsSection = document.getElementById(
+  "savings-investments-section"
+);
+const siGuidanceP = document.getElementById("si-guidance");
+const savingsPercentageInput = document.getElementById("savingsPercentage");
+const savingsPercentageError = document.getElementById(
+  "savingsPercentageError"
+);
+const investmentsPercentageInput = document.getElementById(
+  "investmentsPercentage"
+);
+const investmentsPercentageError = document.getElementById(
+  "investmentsPercentageError"
+);
+const cashflowAmountInput = document.getElementById("cashflowAmount");
 
-const finalSummarySection = document.getElementById('final-summary-section');
-const finalSummaryContentDiv = document.getElementById('final-summary-content');
+const finalSummarySection = document.getElementById("final-summary-section");
+const finalSummaryContentDiv = document.getElementById("final-summary-content");
 
 const livingExpenseCategories = [
-    'Mortgage/Rent', 'Transport', 'Insurance', 'Utilities', 'Groceries',
-    'Entertainment', 'Phone Bill', 'Internet Bill', 'Home Maintenance', 'Miscellaneous'
+  "Mortgage/Rent",
+  "Transport",
+  "Insurance",
+  "Utilities",
+  "Groceries",
+  "Entertainment",
+  "Phone Bill",
+  "Internet Bill",
+  "Home Maintenance",
+  "Miscellaneous",
 ];
-
 
 // ===================================================================================
 // INITIALIZATION AND DOM MANIPULATION FUNCTIONS
@@ -508,136 +630,203 @@ const livingExpenseCategories = [
  * Populates the province dropdown from the TAX_CONFIG object.
  */
 function initializeProvinceDropdown() {
-    const provinces = TAX_CONFIG.canada.provinces;
-    Object.keys(provinces).forEach(code => {
-        const option = document.createElement('option');
-        option.value = code;
-        option.textContent = provinces[code].name;
-        provinceSelect.appendChild(option);
-    });
+  const provinces = TAX_CONFIG.canada.provinces;
+  Object.keys(provinces).forEach((code) => {
+    const option = document.createElement("option");
+    option.value = code;
+    option.textContent = provinces[code].name;
+    provinceSelect.appendChild(option);
+  });
 }
+
+/// hey hey hey hey hey hey hey
+
+// function initializeProvinceDropdown() {
+//   const provinces = TAX_CONFIG.canada.provinces;
+//   const provinceSelect = document.getElementById("provinceSelect");
+//   const dropdownSelected = document.getElementById("dropdownSelected");
+
+//   // Clear previous options if any
+//   provinceSelect.innerHTML = "";
+
+//   Object.keys(provinces).forEach((code) => {
+//     const li = document.createElement("li");
+//     li.textContent = provinces[code].name;
+//     li.className = "cursor-pointer px-4 py-2 hover:bg-white/10 rounded-xl transition";
+//     li.addEventListener("click", () => {
+//       dropdownSelected.textContent = provinces[code].name;
+//       provinceSelect.classList.add("hidden");
+//       console.log("hheheh")
+//     });
+//     provinceSelect.appendChild(li);
+//   });
+// }
+
+// // Toggle the dropdown when button is clicked
+// document.getElementById("dropdownBtn").addEventListener("click", () => {
+//   const provinceSelect = document.getElementById("provinceSelect");
+//   console.log("new stufff")
+//   provinceSelect.classList.toggle("hidden");
+// });
 
 /**
  * Dynamically creates the input fields for all living expense categories.
  */
 function createExpenseInputs() {
-    expenseInputsContainer.innerHTML = '';
-    livingExpenseCategories.forEach(category => {
-        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'input-group';
+  expenseInputsContainer.innerHTML = "";
+  livingExpenseCategories.forEach((category) => {
+    const categoryId = category.toLowerCase().replace(/\s+/g, "-");
+    const inputGroup = document.createElement("div");
+    inputGroup.className = "input-group";
 
-        const label = document.createElement('label');
-        label.setAttribute('for', `${categoryId}-input`);
-        // Add a span inside the label to hold the percentage
-        label.innerHTML = `${category.replace(/([A-Z])/g, ' $1').trim()} (CAD $) <span id="percentage-${categoryId}" class="text-sm font-normal text-gray-500"></span>`;
+    const label = document.createElement("label");
+    label.setAttribute("for", `${categoryId}-input`);
+    // Add a span inside the label to hold the percentage
+    label.innerHTML = `
+  <div class="flex items-center justify-between mb-2">
+    <span class="text-white text-base font-semibold">
+      ${category.replace(/([A-Z])/g, " $1").trim()}
+    </span>
+    <span id="percentage-${categoryId}" class="text-sm font-medium text-gray-400">
+      <!-- percentage will go here -->
+    </span>
+  </div>
+`;
 
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.id = `${categoryId}-input`;
-        input.className = 'input-field';
-        input.placeholder = 'e.g., 500';
-        input.min = '0';
-        input.step = '0.01';
+    const input = document.createElement("input");
+    input.type = "number";
+    input.id = `${categoryId}-input`;
+    input.className =
+      "input-field w-full pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
+    input.placeholder = "e.g., 500";
+    input.min = "0";
+    input.step = "0.01";
 
-        const errorP = document.createElement('p');
-        errorP.className = 'error-message';
-        errorP.id = `${categoryId}-error`;
+    const errorP = document.createElement("p");
+    errorP.className = "error-message";
+    errorP.id = `${categoryId}-error`;
 
-        inputGroup.appendChild(label);
-        inputGroup.appendChild(input);
-        inputGroup.appendChild(errorP);
-        expenseInputsContainer.appendChild(inputGroup);
+    inputGroup.appendChild(label);
+    inputGroup.appendChild(input);
+    inputGroup.appendChild(errorP);
+    expenseInputsContainer.appendChild(inputGroup);
 
-        livingExpenses[category] = 0;
+    livingExpenses[category] = 0;
 
-        input.addEventListener('input', () => {
-            const value = parseFloat(input.value) || 0;
-            livingExpenses[category] = value;
-            updateExpenseSummary();
-            updateFinalCalculations();
-            updateExpensePercentageLabels(); // Update percentages on each expense input
-        });
+    input.addEventListener("input", () => {
+      const value = parseFloat(input.value) || 0;
+      livingExpenses[category] = value;
+      updateExpenseSummary();
+      updateFinalCalculations();
+      updateExpensePercentageLabels(); // Update percentages on each expense input
     });
+  });
 }
-
 
 /**
  * Updates the percentage display next to each expense label.
  */
 function updateExpensePercentageLabels() {
-    if (calculatorState.monthlyDisposableIncome <= 0) {
-        // If there's no income, clear all percentage labels
-        livingExpenseCategories.forEach(category => {
-            const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-            const percentageSpan = document.getElementById(`percentage-${categoryId}`);
-            if (percentageSpan) percentageSpan.textContent = '';
-        });
-        return;
-    }
-
-    // Update each label with the new percentage
-    Object.entries(livingExpenses).forEach(([category, value]) => {
-        const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-        const percentageSpan = document.getElementById(`percentage-${categoryId}`);
-        if (percentageSpan) {
-            if (value > 0) {
-                const percentage = (value / calculatorState.monthlyDisposableIncome) * 100;
-                percentageSpan.textContent = `(${percentage.toFixed(1)}%)`;
-            } else {
-                percentageSpan.textContent = ''; // Clear if value is zero
-            }
-        }
+  if (calculatorState.monthlyDisposableIncome <= 0) {
+    // If there's no income, clear all percentage labels
+    livingExpenseCategories.forEach((category) => {
+      const categoryId = category.toLowerCase().replace(/\s+/g, "-");
+      const percentageSpan = document.getElementById(
+        `percentage-${categoryId}`
+      );
+      if (percentageSpan) percentageSpan.textContent = "";
     });
-}
+    return;
+  }
 
+  // Update each label with the new percentage
+  Object.entries(livingExpenses).forEach(([category, value]) => {
+    const categoryId = category.toLowerCase().replace(/\s+/g, "-");
+    const percentageSpan = document.getElementById(`percentage-${categoryId}`);
+    if (percentageSpan) {
+      if (value > 0) {
+        const percentage =
+          (value / calculatorState.monthlyDisposableIncome) * 100;
+        percentageSpan.textContent = `(${percentage.toFixed(1)}%)`;
+      } else {
+        percentageSpan.textContent = ""; // Clear if value is zero
+      }
+    }
+  });
+}
 
 /**
  * Creates read-only input fields to display the breakdown of tax deductions.
  * @param {object} deductions - The deductions object from the calculateTaxes function.
  */
 function createDeductionInputs(deductions) {
-    deductionInputsContainer.innerHTML = '';
-    Object.entries(deductions).forEach(([key, deduction]) => {
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'input-group';
+  deductionInputsContainer.innerHTML = "";
+  Object.entries(deductions).forEach(([key, deduction]) => {
+    const inputGroup = document.createElement("div");
+    inputGroup.className = "input-group";
 
-        const label = document.createElement('label');
+    const label = document.createElement("label");
 
-        // Add tooltip messages based on deduction type
-        let tooltipMessage = '';
-        if (key === 'federal_tax') {
-            tooltipMessage = 'Effective federal tax rate (marginal system)';
-        } else if (key === 'provincial_tax') {
-            tooltipMessage = 'Effective provincial tax rate (marginal system)';
-        } else if (key === 'cpp') {
-            const config = TAX_CONFIG.canada.cpp;
-            const isAtMax = deduction.amount >= config.maxContribution;
-            tooltipMessage = isAtMax ?
-                `CPP rate capped at max contribution of $${config.maxContribution.toFixed(2)}` :
-                `CPP rate on contributory earnings (${(config.rate * 100).toFixed(2)}% on income above $${config.basicExemption})`;
-        } else if (key === 'ei') {
-            const config = TAX_CONFIG.canada.ei;
-            const isAtMax = deduction.amount >= config.maxContribution;
-            tooltipMessage = isAtMax ?
-                `EI rate capped at max contribution of $${config.maxContribution.toFixed(2)}` :
-                `EI rate (${(config.rate * 100).toFixed(2)}% on insurable earnings)`;
-        } else if (key === 'retirement') {
-            tooltipMessage = 'Pre-tax retirement contribution reduces taxable income';
-        }
+    // Add tooltip messages based on deduction type
+    let tooltipMessage = "";
+    if (key === "federal_tax") {
+      tooltipMessage = "Effective federal tax rate (marginal system)";
+    } else if (key === "provincial_tax") {
+      tooltipMessage = "Effective provincial tax rate (marginal system)";
+    } else if (key === "cpp") {
+      const config = TAX_CONFIG.canada.cpp;
+      const isAtMax = deduction.amount >= config.maxContribution;
+      tooltipMessage = isAtMax
+        ? `CPP rate capped at max contribution of $${config.maxContribution.toFixed(
+            2
+          )}`
+        : `CPP rate on contributory earnings (${(config.rate * 100).toFixed(
+            2
+          )}% on income above $${config.basicExemption})`;
+    } else if (key === "ei") {
+      const config = TAX_CONFIG.canada.ei;
+      const isAtMax = deduction.amount >= config.maxContribution;
+      tooltipMessage = isAtMax
+        ? `EI rate capped at max contribution of $${config.maxContribution.toFixed(
+            2
+          )}`
+        : `EI rate (${(config.rate * 100).toFixed(2)}% on insurable earnings)`;
+    } else if (key === "retirement") {
+      tooltipMessage = "Pre-tax retirement contribution reduces taxable income";
+    }
 
-        label.innerHTML = `${deduction.name} (${deduction.percentage.toFixed(2)}%) <span class="text-xs text-gray-500 font-normal">- ${tooltipMessage}</span>`;
+    label.innerHTML = `
+  <div class="flex flex-col gap-1 rounded-md  p-2 shadow-sm text-white">
+    <span class="text-sm font-semibold tracking-tight">
+      ${
+        deduction.name
+      } <span class="text-zinc-400">(${deduction.percentage.toFixed(2)}%)</span>
+    </span>
+    <span class="text-xs text-zinc-300 leading-snug">
+      ${tooltipMessage}
+    </span>
+  </div>
+`;
 
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.className = 'input-field font-semibold text-gray-700';
-        input.value = `$${deduction.amount.toFixed(2)}`;
-        input.readOnly = true;
+    inputGroup.className = "relative w-full";
 
-        inputGroup.appendChild(label);
-        inputGroup.appendChild(input);
-        deductionInputsContainer.appendChild(inputGroup);
-    });
+    const dollarSign = document.createElement("span");
+    dollarSign.className =
+      "absolute left-3 top-1/2 -translate-y-1/2 text-white text-sm pointer-events-none";
+    dollarSign.textContent = "$";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className =
+      "input-field font-semibold text-gray-700 w-full pl-7 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
+    input.value = deduction.amount.toFixed(2); // no $ here
+    input.readOnly = true;
+
+    inputGroup.appendChild(dollarSign);
+    inputGroup.appendChild(input);
+    deductionInputsContainer.appendChild(label);
+    deductionInputsContainer.appendChild(inputGroup);
+  });
 }
 
 // ===================================================================================
@@ -645,50 +834,58 @@ function createDeductionInputs(deductions) {
 // Small utility functions for validation and formatting.
 // ===================================================================================
 
-function validateAnnualIncome() { /* Unchanged */
-    const value = parseFloat(annualIncomeInput.value);
-    if (isNaN(value) || value <= 0) {
-        showError(annualIncomeError, 'Please enter a valid annual income.');
-        return false;
-    }
-    if (value > 10000000) {
-        showError(annualIncomeError, 'Annual income seems unrealistic. Please check.');
-        return false;
-    }
-    clearError(annualIncomeError);
-    return true;
+function validateAnnualIncome() {
+  /* Unchanged */
+  const value = parseFloat(annualIncomeInput.value);
+  if (isNaN(value) || value <= 0) {
+    showError(annualIncomeError, "Please enter a valid annual income.");
+    return false;
+  }
+  if (value > 10000000) {
+    showError(
+      annualIncomeError,
+      "Annual income seems unrealistic. Please check."
+    );
+    return false;
+  }
+  clearError(annualIncomeError);
+  return true;
 }
 
-function validateProvince() { /* Unchanged */
-    if (!provinceSelect.value) {
-        showError(provinceError, 'Please select your province.');
-        return false;
-    }
-    clearError(provinceError);
-    return true;
+function validateProvince() {
+  /* Unchanged */
+  if (!provinceSelect.value) {
+    showError(provinceError, "Please select your province.");
+    return false;
+  }
+  clearError(provinceError);
+  return true;
 }
 
 function validateRetirementPercentage() {
-    if (!includeRetirementCheckbox.checked) {
-        clearError(retirementPercentageError);
-        return true;
-    }
-
-    const value = parseFloat(retirementPercentageInput.value);
-
-    // If the input is empty, treat it as 0 and allow it
-    if (retirementPercentageInput.value === '' || isNaN(value)) {
-        clearError(retirementPercentageError);
-        return true;
-    }
-
-    if (value < 0 || value > 10) {
-        showError(retirementPercentageError, 'Retirement contribution must be between 0% and 10%.');
-        return false;
-    }
-
+  if (!includeRetirementCheckbox.checked) {
     clearError(retirementPercentageError);
     return true;
+  }
+
+  const value = parseFloat(retirementPercentageInput.value);
+
+  // If the input is empty, treat it as 0 and allow it
+  if (retirementPercentageInput.value === "" || isNaN(value)) {
+    clearError(retirementPercentageError);
+    return true;
+  }
+
+  if (value < 0 || value > 10) {
+    showError(
+      retirementPercentageError,
+      "Retirement contribution must be between 0% and 10%."
+    );
+    return false;
+  }
+
+  clearError(retirementPercentageError);
+  return true;
 }
 
 /**
@@ -698,16 +895,19 @@ function validateRetirementPercentage() {
  * @returns {boolean|number|null}
  */
 function validateSavingsPercentage(value, returnNull = false) {
-    const val = parseFloat(value);
-    const isValid = !isNaN(val) && val >= 10 && val <= 15;
-    if (returnNull) return isValid ? val : null;
+  const val = parseFloat(value);
+  const isValid = !isNaN(val) && val >= 10 && val <= 15;
+  if (returnNull) return isValid ? val : null;
 
-    if (savingsPercentageInput.value !== '' && !isValid) {
-        showError(savingsPercentageError, 'Savings percentage must be between 10% and 15%.');
-        return false;
-    }
-    clearError(savingsPercentageError);
-    return true;
+  if (savingsPercentageInput.value !== "" && !isValid) {
+    showError(
+      savingsPercentageError,
+      "Savings percentage must be between 10% and 15%."
+    );
+    return false;
+  }
+  clearError(savingsPercentageError);
+  return true;
 }
 
 /**
@@ -717,36 +917,41 @@ function validateSavingsPercentage(value, returnNull = false) {
  * @returns {boolean|number|null}
  */
 function validateInvestmentsPercentage(value, returnNull = false) {
-    const val = parseFloat(value);
-    const isValid = !isNaN(val) && val >= 10 && val <= 20;
-    if (returnNull) return isValid ? val : null;
+  const val = parseFloat(value);
+  const isValid = !isNaN(val) && val >= 10 && val <= 20;
+  if (returnNull) return isValid ? val : null;
 
-    if (investmentsPercentageInput.value !== '' && !isValid) {
-        showError(investmentsPercentageError, 'Investments percentage must be between 10% and 20%.');
-        return false;
-    }
-    clearError(investmentsPercentageError);
-    return true;
+  if (investmentsPercentageInput.value !== "" && !isValid) {
+    showError(
+      investmentsPercentageError,
+      "Investments percentage must be between 10% and 20%."
+    );
+    return false;
+  }
+  clearError(investmentsPercentageError);
+  return true;
 }
 
 function showError(element, message) {
-    element.textContent = message;
-    element.style.display = 'block';
+  element.textContent = message;
+  element.style.display = "block";
 }
 
 function clearError(element) {
-    element.textContent = '';
-    element.style.display = 'none';
+  element.textContent = "";
+  element.style.display = "none";
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-CA', {style: 'currency', currency: 'CAD'}).format(amount);
+  return new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency: "CAD",
+  }).format(amount);
 }
 
 function formatPercentage(percentage) {
-    return `${percentage.toFixed(1)}%`;
+  return `${percentage.toFixed(1)}%`;
 }
-
 
 // ===================================================================================
 // UI UPDATE AND EVENT HANDLER FUNCTIONS
@@ -758,46 +963,58 @@ function formatPercentage(percentage) {
  * It re-calculates taxes and disposable income, and updates the UI and application state.
  */
 function updateIncomeCalculations() {
-    if (!validateAnnualIncome() || !validateProvince() || !validateRetirementPercentage()) {
-        return;
-    }
+  if (
+    !validateAnnualIncome() ||
+    !validateProvince() ||
+    !validateRetirementPercentage()
+  ) {
+    return;
+  }
 
-    // Read inputs from DOM and update state
-    calculatorState.annualIncome = parseFloat(annualIncomeInput.value);
-    calculatorState.province = provinceSelect.value;
-    calculatorState.retirementPercentage = includeRetirementCheckbox.checked ? (parseFloat(retirementPercentageInput.value) || 0) : 0;
+  // Read inputs from DOM and update state
+  calculatorState.annualIncome = parseFloat(annualIncomeInput.value);
+  calculatorState.province = provinceSelect.value;
+  calculatorState.retirementPercentage = includeRetirementCheckbox.checked
+    ? parseFloat(retirementPercentageInput.value) || 0
+    : 0;
 
-    // Perform calculations
-    const {deductions, totalDeductions} = calculateTaxes(
-        calculatorState.annualIncome,
-        calculatorState.province,
-        calculatorState.retirementPercentage
-    );
+  // Perform calculations
+  const { deductions, totalDeductions } = calculateTaxes(
+    calculatorState.annualIncome,
+    calculatorState.province,
+    calculatorState.retirementPercentage
+  );
 
-    // Update state with calculation results
-    calculatorState.annualDisposable = calculatorState.annualIncome - totalDeductions;
-    calculatorState.monthlyDisposableIncome = calculatorState.annualDisposable / 12;
+  // Update state with calculation results
+  calculatorState.annualDisposable =
+    calculatorState.annualIncome - totalDeductions;
+  calculatorState.monthlyDisposableIncome =
+    calculatorState.annualDisposable / 12;
 
-    // Update UI
-    createDeductionInputs(deductions);
-    totalAnnualDeductionsSpan.textContent = formatCurrency(totalDeductions);
-    annualDisposableIncomeSpan.textContent = formatCurrency(calculatorState.annualDisposable);
-    monthlyDisposableIncomeSpan.textContent = formatCurrency(calculatorState.monthlyDisposableIncome);
+  // Update UI
+  createDeductionInputs(deductions);
+  totalAnnualDeductionsSpan.textContent = formatCurrency(totalDeductions);
+  annualDisposableIncomeSpan.textContent = formatCurrency(
+    calculatorState.annualDisposable
+  );
+  monthlyDisposableIncomeSpan.textContent = formatCurrency(
+    calculatorState.monthlyDisposableIncome
+  );
 
-    // Show/enable subsequent sections
-    deductionsDisposableSection.classList.remove('hidden');
-    enableLivingExpensesSection();
-    updateExpenseSummary(); // This now also handles setting S&I recommendations
-    updateFinalCalculations();
-    updateExpensePercentageLabels(); // Update percentages based on new income
+  // Show/enable subsequent sections
+  deductionsDisposableSection.classList.remove("hidden");
+  enableLivingExpensesSection();
+  updateExpenseSummary(); // This now also handles setting S&I recommendations
+  updateFinalCalculations();
+  updateExpensePercentageLabels(); // Update percentages based on new income
 }
 
 /**
  * Enables and animates the living expenses section.
  */
 function enableLivingExpensesSection() {
-    livingExpensesSection.classList.remove('opacity-50', 'pointer-events-none');
-    livingExpensesSection.classList.add('animate-fade-in');
+  livingExpensesSection.classList.remove("opacity-50", "pointer-events-none");
+  livingExpensesSection.classList.add("animate-fade-in");
 }
 
 /**
@@ -805,100 +1022,129 @@ function enableLivingExpensesSection() {
  * It also sets the recommended values for savings and investments if not manually edited.
  */
 function updateExpenseSummary() {
-    if (calculatorState.monthlyDisposableIncome <= 0) return;
+  if (calculatorState.monthlyDisposableIncome <= 0) return;
 
-    // Calculate totals and percentages
-    calculatorState.totalMonthlyExpensesEntered = Object.values(livingExpenses).reduce((sum, val) => sum + val, 0);
-    const expensesPercentage = calculatorState.monthlyDisposableIncome <= 0 ?
-        Infinity : (calculatorState.totalMonthlyExpensesEntered / calculatorState.monthlyDisposableIncome) * 100;
+  // Calculate totals and percentages
+  calculatorState.totalMonthlyExpensesEntered = Object.values(
+    livingExpenses
+  ).reduce((sum, val) => sum + val, 0);
+  const expensesPercentage =
+    calculatorState.monthlyDisposableIncome <= 0
+      ? Infinity
+      : (calculatorState.totalMonthlyExpensesEntered /
+          calculatorState.monthlyDisposableIncome) *
+        100;
 
-    const [zone, status, savingsAllowed, investmentsAllowed] = determineBudgetZoneAndOptions(expensesPercentage);
+  const [zone, status, savingsAllowed, investmentsAllowed] =
+    determineBudgetZoneAndOptions(expensesPercentage);
 
-    // Set recommended savings/investments if user hasn't edited them
-    if (!calculatorState.isSavingsCustom) {
-        savingsPercentageInput.value = savingsAllowed ? 12 : '';
-    }
-    if (!calculatorState.isInvestmentsCustom) {
-        investmentsPercentageInput.value = investmentsAllowed ? 15 : '';
-    }
+  // Set recommended savings/investments if user hasn't edited them
+  if (!calculatorState.isSavingsCustom) {
+    savingsPercentageInput.value = savingsAllowed ? 12 : "";
+  }
+  if (!calculatorState.isInvestmentsCustom) {
+    investmentsPercentageInput.value = investmentsAllowed ? 15 : "";
+  }
 
-    // Update summary UI
-    currentTotalExpensesSpan.textContent = formatCurrency(calculatorState.totalMonthlyExpensesEntered);
-    currentExpensesPercentageSpan.textContent = formatPercentage(expensesPercentage);
+  // Update summary UI
+  currentTotalExpensesSpan.textContent = formatCurrency(
+    calculatorState.totalMonthlyExpensesEntered
+  );
+  currentExpensesPercentageSpan.textContent =
+    formatPercentage(expensesPercentage);
 
-    // Update budget zone badge and styling
-    currentBudgetZoneSpan.className = 'status-badge'; // Reset classes
-    currentBudgetZoneSpan.textContent = zone;
-    currentZoneMessageP.textContent = status;
+  // Update budget zone badge and styling
+  currentBudgetZoneSpan.className = "status-badge"; // Reset classes
+  currentBudgetZoneSpan.textContent = zone;
+  currentZoneMessageP.textContent = status;
 
-    if (zone === 'GREEN') {
-        currentBudgetZoneSpan.classList.add('green-zone');
-        integratedExpenseSummary.className = 'expense-summary-box mt-8 animate-slide-up green-zone-bg green-border';
-    } else if (zone === 'MODERATE') {
-        currentBudgetZoneSpan.classList.add('moderate-zone');
-        integratedExpenseSummary.className = 'expense-summary-box mt-8 animate-slide-up moderate-zone-bg moderate-border';
-    } else {
-        currentBudgetZoneSpan.classList.add('red-zone');
-        integratedExpenseSummary.className = 'expense-summary-box mt-8 animate-slide-up red-zone-bg red-border';
-    }
+  if (zone === "GREEN") {
+    currentBudgetZoneSpan.classList.add("green-zone");
+    integratedExpenseSummary.className =
+      "expense-summary-box mt-8 animate-slide-up green-zone-bg green-border";
+  } else if (zone === "MODERATE") {
+    currentBudgetZoneSpan.classList.add("moderate-zone");
+    integratedExpenseSummary.className =
+      "expense-summary-box mt-8 animate-slide-up moderate-zone-bg moderate-border";
+  } else {
+    currentBudgetZoneSpan.classList.add("red-zone");
+    integratedExpenseSummary.className =
+      "expense-summary-box mt-8 animate-slide-up red-zone-bg red-border";
+  }
 
-    integratedExpenseSummary.classList.remove('hidden');
+  integratedExpenseSummary.classList.remove("hidden");
 
-    if (calculatorState.totalMonthlyExpensesEntered > 0) {
-        enableSavingsInvestmentsSection(zone);
-    }
+  if (calculatorState.totalMonthlyExpensesEntered > 0) {
+    enableSavingsInvestmentsSection(zone);
+  }
 }
-
 
 /**
  * Enables and configures the savings/investments section based on the budget zone.
  * @param {string} budgetZone - The current budget zone ('GREEN', 'MODERATE', or 'RED').
  */
 function enableSavingsInvestmentsSection(budgetZone) {
-    savingsInvestmentsSection.classList.remove('opacity-50', 'pointer-events-none');
-    savingsInvestmentsSection.classList.add('animate-fade-in');
+  savingsInvestmentsSection.classList.remove(
+    "opacity-50",
+    "pointer-events-none"
+  );
+  savingsInvestmentsSection.classList.add("animate-fade-in");
 
-    if (budgetZone === 'GREEN') {
-        siGuidanceP.textContent = 'Great! You have room for both savings and investments.';
-        savingsPercentageInput.disabled = false;
-        investmentsPercentageInput.disabled = false;
-    } else if (budgetZone === 'MODERATE') {
-        siGuidanceP.textContent = 'Focus on savings first. Investments can wait until your budget improves.';
-        savingsPercentageInput.disabled = false;
-        investmentsPercentageInput.disabled = true;
-    } else {
-        siGuidanceP.textContent = 'Focus on reducing expenses and building emergency cashflow first.';
-        savingsPercentageInput.disabled = true;
-        investmentsPercentageInput.disabled = true;
-    }
+  if (budgetZone === "GREEN") {
+    siGuidanceP.textContent =
+      "Great! You have room for both savings and investments.";
+    savingsPercentageInput.disabled = false;
+    investmentsPercentageInput.disabled = false;
+  } else if (budgetZone === "MODERATE") {
+    siGuidanceP.textContent =
+      "Focus on savings first. Investments can wait until your budget improves.";
+    savingsPercentageInput.disabled = false;
+    investmentsPercentageInput.disabled = true;
+  } else {
+    siGuidanceP.textContent =
+      "Focus on reducing expenses and building emergency cashflow first.";
+    savingsPercentageInput.disabled = true;
+    investmentsPercentageInput.disabled = true;
+  }
 }
 
 /**
  * Triggers the final budget calculation and displays the comprehensive summary.
  */
 function updateFinalCalculations() {
-    if (calculatorState.monthlyDisposableIncome <= 0) return;
+  if (calculatorState.monthlyDisposableIncome <= 0) return;
 
-    const userSavingsPct = savingsPercentageInput.value ? parseFloat(savingsPercentageInput.value) : null;
-    const userInvestmentsPct = investmentsPercentageInput.value ? parseFloat(investmentsPercentageInput.value) : null;
+  const userSavingsPct = savingsPercentageInput.value
+    ? parseFloat(savingsPercentageInput.value)
+    : null;
+  const userInvestmentsPct = investmentsPercentageInput.value
+    ? parseFloat(investmentsPercentageInput.value)
+    : null;
 
-    const budget = calculateBudget(
-        calculatorState.annualIncome,
-        calculatorState.province,
-        livingExpenses,
-        calculatorState.retirementPercentage,
-        userSavingsPct,
-        userInvestmentsPct
-    );
+  const budget = calculateBudget(
+    calculatorState.annualIncome,
+    calculatorState.province,
+    livingExpenses,
+    calculatorState.retirementPercentage,
+    userSavingsPct,
+    userInvestmentsPct
+  );
 
-    // Update cashflow display
-    const allocations = budget.custom_allocations || budget.recommended_allocations;
-    const cashflowPercentage = calculatorState.monthlyDisposableIncome <= 0 ? 0 :
-        (allocations.monthly_cashflow / calculatorState.monthlyDisposableIncome) * 100;
+  // Update cashflow display
+  const allocations =
+    budget.custom_allocations || budget.recommended_allocations;
+  const cashflowPercentage =
+    calculatorState.monthlyDisposableIncome <= 0
+      ? 0
+      : (allocations.monthly_cashflow /
+          calculatorState.monthlyDisposableIncome) *
+        100;
 
-    cashflowAmountInput.value = `${formatCurrency(allocations.monthly_cashflow)} (${formatPercentage(cashflowPercentage)})`;
+  cashflowAmountInput.value = `${formatCurrency(
+    allocations.monthly_cashflow
+  )} (${formatPercentage(cashflowPercentage)})`;
 
-    displayFinalSummary(budget);
+  displayFinalSummary(budget);
 }
 
 /**
@@ -906,84 +1152,117 @@ function updateFinalCalculations() {
  * @param {object} budget - The final, comprehensive budget object.
  */
 function displayFinalSummary(budget) {
-    const allocations = budget.custom_allocations || budget.recommended_allocations;
+  const allocations =
+    budget.custom_allocations || budget.recommended_allocations;
 
-    const summaryHTML = `
+  const summaryHTML = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Income & Taxes</h3>
+                <h3 class="text-lg font-semibold text-white border-b pb-2">Income & Taxes</h3>
                 <div class="space-y-2 text-sm">
-                    <p><strong>Annual Gross Income:</strong> ${formatCurrency(budget.annual_income)}</p>
-                    <p><strong>Total Tax Deductions:</strong> ${formatCurrency(budget.total_deductions)}</p>
-                    <p><strong>Monthly Take-Home:</strong> <span class="text-blue-600 font-bold">${formatCurrency(budget.monthly_disposable)}</span></p>
+                    <p><strong>Annual Gross Income:</strong> ${formatCurrency(
+                      budget.annual_income
+                    )}</p>
+                    <p><strong>Total Tax Deductions:</strong> ${formatCurrency(
+                      budget.total_deductions
+                    )}</p>
+                    <p><strong>Monthly Take-Home:</strong> <span class="text-blue-600 font-bold">${formatCurrency(
+                      budget.monthly_disposable
+                    )}</span></p>
                 </div>
             </div>
             
             <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Monthly Allocation</h3>
+                <h3 class="text-lg font-semibold text-white border-b pb-2">Monthly Allocation</h3>
                 <div class="space-y-2 text-sm">
-                    <p><strong>Living Expenses:</strong> ${formatCurrency(budget.total_monthly_expenses)} (${formatPercentage(budget.expenses_percentage)})</p>
-                    <p><strong>Savings:</strong> ${formatCurrency(allocations.monthly_savings)}</p>
-                    <p><strong>Investments:</strong> ${formatCurrency(allocations.monthly_investments)}</p>
-                    <p><strong>Cashflow:</strong> <span class="text-green-600 font-bold">${formatCurrency(allocations.monthly_cashflow)}</span></p>
+                    <p><strong>Living Expenses:</strong> ${formatCurrency(
+                      budget.total_monthly_expenses
+                    )} (${formatPercentage(budget.expenses_percentage)})</p>
+                    <p><strong>Savings:</strong> ${formatCurrency(
+                      allocations.monthly_savings
+                    )}</p>
+                    <p><strong>Investments:</strong> ${formatCurrency(
+                      allocations.monthly_investments
+                    )}</p>
+                    <p><strong>Cashflow:</strong> <span class="text-green-600 font-bold">${formatCurrency(
+                      allocations.monthly_cashflow
+                    )}</span></p>
                 </div>
             </div>
         </div>
         
-        <div class="mt-6 p-4 rounded-lg ${budget.budget_zone === 'GREEN' ? 'bg-green-50 border border-green-200' :
-        budget.budget_zone === 'MODERATE' ? 'bg-yellow-50 border border-yellow-200' : 'bg-red-50 border border-red-200'}">
+        <div class="mt-6 p-4 rounded-lg  text-black ${
+          budget.budget_zone === "GREEN"
+            ? "bg-green-50 border border-green-200"
+            : budget.budget_zone === "MODERATE"
+            ? "bg-yellow-50 border border-yellow-200"
+            : "bg-red-50 border border-red-200"
+        }">
             <div class="flex items-center mb-2">
-                <span class="status-badge ${budget.budget_zone === 'GREEN' ? 'green-zone' :
-        budget.budget_zone === 'MODERATE' ? 'moderate-zone' : 'red-zone'}">${budget.budget_zone}</span>
+                <span class="status-badge ${
+                  budget.budget_zone === "GREEN"
+                    ? "green-zone"
+                    : budget.budget_zone === "MODERATE"
+                    ? "moderate-zone"
+                    : "red-zone"
+                }">${budget.budget_zone}</span>
             </div>
-            <p class="text-sm ${budget.budget_zone === 'GREEN' ? 'text-green-700' :
-        budget.budget_zone === 'MODERATE' ? 'text-yellow-700' : 'text-red-700'}">${budget.status_message}</p>
+            <p class="text-sm ${
+              budget.budget_zone === "GREEN"
+                ? "text-green-700"
+                : budget.budget_zone === "MODERATE"
+                ? "text-yellow-700"
+                : "text-red-700"
+            }">${budget.status_message}</p>
         </div>
     `;
 
-    finalSummaryContentDiv.innerHTML = summaryHTML;
-    finalSummarySection.classList.remove('hidden');
+  finalSummaryContentDiv.innerHTML = summaryHTML;
+  finalSummarySection.classList.remove("hidden");
 }
-
 
 // ===================================================================================
 // EVENT LISTENERS
 // Attaching the handler functions to the DOM elements.
 // ===================================================================================
 
-annualIncomeInput.addEventListener('input', updateIncomeCalculations);
-provinceSelect.addEventListener('change', updateIncomeCalculations);
+annualIncomeInput.addEventListener("input", updateIncomeCalculations);
+provinceSelect.addEventListener("change", updateIncomeCalculations);
 
-includeRetirementCheckbox.addEventListener('change', () => {
-    if (includeRetirementCheckbox.checked) {
-        retirementPercentageSection.classList.remove('hidden');
-    } else {
-        retirementPercentageSection.classList.add('hidden');
-        retirementPercentageInput.value = '';
-    }
+includeRetirementCheckbox.addEventListener("change", () => {
+  if (includeRetirementCheckbox.checked) {
+    retirementPercentageSection.classList.remove("hidden");
+  }
+  updateIncomeCalculations();
+});
+
+excludeRetirementCheckbox.addEventListener("change", () => {
+  if (excludeRetirementCheckbox.checked) {
+    retirementPercentageSection.classList.add("hidden");
+    retirementPercentageInput.value = "";
+  }
+  updateIncomeCalculations();
+});
+
+retirementPercentageInput.addEventListener("input", () => {
+  if (validateRetirementPercentage()) {
     updateIncomeCalculations();
+  }
 });
 
-retirementPercentageInput.addEventListener('input', () => {
-    if (validateRetirementPercentage()) {
-        updateIncomeCalculations();
-    }
+savingsPercentageInput.addEventListener("input", () => {
+  calculatorState.isSavingsCustom = true; // Mark as custom on user input
+  if (validateSavingsPercentage(savingsPercentageInput.value)) {
+    updateFinalCalculations();
+  }
 });
 
-savingsPercentageInput.addEventListener('input', () => {
-    calculatorState.isSavingsCustom = true; // Mark as custom on user input
-    if (validateSavingsPercentage(savingsPercentageInput.value)) {
-        updateFinalCalculations();
-    }
+investmentsPercentageInput.addEventListener("input", () => {
+  calculatorState.isInvestmentsCustom = true; // Mark as custom on user input
+  if (validateInvestmentsPercentage(investmentsPercentageInput.value)) {
+    updateFinalCalculations();
+  }
 });
-
-investmentsPercentageInput.addEventListener('input', () => {
-    calculatorState.isInvestmentsCustom = true; // Mark as custom on user input
-    if (validateInvestmentsPercentage(investmentsPercentageInput.value)) {
-        updateFinalCalculations();
-    }
-});
-
 
 // ===================================================================================
 // APP INITIALIZATION
@@ -994,8 +1273,8 @@ investmentsPercentageInput.addEventListener('input', () => {
  * Initializes the application by setting up the UI components.
  */
 function initializeApp() {
-    initializeProvinceDropdown();
-    createExpenseInputs();
+  initializeProvinceDropdown();
+  createExpenseInputs();
 }
 
 // Start the application once the script loads.
