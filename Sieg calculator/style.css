@@ -32,6 +32,23 @@
   grid-column: span 3;
   grid-row: span 3;
 }
+.nav_cta {
+  background-color: #000;
+  background-image: linear-gradient(
+    135deg,
+    var(--base-color-brand--brand-green),
+    #16418a
+  );
+  color: var(--text-color--text-alternate);
+  text-align: center;
+  text-transform: uppercase;
+  border-radius: 0.4rem;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.5s;
+}
 .income-card {
   grid-column: span 3;
 }

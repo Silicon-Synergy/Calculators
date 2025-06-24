@@ -546,6 +546,7 @@ const provinceError = document.getElementById("provinceError");
 const includeRetirementCheckbox = document.getElementById("includeRetirement");
 const deductonToggle = document.getElementById("deduction-toggle");
 const excludeRetirementCheckbox = document.getElementById("excludeRetirement");
+const navCTA = document.getElementById("cta");
 const retirementPercentageSection = document.getElementById(
   "retirement-percentage-section"
 );
@@ -571,7 +572,6 @@ const annualDisposableIncomeSpan = document.getElementById(
 const monthlyDisposableIncomeSpan = document.getElementById(
   "monthlyDisposableIncome"
 );
-
 
 const expenseInputsContainer = document.getElementById(
   "expense-inputs-container"
@@ -610,6 +610,12 @@ const cashflowAmountInput = document.getElementById("cashflowAmount");
 const finalSummarySection = document.getElementById("final-summary-section");
 const finalSummaryContentDiv = document.getElementById("final-summary-content");
 
+const cashflowCTA = document.getElementById("cashflow-cta");
+const cashflowSavingPercentage = document.getElementById(
+  "cashflow-saving-percentage"
+);
+const cashflowSavingPrice = document.getElementById("cashflow-saving-price");
+
 const livingExpenseCategories = [
   "Mortgage/Rent",
   "Transport",
@@ -639,17 +645,18 @@ const dropdownList = document.getElementById("customProvinceOptions"); // <ul>
 const dropdownSelected = document.getElementById("dropdownSelected");
 const dropdownBtn = document.getElementById("dropdownBtn");
 
- function initializeProvinceDropdown() {
+function initializeProvinceDropdown() {
   const provinces = TAX_CONFIG.canada.provinces;
-//   Object.keys(provinces).forEach((code) => {
-//     const option = document.createElement("option");
-//     option.value = code;
-//     option.textContent = provinces[code].name;
-//     provinceSelect.appendChild(option);
-//   });
-// }
+  //   Object.keys(provinces).forEach((code) => {
+  //     const option = document.createElement("option");
+  //     option.value = code;
+  //     option.textContent = provinces[code].name;
+  //     provinceSelect.appendChild(option);
+  //   });
+  // }
 
- provinceSelect.innerHTML = '<option value="">Choose your province...</option>';
+  provinceSelect.innerHTML =
+    '<option value="">Choose your province...</option>';
   dropdownList.innerHTML = "";
 
   for (const provinceCode in taxConfig) {
@@ -687,13 +694,6 @@ const dropdownBtn = document.getElementById("dropdownBtn");
 dropdownBtn.addEventListener("click", () => {
   dropdownList.classList.toggle("hidden");
 });
-
-
-
-
-
-
-
 
 document.getElementById("dropdownBtn").addEventListener("click", () => {
   customOptions.classList.toggle("hidden");
@@ -733,6 +733,7 @@ document.getElementById("dropdownBtn").addEventListener("click", () => {
  * Dynamically creates the input fields for all living expense categories.
  */
 function createExpenseInputs() {
+  // excludeRetirementCheckbox.value = "no";
   expenseInputsContainer.innerHTML = "";
   livingExpenseCategories.forEach((category) => {
     const categoryId = category.toLowerCase().replace(/\s+/g, "-");
@@ -747,7 +748,7 @@ function createExpenseInputs() {
     <span class="text-white text-base font-semibold">
       ${category.replace(/([A-Z])/g, " $1").trim()}
     </span>
-    <span id="percentage-${categoryId}" class="text-sm font-medium text-gray-400">
+    <span id="percentage-${categoryId}" class="text-sm font-medium text-white">
       <!-- percentage will go here -->
     </span>
   </div>
@@ -757,7 +758,7 @@ function createExpenseInputs() {
     input.type = "number";
     input.id = `${categoryId}-input`;
     input.className =
-      "input-field w-full pl-8 pr-4 px-2 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-white focus:outline-none focus:border-primary input-glow transition-all duration-200";
+      "input-field w-full pl-8 pr-4 px-2 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-[#FFFFFF80] focus:outline-none focus:border-primary input-glow transition-all duration-200";
     input.placeholder = "e.g., 500";
     input.min = "0";
     input.step = "0.01";
@@ -803,10 +804,12 @@ function updateExpensePercentageLabels() {
   Object.entries(livingExpenses).forEach(([category, value]) => {
     const categoryId = category.toLowerCase().replace(/\s+/g, "-");
     const percentageSpan = document.getElementById(`percentage-${categoryId}`);
+
     if (percentageSpan) {
       if (value > 0) {
         const percentage =
           (value / calculatorState.monthlyDisposableIncome) * 100;
+        // percentageSpan.className = "text-white";
         percentageSpan.textContent = `(${percentage.toFixed(1)}%)`;
       } else {
         percentageSpan.textContent = ""; // Clear if value is zero
@@ -1122,21 +1125,20 @@ function updateExpenseSummary() {
     currentBudgetZoneSpan.classList.add("green-zone");
     integratedExpenseSummary.className =
       "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-green-500 text-white animate-slide-up";
-    livingExpensesSection.className = 
-    "bg-green-500 rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
+    livingExpensesSection.className =
+      "bg-green-500 rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
   } else if (zone === "MODERATE") {
     currentBudgetZoneSpan.classList.add("moderate-zone");
     integratedExpenseSummary.className =
       "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-yellow-500 text-white animate-slide-up ";
-       livingExpensesSection.className = 
-    "bg-yellow-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
-      
+    livingExpensesSection.className =
+      "bg-yellow-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
   } else {
     currentBudgetZoneSpan.classList.add("red-zone");
     integratedExpenseSummary.className =
       "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-red-500 text-white animate-slide-up";
-       livingExpensesSection.className = 
-    "bg-red-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
+    livingExpensesSection.className =
+      "bg-red-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
   }
 
   integratedExpenseSummary.classList.remove("hidden");
@@ -1156,6 +1158,8 @@ function enableSavingsInvestmentsSection(budgetZone) {
     "pointer-events-none"
   );
   savingsInvestmentsSection.classList.add("animate-fade-in");
+  navCTA.classList.remove("hidden");
+  navCTA.classList.add("block");
 
   if (budgetZone === "GREEN") {
     siGuidanceP.textContent =
@@ -1197,6 +1201,9 @@ function updateFinalCalculations() {
     userInvestmentsPct
   );
 
+  cashflowCTA.classList.remove("hidden");
+  cashflowCTA.classList.add("block");
+
   // Update cashflow display
   const allocations =
     budget.custom_allocations || budget.recommended_allocations;
@@ -1210,6 +1217,11 @@ function updateFinalCalculations() {
   cashflowAmountInput.value = `${formatCurrency(
     allocations.monthly_cashflow
   )} (${formatPercentage(cashflowPercentage)})`;
+
+  cashflowSavingPercentage.textContent = `${cashflowPercentage.toFixed(1)}%`;
+  cashflowSavingPrice.textContent = `${formatCurrency(
+    allocations.monthly_cashflow
+  )}`;
 
   displayFinalSummary(budget);
 }
