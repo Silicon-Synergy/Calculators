@@ -572,26 +572,6 @@ const annualDisposableIncomeSpan = document.getElementById(
 const monthlyDisposableIncomeSpan = document.getElementById(
   "monthlyDisposableIncome"
 );
-
-const expenseInputsContainer = document.getElementById(
-  "expense-inputs-container"
-);
-const integratedExpenseSummary = document.getElementById(
-  "integrated-expense-summary"
-);
-const currentTotalExpensesSpan = document.getElementById(
-  "currentTotalExpenses"
-);
-const currentExpensesPercentageSpan = document.getElementById(
-  "currentExpensesPercentage"
-);
-const currentBudgetZoneSpan = document.getElementById("currentBudgetZone");
-const currentZoneMessageP = document.getElementById("currentZoneMessage");
-
-const savingsInvestmentsSection = document.getElementById(
-  "savings-investments-section"
-);
-const siGuidanceP = document.getElementById("si-guidance");
 const savingsPercentageInput = document.getElementById("savingsPercentage");
 const savingsPercentageError = document.getElementById(
   "savingsPercentageError"
@@ -606,28 +586,11 @@ const investmentsPercentageError = document.getElementById(
   "investmentsPercentageError"
 );
 const cashflowAmountInput = document.getElementById("cashflowAmount");
-
-const finalSummarySection = document.getElementById("final-summary-section");
-const finalSummaryContentDiv = document.getElementById("final-summary-content");
-
 const cashflowCTA = document.getElementById("cashflow-cta");
 const cashflowSavingPercentage = document.getElementById(
   "cashflow-saving-percentage"
 );
 const cashflowSavingPrice = document.getElementById("cashflow-saving-price");
-
-const livingExpenseCategories = [
-  "Mortgage/Rent",
-  "Transport",
-  "Insurance",
-  "Utilities",
-  "Groceries",
-  "Entertainment",
-  "Phone Bill",
-  "Internet Bill",
-  "Home Maintenance",
-  "Miscellaneous",
-];
 
 // ===================================================================================
 // INITIALIZATION AND DOM MANIPULATION FUNCTIONS
@@ -691,95 +654,6 @@ dropdownBtn.addEventListener("click", () => {
 document.getElementById("dropdownBtn").addEventListener("click", () => {
   customOptions.classList.toggle("hidden");
 });
-
-/**
- * Dynamically creates the input fields for all living expense categories.
- */
-function createExpenseInputs() {
-  // excludeRetirementCheckbox.value = "no";
-  expenseInputsContainer.innerHTML = "";
-  livingExpenseCategories.forEach((category) => {
-    const categoryId = category.toLowerCase().replace(/\s+/g, "-");
-    const inputGroup = document.createElement("div");
-    inputGroup.className = "input-group";
-
-    const label = document.createElement("label");
-    label.setAttribute("for", `${categoryId}-input`);
-    // Add a span inside the label to hold the percentage
-    label.innerHTML = `
-  <div class="flex items-center justify-between mb-2">
-    <span class="text-white text-base font-semibold">
-      ${category.replace(/([A-Z])/g, " $1").trim()}
-    </span>
-    <span id="percentage-${categoryId}" class="text-sm font-medium text-white">
-      <!-- percentage will go here -->
-    </span>
-  </div>
-`;
-
-    const input = document.createElement("input");
-    input.type = "number";
-    input.id = `${categoryId}-input`;
-    input.className =
-      "input-field w-full pl-8 pr-4 px-2 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-[#FFFFFF80] focus:outline-none focus:border-primary input-glow transition-all duration-200";
-    input.placeholder = "e.g., 500";
-    input.min = "0";
-    input.step = "0.01";
-
-    const errorP = document.createElement("p");
-    errorP.className = "error-message";
-    errorP.id = `${categoryId}-error`;
-
-    inputGroup.appendChild(label);
-    inputGroup.appendChild(input);
-    inputGroup.appendChild(errorP);
-    expenseInputsContainer.appendChild(inputGroup);
-
-    livingExpenses[category] = 0;
-
-    input.addEventListener("input", () => {
-      const value = parseFloat(input.value) || 0;
-      livingExpenses[category] = value;
-      updateExpenseSummary();
-      updateFinalCalculations();
-      updateExpensePercentageLabels(); // Update percentages on each expense input
-    });
-  });
-}
-
-/**
- * Updates the percentage display next to each expense label.
- */
-function updateExpensePercentageLabels() {
-  if (calculatorState.monthlyDisposableIncome <= 0) {
-    // If there's no income, clear all percentage labels
-    livingExpenseCategories.forEach((category) => {
-      const categoryId = category.toLowerCase().replace(/\s+/g, "-");
-      const percentageSpan = document.getElementById(
-        `percentage-${categoryId}`
-      );
-      if (percentageSpan) percentageSpan.textContent = "";
-    });
-    return;
-  }
-
-  // Update each label with the new percentage
-  Object.entries(livingExpenses).forEach(([category, value]) => {
-    const categoryId = category.toLowerCase().replace(/\s+/g, "-");
-    const percentageSpan = document.getElementById(`percentage-${categoryId}`);
-
-    if (percentageSpan) {
-      if (value > 0) {
-        const percentage =
-          (value / calculatorState.monthlyDisposableIncome) * 100;
-        // percentageSpan.className = "text-white";
-        percentageSpan.textContent = `(${percentage.toFixed(1)}%)`;
-      } else {
-        percentageSpan.textContent = ""; // Clear if value is zero
-      }
-    }
-  });
-}
 
 /**
  * Creates read-only input fields to display the breakdown of tax deductions.
@@ -981,6 +855,7 @@ function formatPercentage(percentage) {
 
 // ===================================================================================
 // UI UPDATE AND EVENT HANDLER FUNCTIONS
+
 // These functions are called by event listeners to update the UI in response to user input.
 // ===================================================================================
 
@@ -1030,121 +905,20 @@ function updateIncomeCalculations() {
   // Show/enable subsequent sections
   deductionsDisposableSection.classList.remove("hidden");
   enableLivingExpensesSection();
-  updateExpenseSummary(); // This now also handles setting S&I recommendations
   updateFinalCalculations();
-  updateExpensePercentageLabels(); // Update percentages based on new income
 }
 
-/**
+/*
  * Enables and animates the living expenses section.
- */
+*/
 function enableLivingExpensesSection() {
   livingExpensesSection.classList.remove("opacity-50", "pointer-events-none");
   livingExpensesSection.classList.add("animate-fade-in");
 }
 
-/**
- * Updates the expense summary box with totals, percentages, and the budget zone.
- * It also sets the recommended values for savings and investments if not manually edited.
- */
-function updateExpenseSummary() {
-  if (calculatorState.monthlyDisposableIncome <= 0) return;
-
-  // Calculate totals and percentages
-  calculatorState.totalMonthlyExpensesEntered = Object.values(
-    livingExpenses
-  ).reduce((sum, val) => sum + val, 0);
-  const expensesPercentage =
-    calculatorState.monthlyDisposableIncome <= 0
-      ? Infinity
-      : (calculatorState.totalMonthlyExpensesEntered /
-          calculatorState.monthlyDisposableIncome) *
-        100;
-
-  const [zone, status, savingsAllowed, investmentsAllowed] =
-    determineBudgetZoneAndOptions(expensesPercentage);
-
-  // Set recommended savings/investments if user hasn't edited them
-  if (!calculatorState.isSavingsCustom) {
-    savingsPercentageInput.value = savingsAllowed ? 12 : "";
-  }
-  if (!calculatorState.isInvestmentsCustom) {
-    investmentsPercentageInput.value = investmentsAllowed ? 15 : "";
-  }
-
-  // Update summary UI
-  currentTotalExpensesSpan.textContent = formatCurrency(
-    calculatorState.totalMonthlyExpensesEntered
-  );
-  currentExpensesPercentageSpan.textContent =
-    formatPercentage(expensesPercentage);
-
-  // Update budget zone badge and styling
-  currentBudgetZoneSpan.className = "status-badge"; // Reset classes
-  currentBudgetZoneSpan.textContent = zone;
-  currentZoneMessageP.textContent = status;
-
-  if (zone === "GREEN") {
-    currentBudgetZoneSpan.classList.add("green-zone");
-    integratedExpenseSummary.className =
-      "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-green-500 text-white animate-slide-up";
-    livingExpensesSection.className =
-      "bg-green-500 rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
-  } else if (zone === "MODERATE") {
-    currentBudgetZoneSpan.classList.add("moderate-zone");
-    integratedExpenseSummary.className =
-      "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-yellow-500 text-white animate-slide-up ";
-    livingExpensesSection.className =
-      "bg-yellow-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
-  } else {
-    currentBudgetZoneSpan.classList.add("red-zone");
-    integratedExpenseSummary.className =
-      "expense-summary-box mt-8 glass-effect p-4 rounded-xl bg-red-500 text-white animate-slide-up";
-    livingExpensesSection.className =
-      "bg-red-500  rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out mt-10";
-  }
-
-  integratedExpenseSummary.classList.remove("hidden");
-
-  if (calculatorState.totalMonthlyExpensesEntered > 0) {
-    enableSavingsInvestmentsSection(zone);
-  }
-}
-
-/**
- * Enables and configures the savings/investments section based on the budget zone.
- * @param {string} budgetZone - The current budget zone ('GREEN', 'MODERATE', or 'RED').
- */
-function enableSavingsInvestmentsSection(budgetZone) {
-  savingsInvestmentsSection.classList.remove(
-    "opacity-50",
-    "pointer-events-none"
-  );
-  savingsInvestmentsSection.classList.add("animate-fade-in");
-  navCTA.classList.remove("hidden");
-  navCTA.classList.add("block");
-
-  if (budgetZone === "GREEN") {
-    siGuidanceP.textContent =
-      "Great! You have room for both savings and investments.";
-    savingsPercentageInput.disabled = false;
-    investmentsPercentageInput.disabled = false;
-  } else if (budgetZone === "MODERATE") {
-    siGuidanceP.textContent =
-      "Focus on savings first. Investments can wait until your budget improves.";
-    savingsPercentageInput.disabled = false;
-    investmentsPercentageInput.disabled = true;
-  } else {
-    siGuidanceP.textContent =
-      "Focus on reducing expenses and building emergency cashflow first.";
-    savingsPercentageInput.disabled = true;
-    investmentsPercentageInput.disabled = true;
-  }
-}
-
-/**
+/*
  * Triggers the final budget calculation and displays the comprehensive summary.
- */
+*/
 function updateFinalCalculations() {
   if (calculatorState.monthlyDisposableIncome <= 0) return;
 
@@ -1186,82 +960,9 @@ function updateFinalCalculations() {
     allocations.monthly_cashflow
   )}`;
 
-  displayFinalSummary(budget);
 }
 
-/**
- * Renders the final summary section with all the budget details.
- * @param {object} budget - The final, comprehensive budget object.
- */
-function displayFinalSummary(budget) {
-  const allocations =
-    budget.custom_allocations || budget.recommended_allocations;
 
-  const summaryHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white border-b pb-2">Income & Taxes</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Annual Gross Income:</strong> ${formatCurrency(
-                      budget.annual_income
-                    )}</p>
-                    <p><strong>Total Tax Deductions:</strong> ${formatCurrency(
-                      budget.total_deductions
-                    )}</p>
-                    <p><strong>Monthly Take-Home:</strong> <span class="text-blue-600 font-bold">${formatCurrency(
-                      budget.monthly_disposable
-                    )}</span></p>
-                </div>
-            </div>
-            
-            <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-white border-b pb-2">Monthly Allocation</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Living Expenses:</strong> ${formatCurrency(
-                      budget.total_monthly_expenses
-                    )} (${formatPercentage(budget.expenses_percentage)})</p>
-                    <p><strong>Savings:</strong> ${formatCurrency(
-                      allocations.monthly_savings
-                    )}</p>
-                    <p><strong>Investments:</strong> ${formatCurrency(
-                      allocations.monthly_investments
-                    )}</p>
-                    <p><strong>Cashflow:</strong> <span class="text-green-600 font-bold">${formatCurrency(
-                      allocations.monthly_cashflow
-                    )}</span></p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="mt-6 p-4 rounded-lg  text-black ${
-          budget.budget_zone === "GREEN"
-            ? "bg-green-50 border border-green-200"
-            : budget.budget_zone === "MODERATE"
-            ? "bg-yellow-50 border border-yellow-200"
-            : "bg-red-50 border border-red-200"
-        }">
-            <div class="flex items-center mb-2">
-                <span class="status-badge ${
-                  budget.budget_zone === "GREEN"
-                    ? "green-zone"
-                    : budget.budget_zone === "MODERATE"
-                    ? "moderate-zone"
-                    : "red-zone"
-                }">${budget.budget_zone}</span>
-            </div>
-            <p class="text-sm ${
-              budget.budget_zone === "GREEN"
-                ? "text-green-700"
-                : budget.budget_zone === "MODERATE"
-                ? "text-yellow-700"
-                : "text-red-700"
-            }">${budget.status_message}</p>
-        </div>
-    `;
-
-  // finalSummaryContentDiv.innerHTML = summaryHTML;
-  // finalSummarySection.classList.remove("hidden");
-}
 
 // ===================================================================================
 // EVENT LISTENERS
@@ -1310,8 +1011,6 @@ investmentsPercentageInput.addEventListener("input", () => {
 // APP INITIALIZATION
 // The main function to kick off the application.
 // ===================================================================================
-
-// new code i write
 const toggleDeductionInputs = () => {
   deductonToggle.addEventListener("click", () => {
     deductionInputsContainer.classList.toggle("hidden");
@@ -1399,7 +1098,6 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initializeApp() {
   initializeProvinceDropdown();
-  createExpenseInputs();
 }
 
 // Start the application once the script loads.
