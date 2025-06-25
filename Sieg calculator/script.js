@@ -647,13 +647,6 @@ const dropdownBtn = document.getElementById("dropdownBtn");
 
 function initializeProvinceDropdown() {
   const provinces = TAX_CONFIG.canada.provinces;
-  //   Object.keys(provinces).forEach((code) => {
-  //     const option = document.createElement("option");
-  //     option.value = code;
-  //     option.textContent = provinces[code].name;
-  //     provinceSelect.appendChild(option);
-  //   });
-  // }
 
   provinceSelect.innerHTML =
     '<option value="">Choose your province...</option>';
@@ -698,36 +691,6 @@ dropdownBtn.addEventListener("click", () => {
 document.getElementById("dropdownBtn").addEventListener("click", () => {
   customOptions.classList.toggle("hidden");
 });
-
-/// hey hey hey hey hey hey hey
-
-// function initializeProvinceDropdown() {
-//   const provinces = TAX_CONFIG.canada.provinces;
-//   const provinceSelect = document.getElementById("provinceSelect");
-//   const dropdownSelected = document.getElementById("dropdownSelected");
-
-//   // Clear previous options if any
-//   provinceSelect.innerHTML = "";
-
-//   Object.keys(provinces).forEach((code) => {
-//     const li = document.createElement("li");
-//     li.textContent = provinces[code].name;
-//     li.className = "cursor-pointer px-4 py-2 hover:bg-white/10 rounded-xl transition";
-//     li.addEventListener("click", () => {
-//       dropdownSelected.textContent = provinces[code].name;
-//       provinceSelect.classList.add("hidden");
-//       console.log("hheheh")
-//     });
-//     provinceSelect.appendChild(li);
-//   });
-// }
-
-// // Toggle the dropdown when button is clicked
-// document.getElementById("dropdownBtn").addEventListener("click", () => {
-//   const provinceSelect = document.getElementById("provinceSelect");
-//   console.log("new stufff")
-//   provinceSelect.classList.toggle("hidden");
-// });
 
 /**
  * Dynamically creates the input fields for all living expense categories.
@@ -1354,6 +1317,82 @@ const toggleDeductionInputs = () => {
     deductionInputsContainer.classList.toggle("hidden");
   });
 };
+
+// Other functions that manipulate the DOM
+document.addEventListener('DOMContentLoaded', function() {
+  const infoButton = document.getElementById('infoButton');
+  const infoPopup = document.getElementById('infoPopup');
+  const closePopup = document.getElementById('closePopup');
+
+  // Open popup
+  infoButton.addEventListener('click', function() {
+    infoPopup.classList.remove('hidden');
+    // Add animation
+    setTimeout(() => {
+      infoPopup.querySelector('.transform').classList.remove('scale-95');
+      infoPopup.querySelector('.transform').classList.add('scale-100');
+    }, 10);
+  });
+
+  // Close popup
+  closePopup.addEventListener('click', function() {
+    infoPopup.querySelector('.transform').classList.remove('scale-100');
+    infoPopup.querySelector('.transform').classList.add('scale-95');
+    setTimeout(() => {
+      infoPopup.classList.add('hidden');
+    }, 200);
+  });
+
+  // Close popup when clicking outside
+  infoPopup.addEventListener('click', function(e) {
+    if (e.target === infoPopup) {
+      closePopup.click();
+    }
+  });
+
+  // Close popup with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !infoPopup.classList.contains('hidden')) {
+      closePopup.click();
+    }
+  });
+});
+
+// Function to toggle category expansion/collapse
+function toggleCategory(categoryName) {
+  const categoryButton = document.querySelector(`[onclick="toggleCategory('${categoryName}')"]`);
+  const categoryContent = categoryButton.nextElementSibling;
+  const arrow = categoryButton.querySelector('.category-arrow');
+
+  // Check if currently expanded
+  const isExpanded = categoryContent.style.maxHeight && categoryContent.style.maxHeight !== '0px';
+
+  if (isExpanded) {
+    // Collapse
+    categoryContent.style.maxHeight = '0px';
+    arrow.style.transform = 'rotate(0deg)';
+  } else {
+    // Expand
+    categoryContent.style.maxHeight = categoryContent.scrollHeight + 'px';
+    arrow.style.transform = 'rotate(180deg)';
+  }
+}
+
+// Add input event listeners for real-time calculations
+document.addEventListener('DOMContentLoaded', function() {
+  const allInputs = document.querySelectorAll('#living-expenses-section input[type="number"]');
+
+  allInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      // Add glow effect on focus/input
+      this.classList.add('input-active');
+    });
+
+    input.addEventListener('blur', function() {
+      this.classList.remove('input-active');
+    });
+  });
+});
 
 /**
  * Initializes the application by setting up the UI components.
