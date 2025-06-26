@@ -185,7 +185,8 @@
 
                         <ul
                                 id="customProvinceOptions"
-                                class="glass-effect p-2 t w-full text-white rounded-2xl mt-2 hidden z-50 max-h-60 overflow-y-auto"
+                                class="glass-effect p-2 t w-full text-white rounded-2xl mt-2 z-50 max-h-60 overflow-y-auto"
+                                style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;"
                         >
                             <!-- dynamic <li>s will be injected here -->
                         </ul>
@@ -237,6 +238,7 @@
                                         name="retirementOption"
                                         value="no"
                                         class="accent-red-500"
+                                        checked
                                 />
                                 No
                             </label>
@@ -245,7 +247,8 @@
 
                     <div
                             id="retirement-percentage-section"
-                            class="flex flex-col input-group mt-4 hidden"
+                            class="flex flex-col input-group mt-4"
+                            style="max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;"
                     >
                         <label for="retirementPercentage" class="text-white text-sm"
                         >Annual Retirement Contribution Percentage (0-10%)</label
@@ -285,11 +288,10 @@
         <button
                 id="deduction-toggle"
                 class="w-full flex items-center justify-between p-4 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/15 transition-all duration-200 mb-4"
-                onclick="toggleDeductionInputs()"
         >
             <span class="font-medium">Deduction Details</span>
             <svg
-                    class="w-5 h-5 dropdown-arrow"
+                    class="w-5 h-5 dropdown-arrow transition-transform duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -305,7 +307,7 @@
 
         <div
                 id="deduction-inputs-container"
-                class="grid grid-cols-1 hidden md:grid-cols-2 gap-x-6 gap-y-4 mb-6 text-white"
+                class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-6 text-white overflow-hidden transition-all duration-500 ease-in-out max-h-0"
         ></div>
 
         <!-- i will come back to this -->
@@ -440,10 +442,10 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Water & Sewer <span id="water-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Utilities <span id="utilities-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
-                                        id="water-sewer"
+                                        id="utilities"
                                         class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                                         placeholder="e.g., 80"
                                         min="0"
@@ -470,7 +472,7 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Housing Others <span id="housing_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="housing_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="housing-others"
@@ -564,7 +566,7 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Transport Others <span id="transport_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="transport_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="transport-others"
@@ -658,7 +660,7 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Loan Others <span id="loan_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="loan_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="loan-others"
@@ -752,7 +754,7 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Living Others <span id="living_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="living_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="living-others"
@@ -826,10 +828,10 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Personal Care <span id="personal_care-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Pets <span id="pets-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
-                                        id="personal-care"
+                                        id="pets"
                                         class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                                         placeholder="e.g., 75"
                                         min="0"
@@ -846,7 +848,7 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Misc Others <span id="misc_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="misc_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="misc-others"
@@ -940,7 +942,7 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Children Others <span id="children_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="children_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="children-others"

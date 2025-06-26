@@ -714,7 +714,7 @@ function initializeProvinceDropdown() {
             dropdownSelected.textContent = province.name;
             provinceSelect.value = provinceCode;
             provinceSelect.dispatchEvent(new Event("change")); // Trigger change event
-            dropdownList.classList.add("hidden");
+            toggleProvinceDropdown(); // Use the animation function to close
         });
 
         dropdownList.appendChild(li);
@@ -826,6 +826,7 @@ function validateRetirementPercentage() {
             retirementPercentageError,
             "Contribution must be between 0% and 10%."
         );
+        retirementPercentageInput.value = "10"; // Set value to 10 if greater than 10
         return false;
     }
 
@@ -837,6 +838,7 @@ function validateRetirementPercentage() {
 function showError(element, message) {
     element.textContent = message;
     element.style.display = "block";
+    element.classList.add("text-red-500");
 }
 
 function clearError(element) {
@@ -1075,11 +1077,11 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     if (monthlyDisposableIncome <= 0) return;
 
     const categories = {
-        housing: ['rent-mortgage', 'electricity', 'water-sewer', 'gas-heating', 'home-insurance', 'housing-others'],
+        housing: ['rent-mortgage', 'electricity', 'utilities', 'gas-heating', 'home-insurance', 'housing-others'],
         transportation: ['car-payment', 'gas-fuel', 'car-insurance', 'public-transit', 'car-maintenance', 'transport-others'],
         loans: ['student-loans', 'credit-cards', 'personal-loans', 'business-loans', 'line-of-credit', 'loan-others'],
         living: ['groceries', 'dining-out', 'phone-bills', 'internet', 'subscriptions', 'living-others'],
-        miscellaneous: ['healthcare', 'entertainment', 'clothing', 'personal-care', 'gifts-donations', 'misc-others'],
+        miscellaneous: ['healthcare', 'entertainment', 'clothing', 'pets', 'gifts-donations', 'misc-others'],
         children: ['school-tuition', 'childcare', 'school-supplies', 'kids-activities', 'education-savings', 'children-others']
     };
 
@@ -1123,13 +1125,12 @@ function setupEventListeners() {
     annualIncomeInput.addEventListener("input", handlePrimaryInputChange);
     provinceSelect.addEventListener("change", handlePrimaryInputChange);
     includeRetirementCheckbox.addEventListener("change", () => {
-        // Show the retirement percentage section when 'Yes' is checked
-        retirementPercentageSection.classList.remove("hidden");
+        toggleRetirementSection(true);
         handlePrimaryInputChange();
     });
     excludeRetirementCheckbox.addEventListener("change", () => {
+        toggleRetirementSection(false);
         if (excludeRetirementCheckbox.checked) {
-            retirementPercentageSection.classList.add("hidden");
             retirementPercentageInput.value = "";
         }
         handlePrimaryInputChange();
@@ -1160,13 +1161,11 @@ function setupEventListeners() {
     const dropdownBtn = document.getElementById("dropdownBtn");
     const dropdownList = document.getElementById("customProvinceOptions");
     dropdownBtn.addEventListener("click", () => {
-        dropdownList.classList.toggle("hidden");
+        toggleProvinceDropdown();
     });
 
     deductonToggle.addEventListener("click", () => {
-        const arrow = deductonToggle.querySelector('.dropdown-arrow');
-        deductionInputsContainer.classList.toggle("hidden");
-        arrow.classList.toggle('rotate-180');
+        toggleDeductionInputs();
     });
 
     // Popup logic
@@ -1194,6 +1193,46 @@ function toggleCategory(categoryName) {
     } else {
         categoryContent.style.maxHeight = categoryContent.scrollHeight + 'px';
         arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
+// Function to toggle deduction inputs expansion/collapse
+function toggleDeductionInputs() {
+    const deductionInputsContainer = document.getElementById('deduction-inputs-container');
+    const arrow = deductonToggle.querySelector('.dropdown-arrow');
+
+    const isExpanded = deductionInputsContainer.style.maxHeight && deductionInputsContainer.style.maxHeight !== '0px';
+
+    if (isExpanded) {
+        deductionInputsContainer.style.maxHeight = '0px';
+        arrow.style.transform = 'rotate(0deg)';
+    } else {
+        deductionInputsContainer.style.maxHeight = deductionInputsContainer.scrollHeight + 'px';
+        arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
+function toggleRetirementSection(isShown) {
+    const retirementSection = document.getElementById('retirement-percentage-section');
+    if (isShown) {
+        retirementSection.style.maxHeight = retirementSection.scrollHeight + 'px';
+        retirementSection.style.opacity = '1';
+    } else {
+        retirementSection.style.maxHeight = '0';
+        retirementSection.style.opacity = '0';
+    }
+}
+
+function toggleProvinceDropdown() {
+    const dropdownList = document.getElementById("customProvinceOptions");
+    const isExpanded = dropdownList.style.maxHeight && dropdownList.style.maxHeight !== '0px';
+
+    if (isExpanded) {
+        dropdownList.style.maxHeight = '0';
+        dropdownList.style.opacity = '0';
+    } else {
+        dropdownList.style.maxHeight = dropdownList.scrollHeight + 'px';
+        dropdownList.style.opacity = '1';
     }
 }
 
