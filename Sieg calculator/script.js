@@ -826,7 +826,13 @@ function validateRetirementPercentage() {
             retirementPercentageError,
             "Contribution must be between 0% and 10%."
         );
-        retirementPercentageInput.value = "10"; // Set value to 10 if greater than 10
+        // Cap the value and then trigger a recalculation
+        if (value > 10) {
+            retirementPercentageInput.value = "10";
+        } else if (value < 0) {
+            retirementPercentageInput.value = "0";
+        }
+        handlePrimaryInputChange(); // Trigger recalculation after capping
         return false;
     }
 
@@ -904,6 +910,12 @@ function handlePrimaryInputChange() {
     monthlyDisposableIncomeSpan.textContent = formatCurrency(
         calculatorState.monthlyDisposableIncome
     );
+
+    // If deduction details are currently expanded, update their max-height
+    const deductionInputsContainer = document.getElementById('deduction-inputs-container');
+    if (deductionInputsContainer.style.maxHeight && deductionInputsContainer.style.maxHeight !== '0px') {
+        deductionInputsContainer.style.maxHeight = deductionInputsContainer.scrollHeight + 'px';
+    }
 
     // Show/enable subsequent sections
     deductionsDisposableSection.classList.remove("hidden");
