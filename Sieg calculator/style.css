@@ -35,9 +35,9 @@
 .nav_cta {
   background-color: #000;
   background-image: linear-gradient(
-    135deg,
-    var(--base-color-brand--brand-green),
-    #16418a
+          135deg,
+          var(--base-color-brand--brand-green),
+          #16418a
   );
   color: var(--text-color--text-alternate);
   text-align: center;
