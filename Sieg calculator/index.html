@@ -257,7 +257,7 @@
                                     max="10"
                                     step="0.1"
                                     id="retirementPercentage"
-                                    class="input-field input-field w-[20%] pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl mt-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                                    class="input-field w-[20%] pl-8 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl mt-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                                     placeholder="e.g., 5 (for 5%)"
                             />
                             <p id="retirementPercentageError" class="error-message"></p>
@@ -1010,7 +1010,7 @@
             class="mt-10 opacity-50 pointer-events-none glass-effect rounded-3xl p-8 text-white border border-white/10 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm shadow-lg"
     >
         <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 pb-4 border-gray-300 flex items-center gap-2">
-            💰 Savings & Investments Goals
+            <span class="text-white"></span> Savings & Investments Goals
             <button id="infoButton" class="focus:outline-none">
                 <svg class="w-5 h-5 text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-200"
                      fill="currentColor" viewBox="0 0 20 20">
@@ -1033,7 +1033,7 @@
                                       clip-rule="evenodd"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">💡 SWC Platform Recommendation</h3>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">SWC Platform Recommendation</h3>
                         <p class="text-gray-700 leading-relaxed mb-6">
                             Our budget calculator suggests <strong>10-15% for savings</strong> and <strong>10-20% for
                             investments</strong> to ensure sustainable financial growth while maintaining healthy
@@ -1041,7 +1041,7 @@
                         </p>
                         <div class="bg-blue-50 p-4 rounded-lg mb-6">
                             <p class="text-sm text-blue-800">
-                                <strong>💡 Pro Tip:</strong> These percentages are based on proven financial planning
+                                <strong>Pro Tip:</strong> These percentages are based on proven financial planning
                                 principles that help build wealth while keeping your budget balanced.
                             </p>
                         </div>
@@ -1067,7 +1067,7 @@
             <!-- Left Column: Recommended Allocations -->
             <div class="space-y-6">
                 <h3 class="text-xl font-semibold text-white/90 mb-4 border-b border-white/20 pb-2">
-                    📊 Recommended Allocations
+                    <span class="text-white"></span> 📊 Recommended Allocations
                 </h3>
 
                 <!-- Recommended Savings -->
@@ -1122,12 +1122,34 @@
                         <span id="recommended-cashflow-percentage" class="text-white/80">(0.0%)</span>
                     </div>
                 </div>
+
+                <!-- NEW: Recommended Cashflow CTA -->
+                <div
+                        class="flex flex-col items-center p-4 gap-4 hidden mt-8"
+                        id="recommended-cashflow-cta"
+                >
+                    <p class="w-[70%] text-center text-xl font-medium">
+                        Your <strong>recommended</strong> cashflow percentage is
+                        <span id="recommended-cashflow-saving-percentage"></span> which is
+                        <span id="recommended-cashflow-saving-price"></span>. If you would like to talk
+                        to an expert on how to manage and secure your finances, Click on the
+                        button below
+                    </p>
+                    <div>
+                        <a
+                                href="/Steward Well Capital - InMotion/index.html#contact-us"
+                                class="text-center block nav_cta mb-4"
+                                id="recommended-nav_cta"
+                        >Talk to an expert</a
+                        >
+                    </div>
+                </div>
             </div>
 
             <!-- Right Column: Custom User Inputs -->
             <div class="space-y-6">
                 <h3 class="text-xl font-semibold text-white/90 mb-4 border-b border-white/20 pb-2">
-                    ✏️ Your Custom Allocations
+                    <span class="text-white"></span>✏️ Your Custom Allocations
                 </h3>
 
                 <!-- Custom Savings -->
@@ -1164,7 +1186,7 @@
 
                 <!-- Allocation Error Message -->
                 <div id="allocationError" class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50">
-                  <!-- Error message will be inserted here by JavaScript -->
+                    <!-- Error message will be inserted here by JavaScript -->
                 </div>
 
                 <!-- Custom Investments -->
@@ -1209,27 +1231,28 @@
                         <span id="custom-cashflow-percentage" class="text-white/80">(0.0%)</span>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div
-                class="flex flex-col items-center p-4 gap-4 hidden mt-8"
-                id="cashflow-cta"
-        >
-            <p class="w-[70%] text-center text-xl font-medium">
-                Your cashflow percentage is
-                <span id="cashflow-saving-percentage"></span> which is
-                <span id="cashflow-saving-price"></span>. if you would like to talk
-                to an expert on how to manage and secure your finances, Click on the
-                button below
-            </p>
-            <div>
-                <a
-                        href="/Steward Well Capital - InMotion/index.html#contact-us"
-                        class="text-center block nav_cta mb-4"
-                        id="nav_cta"
-                >Talk to an expert</a
+                <!-- EXISTING: Custom Cashflow CTA -->
+                <div
+                        class="flex flex-col items-center p-4 gap-4 hidden mt-8"
+                        id="custom-cashflow-cta"
                 >
+                    <p class="w-[70%] text-center text-xl font-medium">
+                        Your <strong>custom</strong> cashflow percentage is
+                        <span id="custom-cashflow-saving-percentage"></span> which is
+                        <span id="custom-cashflow-saving-price"></span>. If you would like to talk
+                        to an expert on how to manage and secure your finances. <br />Click on the
+                        button below
+                    </p>
+                    <div>
+                        <a
+                                href="/Steward Well Capital - InMotion/index.html#contact-us"
+                                class="text-center block nav_cta mb-4"
+                                id="custom-nav_cta"
+                        >Talk to an expert</a
+                        >
+                    </div>
+                </div>
             </div>
         </div>
     </section>

@@ -390,71 +390,60 @@ function calculateBudget(annualIncome, province, livingExpenses, retirementPerce
         const MIN_INVEST_PCT = 10;
         const MAX_INVEST_PCT = 20;
 
-        // 1. Ensure initial minimum cashflow
-        recommendedCashflowPct = MIN_CASHFLOW_PCT;
-
-        // Remaining percentage available for Savings and Investments after minimum cashflow
-        let availableForSAndI = remainingDisposableAfterExpenses - recommendedCashflowPct;
+        // Calculate available percentage after accounting for minimum cashflow
+        let availableForSAndI = remainingDisposableAfterExpenses - MIN_CASHFLOW_PCT;
 
         if (availableForSAndI <= 0) {
-            // If no room for S&I (e.g., remainingDisposableAfterExpenses is exactly MIN_CASHFLOW_PCT)
             recommendedSavingsPct = 0;
             recommendedInvestmentsPct = 0;
-            recommendedCashflowPct = remainingDisposableAfterExpenses; // All goes to cashflow
+            recommendedCashflowPct = remainingDisposableAfterExpenses; // All goes to cashflow, which might be less than MIN_CASHFLOW_PCT
         } else {
-            const totalMinTargetSI = MIN_SAVE_PCT + MIN_INVEST_PCT; // 20
-            const totalMaxTargetSI = MAX_SAVE_PCT + MAX_INVEST_PCT; // 35
+            // Determine a target total for S&I within their combined range
+            const totalMinSI = MIN_SAVE_PCT + MIN_INVEST_PCT; // 20%
+            const totalMaxSI = MAX_SAVE_PCT + MAX_INVEST_PCT; // 35%
 
-            if (availableForSAndI <= totalMinTargetSI) {
-                // If available is less than or equal to the combined minimum target (20%)
-                // Distribute proportionally based on min targets (10:10 ratio)
-                const ratioSum = MIN_SAVE_PCT + MIN_INVEST_PCT;
-                if (ratioSum > 0) { // Avoid division by zero
-                    recommendedSavingsPct = availableForSAndI * (MIN_SAVE_PCT / ratioSum);
-                    recommendedInvestmentsPct = availableForSAndI * (MIN_INVEST_PCT / ratioSum);
-                } else {
-                    recommendedSavingsPct = 0;
-                    recommendedInvestmentsPct = 0;
-                }
+            let targetTotalSI;
+            if (availableForSAndI >= totalMaxSI) {
+                targetTotalSI = totalMaxSI; // We have enough room for max S&I
+            } else if (availableForSAndI <= totalMinSI) {
+                targetTotalSI = availableForSAndI; // We can only allocate up to what's available, ensuring we don't go below 0
             } else {
-                // If available is more than combined minimum target, but potentially less than max target (20% to 35%)
-                // Start with minimums, then proportionally distribute the excess towards maximums
-                recommendedSavingsPct = MIN_SAVE_PCT;
-                recommendedInvestmentsPct = MIN_INVEST_PCT;
-                let excessAvailable = availableForSAndI - totalMinTargetSI;
-
-                const savingsRoom = MAX_SAVE_PCT - MIN_SAVE_PCT; // 5
-                const investmentsRoom = MAX_INVEST_PCT - MIN_INVEST_PCT; // 10
-                const totalRoom = savingsRoom + investmentsRoom; // 15
-
-                if (totalRoom > 0) {
-                    let savingsShare = (savingsRoom / totalRoom) * excessAvailable;
-                    let investmentsShare = (investmentsRoom / totalRoom) * excessAvailable;
-
-                    recommendedSavingsPct += Math.min(savingsShare, savingsRoom);
-                    recommendedInvestmentsPct += Math.min(investmentsShare, investmentsRoom);
-                }
+                // Scale linearly between totalMinSI and totalMaxSI based on available space
+                const scaleFactor = (availableForSAndI - totalMinSI) / (totalMaxSI - totalMinSI);
+                targetTotalSI = totalMinSI + (scaleFactor * (totalMaxSI - totalMinSI));
             }
 
-            // Ensure the individual caps are respected (important for floating point / small remainders)
+            // Distribute targetTotalSI proportionally based on the mid-points of savings and investments ranges
+            const midSave = (MIN_SAVE_PCT + MAX_SAVE_PCT) / 2;
+            const midInvest = (MIN_INVEST_PCT + MAX_INVEST_PCT) / 2;
+            const totalMidPoints = midSave + midInvest;
+
+            if (totalMidPoints > 0) {
+                recommendedSavingsPct = targetTotalSI * (midSave / totalMidPoints);
+                recommendedInvestmentsPct = targetTotalSI * (midInvest / totalMidPoints);
+            } else {
+                recommendedSavingsPct = 0;
+                recommendedInvestmentsPct = 0;
+            }
+
+            // Ensure individual percentages don't exceed their own maximums
             recommendedSavingsPct = Math.min(recommendedSavingsPct, MAX_SAVE_PCT);
             recommendedInvestmentsPct = Math.min(recommendedInvestmentsPct, MAX_INVEST_PCT);
 
-            // If combined S&I exceeds availableForSAndI (e.g., due to rounding or very tight fit), scale down proportionally
+            // Adjust if the sum now exceeds the targetTotalSI (due to individual clamping)
             const currentCombinedSI = recommendedSavingsPct + recommendedInvestmentsPct;
-            if (currentCombinedSI > availableForSAndI) {
+            if (currentCombinedSI > targetTotalSI) {
                 if (currentCombinedSI > 0) { // Avoid division by zero
-                    const scaleFactor = availableForSAndI / currentCombinedSI;
-                    recommendedSavingsPct *= scaleFactor;
-                    recommendedInvestmentsPct *= scaleFactor;
+                    const reductionFactor = targetTotalSI / currentCombinedSI;
+                    recommendedSavingsPct *= reductionFactor;
+                    recommendedInvestmentsPct *= reductionFactor;
                 } else {
                     recommendedSavingsPct = 0;
                     recommendedInvestmentsPct = 0;
                 }
             }
 
-            // Any leftover from S&I allocation (if availableForSAndI was greater than totalMaxTargetSI)
-            // goes back to cashflow, boosting it beyond MIN_CASHFLOW_PCT.
+            // Recalculate cashflow based on the final, adjusted S&I
             recommendedCashflowPct = remainingDisposableAfterExpenses - recommendedSavingsPct - recommendedInvestmentsPct;
         }
     }
@@ -664,11 +653,23 @@ const investmentsPercentageInput = document.getElementById(
 const livingExpensesSection = document.getElementById(
     "living-expenses-section"
 );
-const cashflowCTA = document.getElementById("cashflow-cta");
-const cashflowSavingPercentage = document.getElementById(
-    "cashflow-saving-percentage"
+
+// Get references for both recommended and custom CTAs
+const recommendedCashflowCTA = document.getElementById("recommended-cashflow-cta");
+const recommendedCashflowSavingPercentage = document.getElementById(
+    "recommended-cashflow-saving-percentage"
 );
-const cashflowSavingPrice = document.getElementById("cashflow-saving-price");
+const recommendedCashflowSavingPrice = document.getElementById(
+    "recommended-cashflow-saving-price"
+);
+
+const customCashflowCTA = document.getElementById("custom-cashflow-cta"); // Renamed from cashflowCTA for clarity
+const customCashflowSavingPercentage = document.getElementById(
+    "custom-cashflow-saving-percentage"
+); // Renamed from cashflowSavingPercentage for clarity
+const customCashflowSavingPrice = document.getElementById(
+    "custom-cashflow-saving-price"
+); // Renamed from cashflowSavingPrice for clarity
 
 
 const customSavingsAmountInput = document.getElementById("customSavingsAmount");
@@ -987,83 +988,80 @@ function updateAllUI(budget) {
         ? "Set your custom goals below, or use our recommendations."
         : "Savings and investments are not recommended at this time. Focus on cashflow.";
 
-    // Update Recommended Allocations
+    // Update Recommended Allocations Display
     document.getElementById('recommended-savings-amount').textContent = formatCurrency(budget.recommended_allocations.monthly_savings);
     document.getElementById('recommended-investments-amount').textContent = formatCurrency(budget.recommended_allocations.monthly_investments);
     document.getElementById('recommended-cashflow-amount').textContent = formatCurrency(budget.recommended_allocations.monthly_cashflow);
-
-
-    // Display percentages as percentages of DISPOSABLE INCOME
     document.getElementById('recommended-savings-percentage').textContent = `${budget.recommended_savings_pct.toFixed(1)}%`;
     document.getElementById('recommended-investments-percentage').textContent = `${budget.recommended_investments_pct.toFixed(1)}%`;
     document.getElementById('recommended-cashflow-percentage').textContent = `(${(budget.recommended_cashflow_pct).toFixed(1)}%)`;
 
 
-    // Update Custom Allocations (Amounts and Percentages)
-
-    // Handle custom savings amount
+    // Update Custom Allocations Display (Amounts and Percentages)
     const userEnteredSavingsPct = parseFloat(savingsPercentageInput.value);
+    const userEnteredInvestmentsPct = parseFloat(investmentsPercentageInput.value);
+    const hasAnyUserCustomInputForCashflow = (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== '') ||
+        (!isNaN(userEnteredInvestmentsPct) && investmentsPercentageInput.value !== '');
+
+    // Custom Savings Amount
     if (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== '') {
         customSavingsAmountInput.value = formatCurrency(budget.custom_allocations ? budget.custom_allocations.monthly_savings : 0);
     } else {
         customSavingsAmountInput.value = ''; // Clear if no valid custom percentage
     }
 
-    // Handle custom investments amount
-    const userEnteredInvestmentsPct = parseFloat(investmentsPercentageInput.value);
+    // Custom Investments Amount
     if (!isNaN(userEnteredInvestmentsPct) && investmentsPercentageInput.value !== '') {
         customInvestmentsAmountInput.value = formatCurrency(budget.custom_allocations ? budget.custom_allocations.monthly_investments : 0);
     } else {
         customInvestmentsAmountInput.value = ''; // Clear if no valid custom percentage
     }
 
-    // Handle custom cashflow (amount and percentage)
-    const hasAnyUserCustomInputForCashflow = (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== '') ||
-        (!isNaN(userEnteredInvestmentsPct) && investmentsPercentageInput.value !== '');
-
+    // Custom Cashflow Amount and Percentage
     if (hasAnyUserCustomInputForCashflow) {
         if (budget.custom_allocations) {
             document.getElementById('custom-cashflow-amount').textContent = formatCurrency(budget.custom_allocations.monthly_cashflow);
             document.getElementById('custom-cashflow-percentage').textContent = `(${budget.custom_cashflow_pct.toFixed(1)}%)`;
         } else {
-            // This case should ideally not be hit if hasAnyUserCustomInputForCashflow is true and calculateBudget ran
             document.getElementById('custom-cashflow-amount').textContent = formatCurrency(0);
             document.getElementById('custom-cashflow-percentage').textContent = `(0.0%)`;
         }
     } else {
-        // If no custom percentages for S&I, cashflow is just disposable income minus expenses
+        // If no custom percentages for S&I, custom cashflow is just disposable income minus expenses
         const currentCashflowAmount = budget.monthly_disposable_income - budget.total_monthly_expenses;
         const currentCashflowPct = 100 - budget.expenses_percentage;
         document.getElementById('custom-cashflow-amount').textContent = formatCurrency(currentCashflowAmount);
         document.getElementById('custom-cashflow-percentage').textContent = `(${currentCashflowPct.toFixed(1)}%)`;
     }
 
-    // Fix for cashflow CTA - use correct budget values
-    // The CTA logic for cashflow is still relevant as it warns if cashflow is low,
-    // regardless of whether it's from custom or recommended allocations.
-    // However, for the percentages and amounts, it should reflect the *actual* calculated cashflow,
-    // which will come from the custom_allocations if the user has provided custom S&I.
-    let ctaCashflowAmount;
-    let ctaCashflowPercentage;
+    // === START: CTA DISPLAY LOGIC FOR BOTH RECOMMENDED AND CUSTOM ===
 
-    if (hasAnyUserCustomInputForCashflow && budget.custom_allocations) {
-        ctaCashflowAmount = budget.custom_allocations.monthly_cashflow;
-        ctaCashflowPercentage = budget.custom_cashflow_pct;
+    // Recommended Cashflow CTA
+    const recommendedCtaAmount = budget.recommended_allocations.monthly_cashflow;
+    const recommendedCtaPercentage = budget.recommended_cashflow_pct;
+
+    // Show recommended CTA if monthly disposable income is positive
+    if (budget.monthly_disposable_income > 0) {
+        recommendedCashflowCTA.classList.remove('hidden');
+        recommendedCashflowSavingPercentage.textContent = formatPercentage(recommendedCtaPercentage);
+        recommendedCashflowSavingPrice.textContent = formatCurrency(recommendedCtaAmount);
     } else {
-        // If no custom S&I, use the remaining disposable after expenses (which is the effective "cashflow")
-        ctaCashflowAmount = budget.monthly_disposable_income - budget.total_monthly_expenses;
-        ctaCashflowPercentage = 100 - budget.expenses_percentage;
+        recommendedCashflowCTA.classList.add('hidden');
     }
 
+    // Custom Cashflow CTA
+    const customCtaAmount = budget.custom_allocations ? budget.custom_allocations.monthly_cashflow : (budget.monthly_disposable_income - budget.total_monthly_expenses);
+    const customCtaPercentage = budget.custom_allocations ? budget.custom_cashflow_pct : (100 - budget.expenses_percentage);
 
-    if (ctaCashflowPercentage < 10 && budget.monthly_disposable_income > 0) {
-        cashflowCTA.classList.remove('hidden');
-        cashflowSavingPercentage.textContent = formatPercentage(ctaCashflowPercentage);
-        cashflowSavingPrice.textContent = formatCurrency(ctaCashflowAmount);
+    // Show custom CTA if monthly disposable income is positive
+    if (budget.monthly_disposable_income > 0) {
+        customCashflowCTA.classList.remove('hidden');
+        customCashflowSavingPercentage.textContent = formatPercentage(customCtaPercentage);
+        customCashflowSavingPrice.textContent = formatCurrency(customCtaAmount);
     } else {
-        cashflowCTA.classList.add('hidden');
+        customCashflowCTA.classList.add('hidden');
     }
-
+    // === END: CTA DISPLAY LOGIC FOR BOTH RECOMMENDED AND CUSTOM ===
 
     // Update individual expense percentage labels
     updateExpensePercentageLabels(budget.monthly_disposable_income);
@@ -1124,7 +1122,11 @@ function setupEventListeners() {
     // Primary income and deduction inputs
     annualIncomeInput.addEventListener("input", handlePrimaryInputChange);
     provinceSelect.addEventListener("change", handlePrimaryInputChange);
-    includeRetirementCheckbox.addEventListener("change", handlePrimaryInputChange);
+    includeRetirementCheckbox.addEventListener("change", () => {
+        // Show the retirement percentage section when 'Yes' is checked
+        retirementPercentageSection.classList.remove("hidden");
+        handlePrimaryInputChange();
+    });
     excludeRetirementCheckbox.addEventListener("change", () => {
         if (excludeRetirementCheckbox.checked) {
             retirementPercentageSection.classList.add("hidden");
