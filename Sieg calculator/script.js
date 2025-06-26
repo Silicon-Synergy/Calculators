@@ -983,9 +983,10 @@ function updateAllUI(budget) {
         savingsInvestmentsSection.classList.remove("opacity-50", "pointer-events-none");
         savingsInvestmentsSection.classList.add("animate-fade-in");
     }
-    // These remain dependent on the budget zone, as they are for *recommended* allocations
-    savingsPercentageInput.disabled = !budget.savings_allowed;
-    investmentsPercentageInput.disabled = !budget.investments_allowed;
+    // Custom allocation inputs are always enabled
+    savingsPercentageInput.disabled = false;
+    investmentsPercentageInput.disabled = false;
+
     siGuidanceP.textContent = budget.savings_allowed || budget.investments_allowed
         ? "Set your custom goals below, or use our recommendations."
         : "Savings and investments are not recommended at this time. Focus on cashflow.";
