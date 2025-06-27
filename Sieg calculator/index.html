@@ -101,10 +101,74 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1),
             0 0 20px rgba(99, 102, 241, 0.2);
         }
+
+        /* Add this CSS to your <style> tag in index.html */
+
+        /* Background for the "Your Income" container */
+        #annual-income-section .glass-effect {
+            background-color: #E6F2E6; /* Soft Muted Green */
+        }
+
+        /* Background for the "Tax Deductions & Income Overview" container */
+        #deductions-disposable-section {
+            background-color: #EAF2F8; /* Light Airy Blue */
+        }
+
+        /* Background for the "Monthly Living Expenses" container */
+        #living-expenses-section {
+            background-color: #F8F5F1; /* Gentle Warm Sand */
+        }
+
+        /* We also need to adjust the text color for better readability on the new backgrounds */
+        #main-calculator-card h1,
+        #main-calculator-card h2,
+        #main-calculator-card h3,
+        #main-calculator-card p,
+        #main-calculator-card label,
+        #main-calculator-card button,
+        #main-calculator-card span,
+        #main-calculator-card div,
+        #main-calculator-card a {
+            color: #0f172a; /* A dark color like 'dark' from your tailwind config */
+        }
+
+        /* Make sure input fields have dark text too */
+        .input-field, #dropdownSelected {
+            color: #0f172a !important;
+        }
+
+        /* The dropdown list needs a background and dark text */
+        #customProvinceOptions {
+            background-color: #ffffff;
+            color: #0f172a;
+        }
+        #customProvinceOptions li:hover {
+            background-color: #f1f5f3;
+        }
+
+        /* Adjusting some specific elements that were styled for a dark background */
+        .text-white {
+            color: #0f172a;
+        }
+        .text-white\/80 {
+            color: rgba(15, 23, 42, 0.8);
+        }
+        .text-gray-300 {
+            color: #475569; /* A medium gray */
+        }
+        .text-red-400 {
+            color: #ef4444; /* Keep error/deduction colors */
+        }
+        .text-green-400 {
+            color: #22c55e; /* Keep income colors */
+        }
+        .text-blue-400 {
+            color: #3b82f6; /* Keep monthly income colors */
+        }
     </style>
 </head>
 
-<body class="min-h-screen bg-[#08341D]">
+<body class="min-h-screen bg-[#C7DFD2]">
 <div
         id="main-calculator-card"
         class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
@@ -422,7 +486,8 @@
                     <div class="p-4 pt-0">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Rent/Mortgage <span id="rent_mortgage-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Rent/Mortgage <span
+                                        id="rent_mortgage-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="rent-mortgage"
@@ -432,7 +497,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Electricity <span id="electricity-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Electricity <span
+                                        id="electricity-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="electricity"
@@ -442,7 +508,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Utilities <span id="utilities-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Utilities <span
+                                        id="utilities-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="utilities"
@@ -452,7 +519,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Gas/Heating <span id="heating_gas-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Gas/Heating <span
+                                        id="heating_gas-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="gas-heating"
@@ -462,7 +530,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Home Insurance <span id="home_insurance-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Home Insurance <span
+                                        id="home_insurance-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="home-insurance"
@@ -472,7 +542,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="housing_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span
+                                        id="housing_others-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="housing-others"
@@ -516,7 +588,8 @@
                     <div class="p-4 pt-0">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Car Payment <span id="car_payment-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Car Payment <span
+                                        id="car_payment-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="car-payment"
@@ -526,7 +599,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Gas/Fuel <span id="gas_fuel-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Gas/Fuel <span
+                                        id="gas_fuel-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="gas-fuel"
@@ -536,7 +610,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Car Insurance <span id="car_insurance-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Car Insurance <span
+                                        id="car_insurance-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="car-insurance"
@@ -546,7 +621,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Public Transit <span id="public_transit-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Public Transit <span
+                                        id="public_transit-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="public-transit"
@@ -556,7 +633,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Car Maintenance <span id="car_maintenance-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Car Maintenance <span
+                                        id="car_maintenance-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="car-maintenance"
@@ -566,7 +645,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="transport_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span
+                                        id="transport_others-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="transport-others"
@@ -610,7 +691,8 @@
                     <div class="p-4 pt-0">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Student Loans <span id="student_loans-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Student Loans <span
+                                        id="student_loans-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="student-loans"
@@ -620,7 +702,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Credit Cards <span id="credit_cards-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Credit Cards <span
+                                        id="credit_cards-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="credit-cards"
@@ -630,7 +713,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Personal Loans <span id="personal_loans-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Personal Loans <span
+                                        id="personal_loans-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="personal-loans"
@@ -640,7 +725,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Business Loans <span id="business_loans-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Business Loans <span
+                                        id="business_loans-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="business-loans"
@@ -650,7 +737,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Line of Credit <span id="line_of_credit-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Line of Credit <span
+                                        id="line_of_credit-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="line-of-credit"
@@ -660,7 +749,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="loan_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span
+                                        id="loan_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="loan-others"
@@ -704,7 +794,8 @@
                     <div class="p-4 pt-0">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Groceries <span id="groceries-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Groceries <span
+                                        id="groceries-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="groceries"
@@ -714,7 +805,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Dining Out <span id="dining_out-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Dining Out <span
+                                        id="dining_out-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="dining-out"
@@ -724,7 +816,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Phone Bills <span id="phone_bills-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Phone Bills <span
+                                        id="phone_bills-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="phone-bills"
@@ -734,7 +827,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Internet <span id="internet-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Internet <span
+                                        id="internet-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="internet"
@@ -744,7 +838,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Subscriptions <span id="subscriptions-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Subscriptions <span
+                                        id="subscriptions-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="subscriptions"
@@ -754,7 +849,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="living_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span
+                                        id="living_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="living-others"
@@ -798,7 +894,8 @@
                     <div class="p-4 pt-0">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Healthcare <span id="healthcare-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Healthcare <span
+                                        id="healthcare-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="healthcare"
@@ -808,7 +905,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Entertainment <span id="entertainment-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Entertainment <span
+                                        id="entertainment-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="entertainment"
@@ -818,7 +916,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Clothing <span id="clothing-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Clothing <span
+                                        id="clothing-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="clothing"
@@ -828,7 +927,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Pets <span id="pets-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Pets <span
+                                        id="pets-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="pets"
@@ -838,7 +938,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Gifts & Donations <span id="gifts_donations-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Gifts & Donations <span
+                                        id="gifts_donations-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="gifts-donations"
@@ -848,7 +950,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="misc_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span
+                                        id="misc_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="misc-others"
@@ -892,7 +995,9 @@
                     <div class="p-4 pt-0">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">School Tuition <span id="school_tuition-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">School Tuition <span
+                                        id="school_tuition-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="school-tuition"
@@ -902,7 +1007,8 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Childcare <span id="childcare-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Childcare <span
+                                        id="childcare-percentage" class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="childcare"
@@ -912,7 +1018,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">School Supplies <span id="school_supplies-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">School Supplies <span
+                                        id="school_supplies-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="school-supplies"
@@ -922,7 +1030,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Kids Activities <span id="kids_activities-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Kids Activities <span
+                                        id="kids_activities-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="kids-activities"
@@ -932,7 +1042,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Education Savings <span id="education_savings-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Education Savings <span
+                                        id="education_savings-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="education-savings"
@@ -942,7 +1054,9 @@
                                 />
                             </div>
                             <div class="input-group">
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span id="children_others-percentage" class="text-xs text-gray-400 ml-2"></span></label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Others <span
+                                        id="children_others-percentage"
+                                        class="text-xs text-gray-400 ml-2"></span></label>
                                 <input
                                         type="number"
                                         id="children-others"
@@ -1135,7 +1249,7 @@
                         <span id="recommended-cashflow-saving-percentage" class="text-green-400">12.3%</span>,
                         which is
                         <span id="recommended-cashflow-saving-price" class="text-green-400">$657.57</span>.
-                        If you would like to talk to an expert on how to manage and secure your finances,<br />
+                        If you would like to talk to an expert on how to manage and secure your finances,<br/>
                         click on the button below.
                     </p>
 
@@ -1188,7 +1302,8 @@
                 </div>
 
                 <!-- Allocation Error Message -->
-                <div id="allocationError" class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50">
+                <div id="allocationError"
+                     class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50">
                     <!-- Error message will be inserted here by JavaScript -->
                 </div>
 
@@ -1241,7 +1356,7 @@
                         Your <strong>custom</strong> cashflow percentage is
                         <span id="custom-cashflow-saving-percentage">-9.7%</span>, which is
                         <span id="custom-cashflow-saving-price-bottom">- $521.09</span>.
-                        If you would like to talk to an expert on how to manage and secure your finances,<br />
+                        If you would like to talk to an expert on how to manage and secure your finances,<br/>
                         click on the button below.
                     </p>
                     <div class="mt-4 flex justify-center">
