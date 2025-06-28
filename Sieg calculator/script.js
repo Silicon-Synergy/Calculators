@@ -344,123 +344,62 @@ function calculateBudget(annualIncome, province, livingExpenses, retirementPerce
         : 0;
 
     // ===================================================================================
-    // START: DYNAMIC RECOMMENDATION LOGIC
+    // START: DYNAMIC RECOMMENDATION LOGIC (REVISED AND IMPROVED)
     // ===================================================================================
 
     let recommendedSavingsPct = 0;
     let recommendedInvestmentsPct = 0;
-    let recommendedCashflowPct = 0;
-    const MIN_CASHFLOW_PCT = 10; // Minimum recommended cashflow percentage
+    const MIN_CASHFLOW_PCT = 10;
+    const MIN_SAVE_PCT = 10;
+    const MAX_SAVE_PCT = 15;
+    const MIN_INVEST_PCT = 10;
+    const MAX_INVEST_PCT = 20;
 
     // Total percentage of disposable income available for Savings + Investments + Cashflow
     const remainingDisposableAfterExpenses = 100 - expensesPercentage;
+    let availableToAllocate = remainingDisposableAfterExpenses;
 
-    if (expensesPercentage >= 81) {
-        // Rule: Expenses are 81% or more. Neither savings nor investments are recommended.
-        recommendedSavingsPct = 0;
-        recommendedInvestmentsPct = 0;
-        // All remaining income goes to cashflow, even if it's less than MIN_CASHFLOW_PCT
-        recommendedCashflowPct = remainingDisposableAfterExpenses;
+    // 1. Initial Allocation based on Zones
+    if (expensesPercentage < 71) { // Green Zone
+        // In this zone, we can potentially afford all three.
+        // Start by allocating the ideal maximums and then scale down if needed.
+        let potentialSavings = MAX_SAVE_PCT;
+        let potentialInvestments = MAX_INVEST_PCT;
+        let potentialCashflow = MIN_CASHFLOW_PCT;
+        let totalPotential = potentialSavings + potentialInvestments + potentialCashflow;
 
-    } else if (expensesPercentage >= 71) { // i.e., between 71% and 80.99%
-        // Rule: Expenses are between 71% and 80.99%. Only savings are recommended (no investments).
-        recommendedInvestmentsPct = 0; // Investments explicitly 0%
-
-        // Allocate minimum cashflow first, capped by what's actually available
-        recommendedCashflowPct = Math.min(remainingDisposableAfterExpenses, MIN_CASHFLOW_PCT);
-
-        // Calculate remaining percentage for savings after accounting for minimum cashflow
-        let availableForSavings = remainingDisposableAfterExpenses - recommendedCashflowPct;
-
-        if (availableForSavings > 0) {
-            // Allocate savings: up to 15% of disposable income, but not more than available space
-            // Ensure it's at least 10% if there is enough available space for it.
-            recommendedSavingsPct = Math.max(0, Math.min(15, availableForSavings));
-        }
-
-        // Recalculate cashflow based on actual savings allocation
-        recommendedCashflowPct = remainingDisposableAfterExpenses - recommendedSavingsPct - recommendedInvestmentsPct;
-
-    } else { // expensesPercentage < 71% (Green Zone: 0% to 70.99%)
-        // Rule: Expenses are below 71%. Recommend both savings and investments.
-        // Priority: Cashflow (at least 10%) -> Savings (10-15%) -> Investments (10-20%)
-
-        const MIN_SAVE_PCT = 10;
-        const MAX_SAVE_PCT = 15;
-        const MIN_INVEST_PCT = 10;
-        const MAX_INVEST_PCT = 20;
-
-        // Calculate available percentage after accounting for minimum cashflow
-        let availableForSAndI = remainingDisposableAfterExpenses - MIN_CASHFLOW_PCT;
-
-        if (availableForSAndI <= 0) {
-            recommendedSavingsPct = 0;
-            recommendedInvestmentsPct = 0;
-            recommendedCashflowPct = remainingDisposableAfterExpenses; // All goes to cashflow, which might be less than MIN_CASHFLOW_PCT
+        if (availableToAllocate >= totalPotential) {
+            // Plenty of room, assign ideal values
+            recommendedSavingsPct = potentialSavings;
+            recommendedInvestmentsPct = potentialInvestments;
         } else {
-            // Determine a target total for S&I within their combined range
-            const totalMinSI = MIN_SAVE_PCT + MIN_INVEST_PCT; // 20%
-            const totalMaxSI = MAX_SAVE_PCT + MAX_INVEST_PCT; // 35%
-
-            let targetTotalSI;
-            if (availableForSAndI >= totalMaxSI) {
-                targetTotalSI = totalMaxSI; // We have enough room for max S&I
-            } else if (availableForSAndI <= totalMinSI) {
-                targetTotalSI = availableForSAndI; // We can only allocate up to what's available, ensuring we don't go below 0
-            } else {
-                // Scale linearly between totalMinSI and totalMaxSI based on available space
-                const scaleFactor = (availableForSAndI - totalMinSI) / (totalMaxSI - totalMinSI);
-                targetTotalSI = totalMinSI + (scaleFactor * (totalMaxSI - totalMinSI));
+            // Not enough room for ideal values, scale them down proportionally.
+            let availableForSAndI = availableToAllocate - MIN_CASHFLOW_PCT;
+            if (availableForSAndI > 0) {
+                recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSAndI * (MAX_SAVE_PCT / (MAX_SAVE_PCT + MAX_INVEST_PCT)));
+                recommendedInvestmentsPct = Math.min(MAX_INVEST_PCT, availableForSAndI * (MAX_INVEST_PCT / (MAX_SAVE_PCT + MAX_INVEST_PCT)));
             }
-
-            // Distribute targetTotalSI proportionally based on the mid-points of savings and investments ranges
-            const midSave = (MIN_SAVE_PCT + MAX_SAVE_PCT) / 2;
-            const midInvest = (MIN_INVEST_PCT + MAX_INVEST_PCT) / 2;
-            const totalMidPoints = midSave + midInvest;
-
-            if (totalMidPoints > 0) {
-                recommendedSavingsPct = targetTotalSI * (midSave / totalMidPoints);
-                recommendedInvestmentsPct = targetTotalSI * (midInvest / totalMidPoints);
-            } else {
-                recommendedSavingsPct = 0;
-                recommendedInvestmentsPct = 0;
-            }
-
-            // Ensure individual percentages don't exceed their own maximums
-            recommendedSavingsPct = Math.min(recommendedSavingsPct, MAX_SAVE_PCT);
-            recommendedInvestmentsPct = Math.min(recommendedInvestmentsPct, MAX_INVEST_PCT);
-
-            // Adjust if the sum now exceeds the targetTotalSI (due to individual clamping)
-            const currentCombinedSI = recommendedSavingsPct + recommendedInvestmentsPct;
-            if (currentCombinedSI > targetTotalSI) {
-                if (currentCombinedSI > 0) { // Avoid division by zero
-                    const reductionFactor = targetTotalSI / currentCombinedSI;
-                    recommendedSavingsPct *= reductionFactor;
-                    recommendedInvestmentsPct *= reductionFactor;
-                } else {
-                    recommendedSavingsPct = 0;
-                    recommendedInvestmentsPct = 0;
-                }
-            }
-
-            // Recalculate cashflow based on the final, adjusted S&I
-            recommendedCashflowPct = remainingDisposableAfterExpenses - recommendedSavingsPct - recommendedInvestmentsPct;
+        }
+    } else if (expensesPercentage <= 80) { // Moderate Zone
+        // Only recommend savings if possible.
+        let availableForSavings = availableToAllocate - MIN_CASHFLOW_PCT;
+        if (availableForSavings > 0) {
+            recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSavings);
         }
     }
+    // Red Zone (expenses > 80): Savings and Investments remain 0.
 
-    // FINAL SANITY CHECKS and ensure no negative percentages due to floating point inaccuracies or edge cases
-    recommendedSavingsPct = Math.max(0, recommendedSavingsPct);
-    recommendedInvestmentsPct = Math.max(0, recommendedInvestmentsPct);
-    recommendedCashflowPct = Math.max(0, recommendedCashflowPct);
+    // 2. Final Cleanup & Rule Enforcement
+    // Rule: If an allocation is below its minimum 10% threshold, it must be zero.
+    if (recommendedSavingsPct < MIN_SAVE_PCT) {
+        recommendedSavingsPct = 0;
+    }
+    if (recommendedInvestmentsPct < MIN_INVEST_PCT) {
+        recommendedInvestmentsPct = 0;
+    }
 
-    // Re-normalize to ensure total sum is exactly remainingDisposableAfterExpenses,
-    // primarily by adjusting cashflow if there's a slight discrepancy.
-    const totalRecommendedSum = recommendedSavingsPct + recommendedInvestmentsPct + recommendedCashflowPct;
-    const difference = remainingDisposableAfterExpenses - totalRecommendedSum;
-
-    // Distribute any remaining tiny difference to cashflow, as it's the 'catch-all'
-    recommendedCashflowPct += difference;
-    recommendedCashflowPct = Math.max(0, recommendedCashflowPct); // Final check to ensure no negative cashflow
+    // 3. Recalculate cashflow based on the final S&I allocations.
+    let recommendedCashflowPct = remainingDisposableAfterExpenses - recommendedSavingsPct - recommendedInvestmentsPct; // Final check to ensure no negative cashflow
 
 
     // Calculate recommended amounts based on the new percentages of disposable income
