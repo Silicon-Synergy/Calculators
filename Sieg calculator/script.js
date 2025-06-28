@@ -344,62 +344,66 @@ function calculateBudget(annualIncome, province, livingExpenses, retirementPerce
         : 0;
 
     // ===================================================================================
-    // START: DYNAMIC RECOMMENDATION LOGIC (REVISED AND IMPROVED)
+    // START: DYNAMIC RECOMMENDATION LOGIC (BALANCED & PROPORTIONAL V2)
     // ===================================================================================
 
     let recommendedSavingsPct = 0;
     let recommendedInvestmentsPct = 0;
+    let recommendedCashflowPct = 0;
+
     const MIN_CASHFLOW_PCT = 10;
     const MIN_SAVE_PCT = 10;
     const MAX_SAVE_PCT = 15;
     const MIN_INVEST_PCT = 10;
     const MAX_INVEST_PCT = 20;
 
-    // Total percentage of disposable income available for Savings + Investments + Cashflow
-    const remainingDisposableAfterExpenses = 100 - expensesPercentage;
-    let availableToAllocate = remainingDisposableAfterExpenses;
+    const idealAllocationTotal = MAX_SAVE_PCT + MAX_INVEST_PCT + MIN_CASHFLOW_PCT; // 15 + 20 + 10 = 45%
+    const minimumAllocationTotal = MIN_SAVE_PCT + MIN_INVEST_PCT + MIN_CASHFLOW_PCT; // 10 + 10 + 10 = 30%
+    const minCashflowAndSavings = MIN_CASHFLOW_PCT + MIN_SAVE_PCT; // 20%
 
-    // 1. Initial Allocation based on Zones
-    if (expensesPercentage < 71) { // Green Zone
-        // In this zone, we can potentially afford all three.
-        // Start by allocating the ideal maximums and then scale down if needed.
-        let potentialSavings = MAX_SAVE_PCT;
-        let potentialInvestments = MAX_INVEST_PCT;
-        let potentialCashflow = MIN_CASHFLOW_PCT;
-        let totalPotential = potentialSavings + potentialInvestments + potentialCashflow;
+    const availablePool = 100 - expensesPercentage;
 
-        if (availableToAllocate >= totalPotential) {
-            // Plenty of room, assign ideal values
-            recommendedSavingsPct = potentialSavings;
-            recommendedInvestmentsPct = potentialInvestments;
+    if (availablePool >= idealAllocationTotal) {
+        // ABUNDANCE ZONE: Fund ideal amounts, rest to cashflow.
+        recommendedSavingsPct = MAX_SAVE_PCT;
+        recommendedInvestmentsPct = MAX_INVEST_PCT;
+        recommendedCashflowPct = availablePool - recommendedSavingsPct - recommendedInvestmentsPct;
+    } else if (availablePool >= minimumAllocationTotal) {
+        // DYNAMIC SQUEEZE ZONE: Meet all minimums, then distribute surplus proportionally.
+        recommendedCashflowPct = MIN_CASHFLOW_PCT;
+        recommendedSavingsPct = MIN_SAVE_PCT;
+        recommendedInvestmentsPct = MIN_INVEST_PCT;
+
+        const surplus = availablePool - minimumAllocationTotal;
+        const savingsHeadroom = MAX_SAVE_PCT - MIN_SAVE_PCT; // 5
+        const investmentsHeadroom = MAX_INVEST_PCT - MIN_INVEST_PCT; // 10
+        const totalHeadroom = savingsHeadroom + investmentsHeadroom; // 15
+
+        if (totalHeadroom > 0) {
+            recommendedSavingsPct += surplus * (savingsHeadroom / totalHeadroom);
+            recommendedInvestmentsPct += surplus * (investmentsHeadroom / totalHeadroom);
+        } else { // Should not happen in this zone, but as a fallback...
+            recommendedCashflowPct += surplus;
+        }
+    } else {
+        // COMPROMISE ZONE: Not enough for dynamic scaling. Prioritize filling cashflow, then savings.
+        recommendedInvestmentsPct = 0; // No investments in this zone.
+
+        if (availablePool >= minCashflowAndSavings) {
+            // Can fund minimums for both cashflow and savings.
+            recommendedSavingsPct = MIN_SAVE_PCT;
+            // Give the rest to cashflow, as it's the top priority.
+            recommendedCashflowPct = availablePool - recommendedSavingsPct;
+        } else if (availablePool >= MIN_CASHFLOW_PCT) {
+            // Can only fund cashflow.
+            recommendedCashflowPct = availablePool;
+            recommendedSavingsPct = 0;
         } else {
-            // Not enough room for ideal values, scale them down proportionally.
-            let availableForSAndI = availableToAllocate - MIN_CASHFLOW_PCT;
-            if (availableForSAndI > 0) {
-                recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSAndI * (MAX_SAVE_PCT / (MAX_SAVE_PCT + MAX_INVEST_PCT)));
-                recommendedInvestmentsPct = Math.min(MAX_INVEST_PCT, availableForSAndI * (MAX_INVEST_PCT / (MAX_SAVE_PCT + MAX_INVEST_PCT)));
-            }
+            // Not even enough for minimum cashflow. It gets everything.
+            recommendedCashflowPct = availablePool;
+            recommendedSavingsPct = 0;
         }
-    } else if (expensesPercentage <= 80) { // Moderate Zone
-        // Only recommend savings if possible.
-        let availableForSavings = availableToAllocate - MIN_CASHFLOW_PCT;
-        if (availableForSavings > 0) {
-            recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSavings);
-        }
-    }
-    // Red Zone (expenses > 80): Savings and Investments remain 0.
-
-    // 2. Final Cleanup & Rule Enforcement
-    // Rule: If an allocation is below its minimum 10% threshold, it must be zero.
-    if (recommendedSavingsPct < MIN_SAVE_PCT) {
-        recommendedSavingsPct = 0;
-    }
-    if (recommendedInvestmentsPct < MIN_INVEST_PCT) {
-        recommendedInvestmentsPct = 0;
-    }
-
-    // 3. Recalculate cashflow based on the final S&I allocations.
-    let recommendedCashflowPct = remainingDisposableAfterExpenses - recommendedSavingsPct - recommendedInvestmentsPct; // Final check to ensure no negative cashflow
+    } // Final check to ensure no negative cashflow
 
 
     // Calculate recommended amounts based on the new percentages of disposable income
@@ -988,34 +992,33 @@ function updateAllUI(budget) {
         document.getElementById('custom-cashflow-percentage').textContent = `(${currentCashflowPct.toFixed(1)}%)`;
     }
 
-    // === START: CTA DISPLAY LOGIC FOR BOTH RECOMMENDED AND CUSTOM ===
+    // === START: CTA DISPLAY LOGIC ===
+    const ctaSection = document.getElementById('recommended-cashflow-cta');
+    const ctaMessage = document.getElementById('cta-message');
+    const MIN_CASHFLOW_PCT = 10;
 
-    // Recommended Cashflow CTA
-    const recommendedCtaAmount = budget.recommended_allocations.monthly_cashflow;
-    const recommendedCtaPercentage = budget.recommended_cashflow_pct;
-
-    // Show recommended CTA if monthly disposable income is positive
     if (budget.monthly_disposable_income > 0) {
-        recommendedCashflowCTA.classList.remove('hidden');
-        recommendedCashflowSavingPercentage.textContent = formatPercentage(recommendedCtaPercentage);
-        recommendedCashflowSavingPrice.textContent = formatCurrency(recommendedCtaAmount);
-    } else {
-        recommendedCashflowCTA.classList.add('hidden');
-    }
+        ctaSection.classList.remove('hidden');
+        
+        // Use the custom cashflow for the check if it exists, otherwise use recommended.
+        const cashflowToCheck = budget.custom_allocations ? budget.custom_allocations.monthly_cashflow : budget.recommended_allocations.monthly_cashflow;
+        const cashflowPctToCheck = budget.custom_allocations ? budget.custom_cashflow_pct : budget.recommended_cashflow_pct;
 
-    // Custom Cashflow CTA
-    const customCtaAmount = budget.custom_allocations ? budget.custom_allocations.monthly_cashflow : (budget.monthly_disposable_income - budget.total_monthly_expenses);
-    const customCtaPercentage = budget.custom_allocations ? budget.custom_cashflow_pct : (100 - budget.expenses_percentage);
-
-    // Show custom CTA if monthly disposable income is positive
-    if (budget.monthly_disposable_income > 0) {
-        customCashflowCTA.classList.remove('hidden');
-        customCashflowSavingPercentage.textContent = formatPercentage(customCtaPercentage);
-        customCashflowSavingPrice.textContent = formatCurrency(customCtaAmount);
+        if (cashflowPctToCheck < MIN_CASHFLOW_PCT) {
+            // Caution message
+            ctaMessage.innerHTML = `Your cashflow is <strong class="text-red-400">${formatPercentage(cashflowPctToCheck)} (${formatCurrency(cashflowToCheck)})</strong>, which is below the recommended 10%. This indicates poor financial health. We recommend talking to an expert.`;
+            ctaSection.classList.remove('bg-white/5', 'border-white/10');
+            ctaSection.classList.add('bg-red-900/30', 'border-red-500/50');
+        } else {
+            // Standard message
+            ctaMessage.innerHTML = `Your <strong class="font-semibold">recommended</strong> cashflow is <span class="text-green-400">${formatPercentage(budget.recommended_cashflow_pct)}</span>, which is <span class="text-green-400">${formatCurrency(budget.recommended_allocations.monthly_cashflow)}</span>. To learn how to manage and secure your finances, click the button below.`;
+            ctaSection.classList.add('bg-white/5', 'border-white/10');
+            ctaSection.classList.remove('bg-red-900/30', 'border-red-500/50');
+        }
     } else {
-        customCashflowCTA.classList.add('hidden');
+        ctaSection.classList.add('hidden');
     }
-    // === END: CTA DISPLAY LOGIC FOR BOTH RECOMMENDED AND CUSTOM ===
+    // === END: CTA DISPLAY LOGIC ===
 
     // Update individual expense percentage labels
     updateExpensePercentageLabels(budget.monthly_disposable_income);
