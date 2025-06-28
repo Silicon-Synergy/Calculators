@@ -1181,6 +1181,11 @@ function setupEventListeners() {
         toggleDeductionInputs();
     });
 
+    const toggleAllExpensesButton = document.getElementById('toggle-all-expenses');
+    if (toggleAllExpensesButton) {
+        toggleAllExpensesButton.addEventListener('click', toggleAllExpenses);
+    }
+
     // Popup logic
     const infoButton = document.getElementById('infoButton');
     const infoPopup = document.getElementById('infoPopup');
@@ -1194,20 +1199,55 @@ function setupEventListeners() {
 
 // Function to toggle category expansion/collapse
 function toggleCategory(categoryName) {
-    const categoryButton = document.querySelector(`[onclick="toggleCategory('${categoryName}')"]`);
-    const categoryContent = categoryButton.nextElementSibling;
-    const arrow = categoryButton.querySelector('.category-arrow');
+    const allCategoryContents = document.querySelectorAll('.expense-category .category-content');
+    const allCategoryArrows = document.querySelectorAll('.expense-category .category-arrow');
+    const allCategoryButtons = document.querySelectorAll('.expense-category .category-toggle');
 
-    const isExpanded = categoryContent.style.maxHeight && categoryContent.style.maxHeight !== '0px';
+    const currentButton = document.querySelector(`[onclick="toggleCategory('${categoryName}')"]`);
+    const currentContent = currentButton.nextElementSibling;
+    const currentArrow = currentButton.querySelector('.category-arrow');
+    const isExpanded = currentContent.style.maxHeight && currentContent.style.maxHeight !== '0px';
 
-    if (isExpanded) {
-        categoryContent.style.maxHeight = '0px';
-        arrow.style.transform = 'rotate(0deg)';
-    } else {
-        categoryContent.style.maxHeight = categoryContent.scrollHeight + 'px';
-        arrow.style.transform = 'rotate(180deg)';
+    // First, close all categories
+    allCategoryContents.forEach((content, index) => {
+        content.style.maxHeight = '0px';
+        allCategoryArrows[index].style.transform = 'rotate(0deg)';
+    });
+
+    // If the clicked category was not already expanded, open it
+    if (!isExpanded) {
+        currentContent.style.maxHeight = currentContent.scrollHeight + 'px';
+        currentArrow.style.transform = 'rotate(180deg)';
     }
+    // If it was expanded, the above loop already closed it.
 }
+
+
+// Function to toggle all expense categories at once
+function toggleAllExpenses() {
+    const toggleAllButton = document.getElementById('toggle-all-expenses');
+    const expenseCategories = document.querySelectorAll('.expense-category');
+    const isExpanding = toggleAllButton.textContent.includes('Expand');
+
+    expenseCategories.forEach(category => {
+        const categoryContent = category.querySelector('.category-content');
+        const arrow = category.querySelector('.category-arrow');
+        const isExpanded = categoryContent.style.maxHeight && categoryContent.style.maxHeight !== '0px';
+
+        if (isExpanding && !isExpanded) {
+            // Expand it
+            categoryContent.style.maxHeight = categoryContent.scrollHeight + 'px';
+            arrow.style.transform = 'rotate(180deg)';
+        } else if (!isExpanding && isExpanded) {
+            // Collapse it
+            categoryContent.style.maxHeight = '0px';
+            arrow.style.transform = 'rotate(0deg)';
+        }
+    });
+
+    toggleAllButton.textContent = isExpanding ? 'Collapse All' : 'Expand All';
+}
+
 
 // Function to toggle deduction inputs expansion/collapse
 function toggleDeductionInputs() {

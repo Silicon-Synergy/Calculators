@@ -547,25 +547,30 @@
         id="living-expenses-section"
         class="mt-10 glass-effect opacity-50 pointer-events-none rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out"
       >
-        <div class="flex items-center space-x-3 mb-6">
-          <div
-            class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-              ></path>
-            </svg>
+              <svg
+                class="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white">Monthly Living Expenses</h2>
           </div>
-          <h2 class="text-2xl font-bold text-white">Monthly Living Expenses</h2>
+          <button id="toggle-all-expenses" class="text-sm font-medium text-white/80 hover:text-white transition-colors duration-200 focus:outline-none">
+            Expand All
+          </button>
         </div>
 
         <!-- Expense Categories Container -->
@@ -725,7 +730,162 @@
             </div>
           </div>
 
-          <!-- Category 2: Transportation -->
+          <!-- Category 2: Living Expenses -->
+          <div
+                  class="expense-category glass-effect rounded-2xl border border-white/10"
+          >
+            <button
+                    class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
+                    onclick="toggleCategory('living')"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                        class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center"
+                >
+                  <svg
+                          class="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                  >
+                    <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    ></path>
+                  </svg>
+                </div>
+                <span class="font-medium">Living Expenses</span>
+                <span
+                        id="living-total"
+                        class="ml-auto text-sm font-normal text-gray-400"
+                ></span>
+              </div>
+              <svg
+                      class="w-5 h-5 category-arrow transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+              >
+                <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+
+            <div
+                    class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
+            >
+              <div class="p-4 pt-0">
+                <div
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                >
+                  <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                    >Groceries
+                      <span
+                              id="groceries-percentage"
+                              class="text-xs text-gray-400 ml-2"
+                      ></span
+                      ></label>
+                    <input
+                            type="number"
+                            id="groceries"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 400"
+                            min="0"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                    >Dining Out
+                      <span
+                              id="dining_out-percentage"
+                              class="text-xs text-gray-400 ml-2"
+                      ></span
+                      ></label>
+                    <input
+                            type="number"
+                            id="dining-out"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 200"
+                            min="0"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                    >Phone Bills
+                      <span
+                              id="phone_bills-percentage"
+                              class="text-xs text-gray-400 ml-2"
+                      ></span
+                      ></label>
+                    <input
+                            type="number"
+                            id="phone-bills"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 80"
+                            min="0"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                    >Internet
+                      <span
+                              id="internet-percentage"
+                              class="text-xs text-gray-400 ml-2"
+                      ></span
+                      ></label>
+                    <input
+                            type="number"
+                            id="internet"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 70"
+                            min="0"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                    >Subscriptions
+                      <span
+                              id="subscriptions-percentage"
+                              class="text-xs text-gray-400 ml-2"
+                      ></span
+                      ></label>
+                    <input
+                            type="number"
+                            id="subscriptions"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 50"
+                            min="0"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2"
+                    >Others
+                      <span
+                              id="living_others-percentage"
+                              class="text-xs text-gray-400 ml-2"
+                      ></span
+                      ></label>
+                    <input
+                            type="number"
+                            id="living-others"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 100"
+                            min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category 3: Transportation -->
           <div
             class="expense-category glass-effect rounded-2xl border border-white/10"
           >
@@ -880,7 +1040,7 @@
             </div>
           </div>
 
-          <!-- Category 3: Loan Payments -->
+          <!-- Category 4: Loan Payments -->
           <div
             class="expense-category glass-effect rounded-2xl border border-white/10"
           >
@@ -1035,154 +1195,154 @@
             </div>
           </div>
 
-          <!-- Category 4: Living Expenses -->
+          <!-- Category 5: Children and Education -->
           <div
-            class="expense-category glass-effect rounded-2xl border border-white/10"
+                  class="expense-category glass-effect rounded-2xl border border-white/10"
           >
             <button
-              class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
-              onclick="toggleCategory('living')"
+                    class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
+                    onclick="toggleCategory('children')"
             >
               <div class="flex items-center gap-3">
                 <div
-                  class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center"
+                        class="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-600 rounded-lg flex items-center justify-center"
                 >
                   <svg
-                    class="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                          class="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                   >
                     <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z"
                     ></path>
                   </svg>
                 </div>
-                <span class="font-medium">Living Expenses</span>
+                <span class="font-medium">Children and Education</span>
                 <span
-                  id="living-total"
-                  class="ml-auto text-sm font-normal text-gray-400"
+                        id="children-total"
+                        class="ml-auto text-sm font-normal text-gray-400"
                 ></span>
               </div>
               <svg
-                class="w-5 h-5 category-arrow transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                      class="w-5 h-5 category-arrow transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
             </button>
 
             <div
-              class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
+                    class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
             >
               <div class="p-4 pt-0">
                 <div
-                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
                 >
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Groceries
+                    >School Tuition
                       <span
-                        id="groceries-percentage"
-                        class="text-xs text-gray-400 ml-2"
+                              id="school_tuition-percentage"
+                              class="text-xs text-gray-400 ml-2"
                       ></span
-                    ></label>
+                      ></label>
                     <input
-                      type="number"
-                      id="groceries"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 400"
-                      min="0"
+                            type="number"
+                            id="school-tuition"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 500"
+                            min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Dining Out
+                    >Childcare
                       <span
-                        id="dining_out-percentage"
-                        class="text-xs text-gray-400 ml-2"
+                              id="childcare-percentage"
+                              class="text-xs text-gray-400 ml-2"
                       ></span
-                    ></label>
+                      ></label>
                     <input
-                      type="number"
-                      id="dining-out"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 200"
-                      min="0"
+                            type="number"
+                            id="childcare"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 800"
+                            min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Phone Bills
+                    >School Supplies
                       <span
-                        id="phone_bills-percentage"
-                        class="text-xs text-gray-400 ml-2"
+                              id="school_supplies-percentage"
+                              class="text-xs text-gray-400 ml-2"
                       ></span
-                    ></label>
+                      ></label>
                     <input
-                      type="number"
-                      id="phone-bills"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 80"
-                      min="0"
+                            type="number"
+                            id="school-supplies"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 100"
+                            min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Internet
+                    >Kids Activities
                       <span
-                        id="internet-percentage"
-                        class="text-xs text-gray-400 ml-2"
+                              id="kids_activities-percentage"
+                              class="text-xs text-gray-400 ml-2"
                       ></span
-                    ></label>
+                      ></label>
                     <input
-                      type="number"
-                      id="internet"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 70"
-                      min="0"
+                            type="number"
+                            id="kids-activities"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 150"
+                            min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Subscriptions
+                    >Education Savings
                       <span
-                        id="subscriptions-percentage"
-                        class="text-xs text-gray-400 ml-2"
+                              id="education_savings-percentage"
+                              class="text-xs text-gray-400 ml-2"
                       ></span
-                    ></label>
+                      ></label>
                     <input
-                      type="number"
-                      id="subscriptions"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 50"
-                      min="0"
+                            type="number"
+                            id="education-savings"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 200"
+                            min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Others
+                    >Others
                       <span
-                        id="living_others-percentage"
-                        class="text-xs text-gray-400 ml-2"
+                              id="children_others-percentage"
+                              class="text-xs text-gray-400 ml-2"
                       ></span
-                    ></label>
+                      ></label>
                     <input
-                      type="number"
-                      id="living-others"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 100"
-                      min="0"
+                            type="number"
+                            id="children-others"
+                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                            placeholder="e.g., 75"
+                            min="0"
                     />
                   </div>
                 </div>
@@ -1190,7 +1350,7 @@
             </div>
           </div>
 
-          <!-- Category 5: Miscellaneous Expenses -->
+          <!-- Category 6: Miscellaneous Expenses -->
           <div
             class="expense-category glass-effect rounded-2xl border border-white/10"
           >
@@ -1345,160 +1505,7 @@
             </div>
           </div>
 
-          <!-- Category 6: Children and Education -->
-          <div
-            class="expense-category glass-effect rounded-2xl border border-white/10"
-          >
-            <button
-              class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
-              onclick="toggleCategory('children')"
-            >
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-600 rounded-lg flex items-center justify-center"
-                >
-                  <svg
-                    class="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z"
-                    ></path>
-                  </svg>
-                </div>
-                <span class="font-medium">Children and Education</span>
-                <span
-                  id="children-total"
-                  class="ml-auto text-sm font-normal text-gray-400"
-                ></span>
-              </div>
-              <svg
-                class="w-5 h-5 category-arrow transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </button>
 
-            <div
-              class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
-            >
-              <div class="p-4 pt-0">
-                <div
-                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                >
-                  <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >School Tuition
-                      <span
-                        id="school_tuition-percentage"
-                        class="text-xs text-gray-400 ml-2"
-                      ></span
-                    ></label>
-                    <input
-                      type="number"
-                      id="school-tuition"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 500"
-                      min="0"
-                    />
-                  </div>
-                  <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Childcare
-                      <span
-                        id="childcare-percentage"
-                        class="text-xs text-gray-400 ml-2"
-                      ></span
-                    ></label>
-                    <input
-                      type="number"
-                      id="childcare"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 800"
-                      min="0"
-                    />
-                  </div>
-                  <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >School Supplies
-                      <span
-                        id="school_supplies-percentage"
-                        class="text-xs text-gray-400 ml-2"
-                      ></span
-                    ></label>
-                    <input
-                      type="number"
-                      id="school-supplies"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 100"
-                      min="0"
-                    />
-                  </div>
-                  <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Kids Activities
-                      <span
-                        id="kids_activities-percentage"
-                        class="text-xs text-gray-400 ml-2"
-                      ></span
-                    ></label>
-                    <input
-                      type="number"
-                      id="kids-activities"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 150"
-                      min="0"
-                    />
-                  </div>
-                  <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Education Savings
-                      <span
-                        id="education_savings-percentage"
-                        class="text-xs text-gray-400 ml-2"
-                      ></span
-                    ></label>
-                    <input
-                      type="number"
-                      id="education-savings"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 200"
-                      min="0"
-                    />
-                  </div>
-                  <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Others
-                      <span
-                        id="children_others-percentage"
-                        class="text-xs text-gray-400 ml-2"
-                      ></span
-                    ></label>
-                    <input
-                      type="number"
-                      id="children-others"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                      placeholder="e.g., 75"
-                      min="0"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div
@@ -1646,10 +1653,11 @@
             <!-- Recommended Savings -->
             <div class="space-y-3">
               <label class="block text-sm font-medium text-white/80">
-                Recommended Monthly Savings
+                Monthly Savings
               </label>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                   <div
                     class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
                   >
@@ -1657,9 +1665,9 @@
                       >0%</span
                     >
                   </div>
-                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                 </div>
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                   <div
                     class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
                   >
@@ -1667,7 +1675,6 @@
                       >$0.00</span
                     >
                   </div>
-                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                 </div>
               </div>
             </div>
@@ -1675,10 +1682,11 @@
             <!-- Recommended Investments -->
             <div class="space-y-3">
               <label class="block text-sm font-medium text-white/80">
-                Recommended Monthly Investments
+                Monthly Investments
               </label>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                   <div
                     class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
                   >
@@ -1688,9 +1696,9 @@
                       >0%</span
                     >
                   </div>
-                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                 </div>
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                   <div
                     class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
                   >
@@ -1698,7 +1706,6 @@
                       >$0.00</span
                     >
                   </div>
-                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                 </div>
               </div>
             </div>
@@ -1706,7 +1713,7 @@
             <!-- Recommended Cashflow -->
             <div class="space-y-3">
               <label class="block text-sm font-medium text-white/80">
-                Recommended Monthly Cashflow
+                Monthly Cashflow
               </label>
               <div
                 class="w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
@@ -1769,6 +1776,7 @@
               </label>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                   <input
                     type="number"
                     id="savingsPercentage"
@@ -1777,9 +1785,9 @@
                     min="0"
                     value=""
                   />
-                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                 </div>
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                   <input
                     type="text"
                     id="customSavingsAmount"
@@ -1788,7 +1796,6 @@
                     readonly
                     value=""
                   />
-                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                 </div>
               </div>
               <p
@@ -1812,6 +1819,7 @@
               </label>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                   <input
                     type="number"
                     id="investmentsPercentage"
@@ -1820,9 +1828,9 @@
                     min="0"
                     value=""
                   />
-                  <label class="text-xs text-white/60 mt-1">Percentage</label>
                 </div>
                 <div class="input-group">
+                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                   <input
                     type="text"
                     id="customInvestmentsAmount"
@@ -1831,7 +1839,6 @@
                     readonly
                     value=""
                   />
-                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                 </div>
               </div>
               <p
