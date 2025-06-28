@@ -174,7 +174,7 @@
   </head>
 
   <body class="min-h-screen bg-[#C7DFD2]">
-    <!-- <div class="nav_fixed">
+    <div class="nav_fixed">
       <div
         data-animation="default"
         data-collapse="medium"
@@ -271,7 +271,7 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
     <div
       id="main-calculator-card"
       class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
@@ -566,9 +566,14 @@
                 ></path>
               </svg>
             </div>
-            <h2 class="text-2xl font-bold text-white">Monthly Living Expenses</h2>
+            <h2 class="text-2xl font-bold text-white">
+              Monthly Living Expenses
+            </h2>
           </div>
-          <button id="toggle-all-expenses" class="text-sm font-medium text-white/80 hover:text-white transition-colors duration-200 focus:outline-none">
+          <button
+            id="toggle-all-expenses"
+            class="text-sm font-medium text-white/80 hover:text-white transition-colors duration-200 focus:outline-none"
+          >
             Expand All
           </button>
         </div>
@@ -656,7 +661,7 @@
                     <input
                       type="number"
                       id="electricity"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 120"
                       min="0"
                     />
@@ -672,7 +677,7 @@
                     <input
                       type="number"
                       id="utilities"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 80"
                       min="0"
                     />
@@ -688,7 +693,7 @@
                     <input
                       type="number"
                       id="gas-heating"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 100"
                       min="0"
                     />
@@ -704,7 +709,7 @@
                     <input
                       type="number"
                       id="home-insurance"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 150"
                       min="0"
                     />
@@ -720,7 +725,7 @@
                     <input
                       type="number"
                       id="housing-others"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 50"
                       min="0"
                     />
@@ -732,152 +737,152 @@
 
           <!-- Category 2: Living Expenses -->
           <div
-                  class="expense-category glass-effect rounded-2xl border border-white/10"
+            class="expense-category glass-effect rounded-2xl border border-white/10"
           >
             <button
-                    class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
-                    onclick="toggleCategory('living')"
+              class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent hover:border-[#57f2a9] bg-[#dfece6] transition-all duration-300 rounded-2xl"
+              onclick="toggleCategory('living')"
             >
               <div class="flex items-center gap-3">
                 <div
-                        class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center"
+                  class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center"
                 >
                   <svg
-                          class="w-4 h-4 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
                     <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                     ></path>
                   </svg>
                 </div>
                 <span class="font-medium">Living Expenses</span>
                 <span
-                        id="living-total"
-                        class="ml-auto text-sm font-normal text-gray-400"
+                  id="living-total"
+                  class="ml-auto text-sm font-normal text-gray-400"
                 ></span>
               </div>
               <svg
-                      class="w-5 h-5 category-arrow transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                class="w-5 h-5 category-arrow transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
             </button>
 
             <div
-                    class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
+              class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
             >
               <div class="p-4 pt-0">
                 <div
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
                 >
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Groceries
+                      >Groceries
                       <span
-                              id="groceries-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="groceries-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="groceries"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 400"
-                            min="0"
+                      type="number"
+                      id="groceries"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 400"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Dining Out
+                      >Dining Out
                       <span
-                              id="dining_out-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="dining_out-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="dining-out"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 200"
-                            min="0"
+                      type="number"
+                      id="dining-out"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 200"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Phone Bills
+                      >Phone Bills
                       <span
-                              id="phone_bills-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="phone_bills-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="phone-bills"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 80"
-                            min="0"
+                      type="number"
+                      id="phone-bills"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 80"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Internet
+                      >Internet
                       <span
-                              id="internet-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="internet-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="internet"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 70"
-                            min="0"
+                      type="number"
+                      id="internet"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 70"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Subscriptions
+                      >Subscriptions
                       <span
-                              id="subscriptions-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="subscriptions-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="subscriptions"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 50"
-                            min="0"
+                      type="number"
+                      id="subscriptions"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 50"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Others
+                      >Others
                       <span
-                              id="living_others-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="living_others-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="living-others"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 100"
-                            min="0"
+                      type="number"
+                      id="living-others"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 100"
+                      min="0"
                     />
                   </div>
                 </div>
@@ -890,7 +895,7 @@
             class="expense-category glass-effect rounded-2xl border border-white/10"
           >
             <button
-              class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
+              class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent hover:border-[#57f2a9] bg-[#dfece6] transition-all duration-300 rounded-2xl"
               onclick="toggleCategory('transportation')"
             >
               <div class="flex items-center gap-3">
@@ -950,7 +955,7 @@
                     <input
                       type="number"
                       id="car-payment"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 400"
                       min="0"
                     />
@@ -966,7 +971,7 @@
                     <input
                       type="number"
                       id="gas-fuel"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 200"
                       min="0"
                     />
@@ -982,7 +987,7 @@
                     <input
                       type="number"
                       id="car-insurance"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 150"
                       min="0"
                     />
@@ -998,7 +1003,7 @@
                     <input
                       type="number"
                       id="public-transit"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 120"
                       min="0"
                     />
@@ -1014,7 +1019,7 @@
                     <input
                       type="number"
                       id="car-maintenance"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 100"
                       min="0"
                     />
@@ -1030,7 +1035,7 @@
                     <input
                       type="number"
                       id="transport-others"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 50"
                       min="0"
                     />
@@ -1045,7 +1050,7 @@
             class="expense-category glass-effect rounded-2xl border border-white/10"
           >
             <button
-              class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
+              class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent hover:border-[#57f2a9] bg-[#dfece6] transition-all duration-300 rounded-2xl"
               onclick="toggleCategory('loans')"
             >
               <div class="flex items-center gap-3">
@@ -1105,7 +1110,7 @@
                     <input
                       type="number"
                       id="student-loans"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 300"
                       min="0"
                     />
@@ -1121,7 +1126,7 @@
                     <input
                       type="number"
                       id="credit-cards"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 250"
                       min="0"
                     />
@@ -1137,7 +1142,7 @@
                     <input
                       type="number"
                       id="personal-loans"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 200"
                       min="0"
                     />
@@ -1153,7 +1158,7 @@
                     <input
                       type="number"
                       id="business-loans"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 500"
                       min="0"
                     />
@@ -1169,7 +1174,7 @@
                     <input
                       type="number"
                       id="line-of-credit"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 100"
                       min="0"
                     />
@@ -1185,7 +1190,7 @@
                     <input
                       type="number"
                       id="loan-others"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 75"
                       min="0"
                     />
@@ -1197,152 +1202,152 @@
 
           <!-- Category 5: Children and Education -->
           <div
-                  class="expense-category glass-effect rounded-2xl border border-white/10"
+            class="expense-category glass-effect rounded-2xl border border-white/10"
           >
             <button
-                    class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
-                    onclick="toggleCategory('children')"
+              class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent hover:border-[#57f2a9] bg-[#dfece6] transition-all duration-300 rounded-2xl"
+              onclick="toggleCategory('children')"
             >
               <div class="flex items-center gap-3">
                 <div
-                        class="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-600 rounded-lg flex items-center justify-center"
+                  class="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-600 rounded-lg flex items-center justify-center"
                 >
                   <svg
-                          class="w-4 h-4 text-white"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
                     <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z"
                     ></path>
                   </svg>
                 </div>
                 <span class="font-medium">Children and Education</span>
                 <span
-                        id="children-total"
-                        class="ml-auto text-sm font-normal text-gray-400"
+                  id="children-total"
+                  class="ml-auto text-sm font-normal text-gray-400"
                 ></span>
               </div>
               <svg
-                      class="w-5 h-5 category-arrow transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                class="w-5 h-5 category-arrow transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
                 ></path>
               </svg>
             </button>
 
             <div
-                    class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
+              class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0"
             >
               <div class="p-4 pt-0">
                 <div
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
                 >
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >School Tuition
+                      >School Tuition
                       <span
-                              id="school_tuition-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="school_tuition-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="school-tuition"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 500"
-                            min="0"
+                      type="number"
+                      id="school-tuition"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 500"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Childcare
+                      >Childcare
                       <span
-                              id="childcare-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="childcare-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="childcare"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 800"
-                            min="0"
+                      type="number"
+                      id="childcare"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 800"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >School Supplies
+                      >School Supplies
                       <span
-                              id="school_supplies-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="school_supplies-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="school-supplies"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 100"
-                            min="0"
+                      type="number"
+                      id="school-supplies"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 100"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Kids Activities
+                      >Kids Activities
                       <span
-                              id="kids_activities-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="kids_activities-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="kids-activities"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 150"
-                            min="0"
+                      type="number"
+                      id="kids-activities"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 150"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Education Savings
+                      >Education Savings
                       <span
-                              id="education_savings-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="education_savings-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="education-savings"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 200"
-                            min="0"
+                      type="number"
+                      id="education-savings"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 200"
+                      min="0"
                     />
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                    >Others
+                      >Others
                       <span
-                              id="children_others-percentage"
-                              class="text-xs text-gray-400 ml-2"
+                        id="children_others-percentage"
+                        class="text-xs text-gray-400 ml-2"
                       ></span
-                      ></label>
+                    ></label>
                     <input
-                            type="number"
-                            id="children-others"
-                            class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                            placeholder="e.g., 75"
-                            min="0"
+                      type="number"
+                      id="children-others"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="e.g., 75"
+                      min="0"
                     />
                   </div>
                 </div>
@@ -1355,7 +1360,7 @@
             class="expense-category glass-effect rounded-2xl border border-white/10"
           >
             <button
-              class="category-toggle w-full flex items-center justify-between p-4 text-white hover:bg-white/5 transition-all duration-300 rounded-2xl"
+              class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent hover:border-[#57f2a9] bg-[#dfece6] transition-all duration-300 rounded-2xl"
               onclick="toggleCategory('miscellaneous')"
             >
               <div class="flex items-center gap-3">
@@ -1415,7 +1420,7 @@
                     <input
                       type="number"
                       id="healthcare"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 150"
                       min="0"
                     />
@@ -1431,7 +1436,7 @@
                     <input
                       type="number"
                       id="entertainment"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 100"
                       min="0"
                     />
@@ -1447,7 +1452,7 @@
                     <input
                       type="number"
                       id="clothing"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 80"
                       min="0"
                     />
@@ -1463,7 +1468,7 @@
                     <input
                       type="number"
                       id="pets"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 75"
                       min="0"
                     />
@@ -1479,7 +1484,7 @@
                     <input
                       type="number"
                       id="gifts-donations"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 50"
                       min="0"
                     />
@@ -1495,7 +1500,7 @@
                     <input
                       type="number"
                       id="misc-others"
-                      class="input-field w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                       placeholder="e.g., 60"
                       min="0"
                     />
@@ -1504,8 +1509,6 @@
               </div>
             </div>
           </div>
-
-
         </div>
 
         <div
@@ -1559,7 +1562,7 @@
       <!-- Savings & Investments Input - Updated Layout -->
       <section
         id="savings-investments-section"
-        class="mt-10 opacity-50 pointer-events-none glass-effect rounded-3xl p-8 text-white border border-white/10 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm shadow-lg"
+        class="mt-10 opacity-50 pointer-events-none glass-effect rounded-3xl p-8 text-white border border-white/10 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm shadow-lg bg-white"
       >
         <h2
           class="text-2xl md:text-3xl font-bold text-white mb-6 pb-4 border-gray-300 flex items-center gap-2"
@@ -1659,7 +1662,7 @@
                 <div class="input-group">
                   <label class="text-xs text-white/60 mt-1">Percentage</label>
                   <div
-                    class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                   >
                     <span id="recommended-savings-percentage" class="text-white"
                       >0%</span
@@ -1669,7 +1672,7 @@
                 <div class="input-group">
                   <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                   <div
-                    class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                   >
                     <span id="recommended-savings-amount" class="text-white"
                       >$0.00</span
@@ -1688,7 +1691,7 @@
                 <div class="input-group">
                   <label class="text-xs text-white/60 mt-1">Percentage</label>
                   <div
-                    class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                   >
                     <span
                       id="recommended-investments-percentage"
@@ -1700,7 +1703,7 @@
                 <div class="input-group">
                   <label class="text-xs text-white/60 mt-1">Amount ($)</label>
                   <div
-                    class="w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                   >
                     <span id="recommended-investments-amount" class="text-white"
                       >$0.00</span
@@ -1716,12 +1719,12 @@
                 Monthly Cashflow
               </label>
               <div
-                class="w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
+                class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
               >
                 <span id="recommended-cashflow-amount" class="text-white"
                   >$0.00</span
                 >
-                <span id="recommended-cashflow-percentage" class="text-white/80"
+                <span id="recommended-cashflow-percentage" class="text-red"
                   >(0.0%)</span
                 >
               </div>
@@ -1747,7 +1750,7 @@
                   <input
                     type="number"
                     id="savingsPercentage"
-                    class="input-field w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                     placeholder="0"
                     min="0"
                     value=""
@@ -1758,7 +1761,7 @@
                   <input
                     type="text"
                     id="customSavingsAmount"
-                    class="input-field w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                     placeholder="$0.00"
                     readonly
                     value=""
@@ -1790,7 +1793,7 @@
                   <input
                     type="number"
                     id="investmentsPercentage"
-                    class="input-field w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                     placeholder="0"
                     min="0"
                     value=""
@@ -1801,7 +1804,7 @@
                   <input
                     type="text"
                     id="customInvestmentsAmount"
-                    class="input-field w-full pl-4 pr-2 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none transition-all duration-200"
+                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                     placeholder="$0.00"
                     readonly
                     value=""
@@ -1820,7 +1823,7 @@
                 Your Calculated Monthly Cashflow
               </label>
               <div
-                class="w-full pl-4 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white"
+                class="w-full pl-4 pr-4 py-3 border border-white/20 rounded-xl text-white bg-[#dfece6]"
               >
                 <span id="custom-cashflow-amount" class="text-white"
                   >$0.00</span
@@ -1835,25 +1838,25 @@
 
         <!-- Centered CTA Section -->
         <div class="mt-8 flex justify-center">
-            <div
-              id="recommended-cashflow-cta"
-              class="w-full max-w-md p-4 rounded-xl backdrop-blur-md bg-white/5 border border-white/10 shadow-sm flex flex-col items-center gap-4"
+          <div
+            id="recommended-cashflow-cta"
+            class="w-full max-w-md p-4 rounded-xl backdrop-blur-md bg-white/5 border border-white/10 shadow-sm flex flex-col items-center gap-4"
+          >
+            <p
+              id="cta-message"
+              class="text-center text-white text-base font-medium leading-relaxed"
             >
-              <p
-                id="cta-message"
-                class="text-center text-white text-base font-medium leading-relaxed"
-              >
-                <!-- This content will be set by JavaScript -->
-              </p>
+              <!-- This content will be set by JavaScript -->
+            </p>
 
-              <a
-                href="/Steward Well Capital - InMotion/index.html#contact-us"
-                class="px-6 py-2 rounded-lg font-medium text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
-                id="recommended-nav_cta"
-              >
-                TALK TO AN EXPERT
-              </a>
-            </div>
+            <a
+              href="/Steward Well Capital - InMotion/index.html#contact-us"
+              class="px-6 py-2 rounded-lg font-medium text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
+              id="recommended-nav_cta"
+            >
+              TALK TO AN EXPERT
+            </a>
+          </div>
         </div>
       </section>
     </div>
