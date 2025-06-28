@@ -1109,6 +1109,8 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
                 if (value > 0) {
                     const percentage = (value / monthlyDisposableIncome) * 100;
                     percentageSpan.textContent = `(${formatPercentage(percentage)})`;
+                    console.log('percentage:', percentage);
+                    console.log(percentageSpan.textContent);
                 } else {
                     percentageSpan.textContent = '';
                 }
