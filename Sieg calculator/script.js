@@ -1,173 +1,3 @@
-// ===================================================================================
-// TAX CONFIGURATION DATA
-// This object holds all the static data for tax brackets, CPP, and EI rates.
-// All calculations are based on the values in this configuration.
-// NOTE: This data is for a specific tax year and may need to be updated annually. The current year is 2025
-// ===================================================================================
-const TAX_CONFIG = {
-    canada: {
-        country: "Canada",
-        federal: {
-            name: "Federal Tax",
-            brackets: [
-                {min: 0, max: 57375, rate: 0.15},
-                {min: 57375, max: 114750, rate: 0.205},
-                {min: 114750, max: 177882, rate: 0.26},
-                {min: 177882, max: 253414, rate: 0.29},
-                {min: 253414, max: Infinity, rate: 0.33},
-            ],
-        },
-        cpp: {
-            name: "CPP",
-            maxEarnings: 71300,
-            basicExemption: 3500,
-            rate: 0.0595,
-            maxContribution: 4034.1,
-        },
-        ei: {
-            name: "Employment Insurance",
-            rate: 0.0164,
-            maxEarnings: 65700,
-            maxContribution: 1077.48,
-        },
-        provinces: {
-            NL: {
-                name: "Newfoundland and Labrador",
-                brackets: [
-                    {min: 0, max: 44192, rate: 0.087},
-                    {min: 44192, max: 88382, rate: 0.145},
-                    {min: 88382, max: 157792, rate: 0.158},
-                    {min: 157792, max: 220910, rate: 0.178},
-                    {min: 220910, max: 282214, rate: 0.198},
-                    {min: 282214, max: 564429, rate: 0.208},
-                    {min: 564429, max: 1128858, rate: 0.213},
-                    {min: 1128858, max: Infinity, rate: 0.218},
-                ],
-            },
-            PE: {
-                name: "Prince Edward Island",
-                brackets: [
-                    {min: 0, max: 33328, rate: 0.095},
-                    {min: 33328, max: 64656, rate: 0.1347},
-                    {min: 64656, max: 105000, rate: 0.166},
-                    {min: 105000, max: 140000, rate: 0.1762},
-                    {min: 140000, max: Infinity, rate: 0.19},
-                ],
-            },
-            NS: {
-                name: "Nova Scotia",
-                brackets: [
-                    {min: 0, max: 30507, rate: 0.0879},
-                    {min: 30507, max: 61015, rate: 0.1495},
-                    {min: 61015, max: 95883, rate: 0.1667},
-                    {min: 95883, max: 154650, rate: 0.175},
-                    {min: 154650, max: Infinity, rate: 0.21},
-                ],
-            },
-            NB: {
-                name: "New Brunswick",
-                brackets: [
-                    {min: 0, max: 51306, rate: 0.094},
-                    {min: 51306, max: 102614, rate: 0.14},
-                    {min: 102614, max: 190060, rate: 0.16},
-                    {min: 190060, max: Infinity, rate: 0.195},
-                ],
-            },
-            QC: {
-                name: "Quebec",
-                brackets: [
-                    {min: 0, max: 53255, rate: 0.14},
-                    {min: 53255, max: 106495, rate: 0.19},
-                    {min: 106495, max: 129590, rate: 0.24},
-                    {min: 129590, max: Infinity, rate: 0.2575},
-                ],
-            },
-            ON: {
-                name: "Ontario",
-                brackets: [
-                    {min: 0, max: 52886, rate: 0.0505},
-                    {min: 52886, max: 105775, rate: 0.0915},
-                    {min: 105775, max: 150000, rate: 0.1116},
-                    {min: 150000, max: 220000, rate: 0.1216},
-                    {min: 220000, max: Infinity, rate: 0.1316},
-                ],
-            },
-            MB: {
-                name: "Manitoba",
-                brackets: [
-                    {min: 0, max: 47564, rate: 0.108},
-                    {min: 47564, max: 101200, rate: 0.1275},
-                    {min: 101200, max: Infinity, rate: 0.174},
-                ],
-            },
-            SK: {
-                name: "Saskatchewan",
-                brackets: [
-                    {min: 0, max: 53463, rate: 0.105},
-                    {min: 53463, max: 152750, rate: 0.125},
-                    {min: 152750, max: Infinity, rate: 0.145},
-                ],
-            },
-            AB: {
-                name: "Alberta",
-                brackets: [
-                    {min: 0, max: 60000, rate: 0.08}, // New bracket for 2025
-                    {min: 60000, max: 151234, rate: 0.1},
-                    {min: 151234, max: 181481, rate: 0.12},
-                    {min: 181481, max: 241974, rate: 0.13},
-                    {min: 241974, max: 362961, rate: 0.14},
-                    {min: 362961, max: Infinity, rate: 0.15},
-                ],
-            },
-            BC: {
-                name: "British Columbia",
-                brackets: [
-                    {min: 0, max: 49279, rate: 0.0506},
-                    {min: 49279, max: 98560, rate: 0.077},
-                    {min: 98560, max: 113158, rate: 0.105},
-                    {min: 113158, max: 137407, rate: 0.1229},
-                    {min: 137407, max: 186306, rate: 0.147},
-                    {min: 186306, max: 259829, rate: 0.168},
-                    {min: 259829, max: Infinity, rate: 0.205},
-                ],
-            },
-            YT: {
-                name: "Yukon",
-                brackets: [
-                    {min: 0, max: 57375, rate: 0.064},
-                    {min: 57375, max: 114750, rate: 0.09},
-                    {min: 114750, max: 177882, rate: 0.109},
-                    {min: 177882, max: 500000, rate: 0.128},
-                    {min: 500000, max: Infinity, rate: 0.15},
-                ],
-            },
-            NT: {
-                name: "Northwest Territories",
-                brackets: [
-                    {min: 0, max: 51964, rate: 0.059},
-                    {min: 51964, max: 103930, rate: 0.086},
-                    {min: 103930, max: 168967, rate: 0.122},
-                    {min: 168967, max: Infinity, rate: 0.1405},
-                ],
-            },
-            NU: {
-                name: "Nunavut",
-                brackets: [
-                    {min: 0, max: 54707, rate: 0.04},
-                    {min: 54707, max: 109413, rate: 0.07},
-                    {min: 109413, max: 177881, rate: 0.09},
-                    {min: 177881, max: Infinity, rate: 0.115},
-                ],
-            },
-        },
-    },
-};
-
-// ===================================================================================
-// APPLICATION STATE
-// These variables hold the dynamic state of the calculator as the user interacts.
-// ===================================================================================
-
 // A central object to hold the results of calculations to be used across different functions.
 const calculatorState = {
     annualIncome: 0,
@@ -177,34 +7,17 @@ const calculatorState = {
     livingExpenses: {},
     totalMonthlyExpensesEntered: 0,
     annualDisposable: 0,
-    isSavingsCustom: false, // Flag to check if user has manually edited savings
-    isInvestmentsCustom: false, // Flag to check if user has manually edited investments
 };
 
-// ===================================================================================
-// CORE CALCULATION FUNCTIONS
-// These are pure functions responsible for the main tax and deduction calculations.
-// ===================================================================================
+// Core tax and deduction calculation functions.
 
 /**
- * Calculates tax based on a progressive (marginal) tax bracket system.
- * @param {number} income - The taxable income amount.
- * @param {Array<object>} brackets - An array of tax bracket objects {min, max, rate}.
- * @returns {number} The total calculated tax.
+ * Calculates tax based on progressive (marginal) tax brackets.
  */
 
 function calculateProgressiveTax(income, brackets) {
     let totalTax = 0;
-    let remainingIncome = income;
-
     for (const bracket of brackets) {
-        if (remainingIncome <= 0) break;
-
-        const taxableInThisBracket = Math.min(
-            remainingIncome,
-            bracket.max - bracket.min
-        );
-        // This logic was flawed. It should calculate tax based on income within each bracket, not remaining income.
         if (income > bracket.min) {
             const taxableInBracket = Math.min(income, bracket.max) - bracket.min;
             totalTax += taxableInBracket * bracket.rate;
@@ -215,10 +28,7 @@ function calculateProgressiveTax(income, brackets) {
 
 
 /**
- * Calculates the Canada Pension Plan (CPP) contribution.
- * @param {number} income - The gross annual income.
- * @param {object} cppConfig - The CPP configuration object from TAX_CONFIG.
- * @returns {number} The calculated annual CPP contribution.
+ * Calculates Canada Pension Plan (CPP) contribution.
  */
 function calculateCPP(income, cppConfig) {
     if (income <= cppConfig.basicExemption) {
@@ -230,10 +40,7 @@ function calculateCPP(income, cppConfig) {
 }
 
 /**
- * Calculates the Employment Insurance (EI) contribution.
- * @param {number} income - The gross annual income.
- * @param {object} eiConfig - The EI configuration object from TAX_CONFIG.
- * @returns {number} The calculated annual EI contribution.
+ * Calculates Employment Insurance (EI) contribution.
  */
 function calculateEI(income, eiConfig) {
     const contribution = Math.min(income, eiConfig.maxEarnings) * eiConfig.rate;
@@ -242,10 +49,6 @@ function calculateEI(income, eiConfig) {
 
 /**
  * Calculates all federal and provincial taxes, CPP, and EI deductions.
- * @param {number} grossIncome - The user's gross annual income.
- * @param {string} province - The two-letter province code (e.g., "NL").
- * @param {number} [retirementPercentage=0] - The percentage of income contributed to retirement.
- * @returns {{deductions: object, totalDeductions: number}} An object containing a detailed breakdown of deductions and the total amount.
  */
 function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
     const config = TAX_CONFIG.canada;
@@ -311,14 +114,7 @@ function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
 }
 
 /**
- * Calculates all budget allocations based on the user's input and financial situation.
- * @param {number} annualIncome - The user's gross annual income.
- * @param {string} province - The two-letter province code (e.g., "NL").
- * @param {object} livingExpenses - An object containing the user's monthly living expenses.
- * @param {number} retirementPercentage - The percentage of income contributed to retirement.
- * @param {number|null} userSavingsPct - The user-defined savings percentage (of disposable income).
- * @param {number|null} userInvestmentsPct - The user-defined investments percentage (of disposable income).
- * @returns {object} A comprehensive budget object with all calculated details.
+ * Calculates all budget allocations (taxes, expenses, savings, investments, cashflow).
  */
 function calculateBudget(annualIncome, province, livingExpenses, retirementPercentage, userSavingsPct = 0, userInvestmentsPct = 0) {
     // Calculate taxes and deductions
@@ -343,9 +139,7 @@ function calculateBudget(annualIncome, province, livingExpenses, retirementPerce
         ? (totalMonthlyExpenses / monthlyDisposableIncome) * 100
         : 0;
 
-    // ===================================================================================
-    // START: DYNAMIC RECOMMENDATION LOGIC (BALANCED & PROPORTIONAL V2)
-    // ===================================================================================
+    // Main budget calculation and recommendation engine.
 
     let recommendedSavingsPct = 0;
     let recommendedInvestmentsPct = 0;
@@ -478,16 +272,7 @@ function calculateBudget(annualIncome, province, livingExpenses, retirementPerce
 }
 
 
-// ===================================================================================
-// BUDGETING AND ALLOCATION FUNCTIONS
-// Functions related to budgeting, fund allocation, and financial health status.
-// ===================================================================================
-
-/**
- * Determines the user's budget "zone" (Green, Moderate, Red) based on their expense ratio.
- * @param {number} expensesPercentage - The percentage of disposable income that goes to expenses.
- * @returns {Array<string|boolean>} An array containing [zone, statusMessage, savingsAllowed, investmentsAllowed].
- */
+// Determines the user's budget zone (Green, Moderate, Red) based on expense ratio.
 function determineBudgetZoneAndOptions(expensesPercentage) {
     if (expensesPercentage <= 70) {
         return ["GREEN", "You have excellent financial flexibility. Great job!", true, true];
@@ -503,39 +288,10 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
     }
 }
 
-/**
- * Allocates funds to savings, investments, and cashflow based on desired percentages of the DISPOSABLE INCOME.
- * This function is now simplified as the `calculateBudget` determines the percentages directly.
- * @param {number} monthlyDisposable - The monthly income after all taxes and deductions.
- * @param {number} totalMonthlyExpenses - The total of all user-entered living expenses.
- * @param {number} savingsPctOfDisposable - The desired percentage OF THE DISPOSABLE INCOME to allocate to savings.
- * @param {number} investmentsPctOfDisposable - The desired percentage OF THE DISPOSABLE INCOME to allocate to investments.
- * @returns {object} An object with the calculated monthly allocations.
- */
-function allocateFunds(
-    monthlyDisposable,
-    totalMonthlyExpenses,
-    savingsPctOfDisposable,
-    investmentsPctOfDisposable
-) {
-    const monthlySavings = (savingsPctOfDisposable / 100) * monthlyDisposable;
-    const monthlyInvestments = (investmentsPctOfDisposable / 100) * monthlyDisposable;
-
-    // Cashflow is disposable income minus expenses, savings, and investments
-    const monthlyCashflow = monthlyDisposable - totalMonthlyExpenses - monthlySavings - monthlyInvestments;
-
-    return {
-        monthly_savings: monthlySavings,
-        monthly_investments: monthlyInvestments,
-        monthly_cashflow: monthlyCashflow,
-    };
-}
 
 
-// ===================================================================================
-// DOM ELEMENTS
-// Cached references to all the necessary HTML elements to avoid repeated queries.
-// ===================================================================================
+
+// Cached DOM element references.
 const annualIncomeInput = document.getElementById("annualIncome");
 const provinceSelect = document.getElementById("provinceSelect");
 const annualIncomeError = document.getElementById("annualIncomeError");
@@ -543,7 +299,7 @@ const provinceError = document.getElementById("provinceError");
 const includeRetirementCheckbox = document.getElementById("includeRetirement");
 const deductonToggle = document.getElementById("deduction-toggle");
 const excludeRetirementCheckbox = document.getElementById("excludeRetirement");
-const navCTA = document.getElementById("cta");
+
 const retirementPercentageSection = document.getElementById(
     "retirement-percentage-section"
 );
@@ -570,9 +326,7 @@ const monthlyDisposableIncomeSpan = document.getElementById(
     "monthlyDisposableIncome"
 );
 
-const expenseInputsContainer = document.getElementById(
-    "expense-inputs-container"
-);
+
 const integratedExpenseSummary = document.getElementById(
     "integrated-expense-summary"
 );
@@ -597,22 +351,7 @@ const livingExpensesSection = document.getElementById(
     "living-expenses-section"
 );
 
-// Get references for both recommended and custom CTAs
-const recommendedCashflowCTA = document.getElementById("recommended-cashflow-cta");
-const recommendedCashflowSavingPercentage = document.getElementById(
-    "recommended-cashflow-saving-percentage"
-);
-const recommendedCashflowSavingPrice = document.getElementById(
-    "recommended-cashflow-saving-price"
-);
 
-const customCashflowCTA = document.getElementById("custom-cashflow-cta"); // Renamed from cashflowCTA for clarity
-const customCashflowSavingPercentage = document.getElementById(
-    "custom-cashflow-saving-percentage"
-); // Renamed from cashflowSavingPercentage for clarity
-const customCashflowSavingPrice = document.getElementById(
-    "custom-cashflow-saving-price"
-); // Renamed from cashflowSavingPrice for clarity
 
 
 const customSavingsAmountInput = document.getElementById("customSavingsAmount");
@@ -621,14 +360,7 @@ const customInvestmentsAmountInput = document.getElementById(
 );
 
 
-// ===================================================================================
-// INITIALIZATION AND DOM MANIPULATION FUNCTIONS
-// Functions responsible for setting up the initial state of the UI.
-// ===================================================================================
-
-/**
- * Populates the province dropdown from the TAX_CONFIG object.
- */
+// Populates the province dropdown from the TAX_CONFIG object.
 function initializeProvinceDropdown() {
     const provinces = TAX_CONFIG.canada.provinces;
     const dropdownList = document.getElementById("customProvinceOptions");
@@ -665,8 +397,7 @@ function initializeProvinceDropdown() {
 }
 
 /**
- * Creates read-only input fields to display the breakdown of tax deductions.
- * @param {object} deductions - The deductions object from the calculateTaxes function.
+ * Creates read-only input fields to display tax deduction breakdown.
  */
 function createDeductionInputs(deductions) {
     deductionInputsContainer.innerHTML = "";
@@ -720,10 +451,7 @@ function createDeductionInputs(deductions) {
 }
 
 
-// ===================================================================================
-// VALIDATION AND HELPER FUNCTIONS
-// Small utility functions for validation and formatting.
-// ===================================================================================
+// Utility functions for validation and formatting.
 
 function validateAnnualIncome() {
     const value = parseFloat(annualIncomeInput.value);
@@ -806,14 +534,10 @@ function formatPercentage(percentage) {
     return isFinite(percentage) ? `${percentage.toFixed(1)}%` : "N/A";
 }
 
-// ===================================================================================
-// UI UPDATE AND EVENT HANDLER FUNCTIONS
-// These functions are called by event listeners to update the UI in response to user input.
-// ===================================================================================
+// Updates UI based on user input.
 
 /**
- * Main handler for income/province/retirement changes.
- * It re-calculates taxes and disposable income, and updates the UI and application state.
+ * Main handler for income/province/retirement changes. Recalculates taxes and disposable income.
  */
 function handlePrimaryInputChange() {
     if (
@@ -873,8 +597,7 @@ function handlePrimaryInputChange() {
 }
 
 /**
- * Handles changes from any expense or allocation input.
- * It gathers all current data and performs a full budget recalculation and UI update.
+ * Handles changes from any expense or allocation input. Triggers full budget recalculation and UI update.
  */
 function handleExpenseOrAllocationChange() {
     if (calculatorState.monthlyDisposableIncome <= 0) return;
@@ -914,8 +637,6 @@ function handleExpenseOrAllocationChange() {
 
 /**
  * Updates all UI components based on the comprehensive budget object.
- * This function is the single source of truth for UI updates.
- * @param {object} budget - The full budget object from calculateBudget.
  */
 function updateAllUI(budget) {
     // Update Expense Summary Section
@@ -1025,8 +746,7 @@ function updateAllUI(budget) {
 }
 
 /**
- * Updates the percentage display for each expense item and category total.
- * @param {number} monthlyDisposableIncome - The current monthly disposable income.
+ * Updates percentage display for each expense item and category total.
  */
 function updateExpensePercentageLabels(monthlyDisposableIncome) {
     if (monthlyDisposableIncome <= 0) return;
@@ -1051,8 +771,6 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
                 if (value > 0) {
                     const percentage = (value / monthlyDisposableIncome) * 100;
                     percentageSpan.textContent = `(${formatPercentage(percentage)})`;
-                    console.log('percentage:', percentage);
-                    console.log(percentageSpan.textContent);
                 } else {
                     percentageSpan.textContent = '';
                 }
@@ -1072,10 +790,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
 }
 
 
-// ===================================================================================
-// EVENT LISTENERS
-// Attaching the handler functions to the DOM elements.
-// ===================================================================================
+// Attaches event listeners to DOM elements.
 
 function setupEventListeners() {
     // Primary income and deduction inputs
@@ -1233,10 +948,7 @@ function toggleProvinceDropdown() {
     }
 }
 
-// ===================================================================================
-// APP INITIALIZATION
-// The main function to kick off the application.
-// ===================================================================================
+// Initializes the application on DOM load.
 function initializeApp() {
     initializeProvinceDropdown();
     setupEventListeners();
