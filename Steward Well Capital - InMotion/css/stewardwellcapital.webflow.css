@@ -156,7 +156,7 @@ h3 {
     var(--base-color-brand--brand-green),
     #16418a
   );
-  letter-spacing: -2px;
+  letter-spacing: 0px;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
@@ -173,7 +173,7 @@ h4 {
     var(--base-color-brand--brand-green),
     #16418a
   );
-  letter-spacing: -2px;
+  letter-spacing: 0px;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
@@ -190,7 +190,7 @@ h5 {
     var(--base-color-brand--brand-green),
     #16418a
   );
-  letter-spacing: -1px;
+  letter-spacing: 0px;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
