@@ -40,6 +40,118 @@
       rel="stylesheet"
       type="text/css"
     />
+    <style>
+        /* Calculator Dropdown Styles */
+        .calculator-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu_links-wrapper {
+            display: flex !important;
+            align-items: center !important;
+            gap: 2rem !important;
+            flex-wrap: nowrap !important;
+        }
+
+        .nav_menu_link {
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 300px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            padding: 8px 0;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f3f4f6;
+            font-weight: 500;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+            color: #6366f1;
+            transform: translateX(4px);
+        }
+
+        .dropdown-item.active {
+            background-color: #e0e7ff;
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        .calculator-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav_menu_link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav_menu_link:hover {
+            color: #6366f1;
+        }
+
+        .dropdown-arrow {
+            display: inline-block;
+            margin-left: 6px;
+            transition: transform 0.3s ease;
+        }
+
+        .calculator-dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Mobile responsive for dropdown */
+        @media (max-width: 768px) {
+            .dropdown-content {
+                min-width: 280px;
+                left: -50px;
+            }
+
+            .menu_links-wrapper {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 1rem !important;
+            }
+
+            .lite-header {
+                display: block !important;
+            }
+        }
+    </style>
     <script type="text/javascript">
       !(function (o, c) {
         var n = c.documentElement,
@@ -274,11 +386,43 @@ a,
                   <a href="#testimonials" class="nav_menu_link w-nav-link"
                     >Testimonials</a
                   >
-                  <a
-                    href="./budget-calculator.html"
-                    class="nav_menu_link w-nav-link"
-                    >Calculators</a
-                  >
+                  <!-- Updated Calculator Dropdown -->
+                        <div class="calculator-dropdown" style="display: inline-block;">
+                            <a href="#" class="nav_menu_link w-nav-link" id="calculatorToggle" style="display: inline-flex; align-items: center;">
+                                Calculators
+                                <span class="dropdown-arrow">
+                                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                            </a>
+                            <div class="dropdown-content" id="calculatorDropdown">
+                                <a href="./budget-calculator.html" class="dropdown-item">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 2px;">Budgeting & Cashflow Calculator</div>
+                                        <div style="font-size: 12px; color: #6b7280;">Manage your monthly budget and cash flow</div>
+                                    </div>
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 2px;">Savings & Investment Calculator</div>
+                                        <div style="font-size: 12px; color: #6b7280;">Plan your savings and investment goals</div>
+                                    </div>
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 2px;">Debt & Credit Management Calculator</div>
+                                        <div style="font-size: 12px; color: #6b7280;">Track and manage your debt payments</div>
+                                    </div>
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 2px;">Protection & Legacy Planning Calculator</div>
+                                        <div style="font-size: 12px; color: #6b7280;">Plan for insurance and estate needs</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                   <a href="#contact-us" class="nav_menu_link w-nav-link"
                     >Contact us</a
                   >
@@ -343,6 +487,8 @@ a,
           </div>
         </div>
       </div>
+
+
       <main class="main-wrapper">
         <section class="section_hero">
           <div class="padding-global padding-section-medium">
@@ -1508,6 +1654,26 @@ a,
           lenis.start();
         }
       });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculatorToggle = document.getElementById('calculatorToggle');
+            const calculatorDropdown = document.getElementById('calculatorDropdown');
+
+            if (calculatorToggle && calculatorDropdown) {
+                calculatorToggle.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    calculatorDropdown.classList.toggle('show');
+                });
+
+                // Close the dropdown if the user clicks outside of it
+                window.addEventListener('click', function(event) {
+                    if (!calculatorToggle.contains(event.target) && !calculatorDropdown.contains(event.target)) {
+                        calculatorDropdown.classList.remove('show');
+                    }
+                });
+            }
+        });
     </script>
   </body>
 </html>
