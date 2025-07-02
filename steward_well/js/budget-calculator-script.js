@@ -455,7 +455,10 @@ function createDeductionInputs(deductions) {
         </span>
       </div>`;
 
-    inputGroup.className = "relative w-full";
+    inputGroup.className = "w-full";
+
+    const inputWrapper = document.createElement("div");
+    inputWrapper.className = "relative";
 
     const dollarSign = document.createElement("span");
     dollarSign.className =
@@ -465,13 +468,16 @@ function createDeductionInputs(deductions) {
     const input = document.createElement("input");
     input.type = "text";
     input.className =
-      "input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
+      "input-field w-full pl-8 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
     input.value = deduction.amount.toFixed(2);
     input.readOnly = true;
 
     inputGroup.appendChild(label); // Append label first
-    inputGroup.appendChild(dollarSign);
-    inputGroup.appendChild(input);
+
+    inputWrapper.appendChild(dollarSign);
+    inputWrapper.appendChild(input);
+    inputGroup.appendChild(inputWrapper);
+
     deductionInputsContainer.appendChild(inputGroup);
   });
 }
@@ -726,9 +732,9 @@ function updateAllUI(budget) {
     investmentsPercentageInput.value
   );
   const hasAnyUserCustomInputForCashflow =
-    (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== "") ||
+    (!isNaN(userEnteredSavingsPct) && String(userEnteredSavingsPct) !== "") ||
     (!isNaN(userEnteredInvestmentsPct) &&
-      investmentsPercentageInput.value !== "");
+      String(userEnteredInvestmentsPct) !== "");
 
   // Custom Savings Amount
   if (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== "") {
@@ -860,13 +866,13 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
       "dining-out",
       "phone-bills",
       "internet",
-      "subscriptions",
+      "clothing",
       "living-others",
     ],
     miscellaneous: [
       "healthcare",
       "entertainment",
-      "clothing",
+      "subscriptions",
       "pets",
       "gifts-donations",
       "misc-others",
@@ -904,9 +910,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     if (categoryTotalSpan) {
       if (categoryTotal > 0) {
         const totalPercentage = (categoryTotal / monthlyDisposableIncome) * 100;
-        categoryTotalSpan.textContent = `(${formatCurrency(
-          categoryTotal
-        )} = ${formatPercentage(totalPercentage)})`;
+        categoryTotalSpan.textContent = `${formatCurrency(categoryTotal)} (${formatPercentage(totalPercentage)} of your MDI)`;
       } else {
         categoryTotalSpan.textContent = "";
       }
