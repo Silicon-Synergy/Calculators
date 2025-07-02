@@ -26,7 +26,6 @@ h2 {
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: auto 1fr 1fr;
   gap: 1rem;
   height: 100vh;
   padding: 1rem;
