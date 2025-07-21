@@ -154,62 +154,136 @@ function calculateBudget(
   let recommendedCashflowPct = 0;
 
   const MIN_CASHFLOW_PCT = 10;
-  const MIN_SAVE_PCT = 10;
+  const MIN_SAVE_PCT = 5;
   const MAX_SAVE_PCT = 15;
   const MIN_INVEST_PCT = 10;
   const MAX_INVEST_PCT = 20;
 
   const idealAllocationTotal = MAX_SAVE_PCT + MAX_INVEST_PCT + MIN_CASHFLOW_PCT; // 15 + 20 + 10 = 45%
   const minimumAllocationTotal =
-    MIN_SAVE_PCT + MIN_INVEST_PCT + MIN_CASHFLOW_PCT; // 10 + 10 + 10 = 30%
-  const minCashflowAndSavings = MIN_CASHFLOW_PCT + MIN_SAVE_PCT; // 20%
+    MIN_SAVE_PCT + MIN_INVEST_PCT + MIN_CASHFLOW_PCT; // 5 + 10 + 10 = 25%
+  const minCashflowAndSavings = MIN_CASHFLOW_PCT + MIN_SAVE_PCT; // 10 + 5 = 15%
 
   const availablePool = 100 - expensesPercentage;
 
-  if (availablePool >= idealAllocationTotal) {
-    // ABUNDANCE ZONE: Fund ideal amounts, rest to cashflow.
-    recommendedSavingsPct = MAX_SAVE_PCT;
-    recommendedInvestmentsPct = MAX_INVEST_PCT;
-    recommendedCashflowPct =
-      availablePool - recommendedSavingsPct - recommendedInvestmentsPct;
-  } else if (availablePool >= minimumAllocationTotal) {
-    // DYNAMIC SQUEEZE ZONE: Meet all minimums, then distribute surplus proportionally.
-    recommendedCashflowPct = MIN_CASHFLOW_PCT;
-    recommendedSavingsPct = MIN_SAVE_PCT;
-    recommendedInvestmentsPct = MIN_INVEST_PCT;
-
-    const surplus = availablePool - minimumAllocationTotal;
-    const savingsHeadroom = MAX_SAVE_PCT - MIN_SAVE_PCT; // 5
-    const investmentsHeadroom = MAX_INVEST_PCT - MIN_INVEST_PCT; // 10
-    const totalHeadroom = savingsHeadroom + investmentsHeadroom; // 15
-
-    if (totalHeadroom > 0) {
-      recommendedSavingsPct += surplus * (savingsHeadroom / totalHeadroom);
-      recommendedInvestmentsPct +=
-        surplus * (investmentsHeadroom / totalHeadroom);
+  // Calculate remaining percentage after living expenses
+  const remainingPct = 100 - expensesPercentage;
+  let remainingAfterAllocation = remainingPct;
+  
+  // Different allocation strategies based on expense percentage zones
+  if (expensesPercentage > 70 && expensesPercentage < 80) {
+    // MODERATE ZONE (Yellow): 70.1% - 79.9% expenses
+    // Priority: Cashflow first (10%), then maximize Savings up to 15%, no Investments
+    
+    // Step 1: Allocate to Cashflow (always at least 10% if possible)
+    recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
+    remainingAfterAllocation -= recommendedCashflowPct;
+    
+    // Step 2: Allocate to Savings (up to MAX_SAVE_PCT (15%) in this zone)
+    recommendedSavingsPct = Math.min(MAX_SAVE_PCT, remainingAfterAllocation);
+    remainingAfterAllocation -= recommendedSavingsPct;
+    
+    // Step 3: No investments in this zone, add remaining to cashflow
+    recommendedInvestmentsPct = 0;
+    
+    // Add any leftover to Cashflow
+    if (remainingAfterAllocation > 0) {
+      recommendedCashflowPct += remainingAfterAllocation;
+    }
+  } else if (expensesPercentage < 70) {
+    // GREEN ZONE: Less than 70% expenses
+    // Step 1: Allocate to Cashflow (always at least 10% of remaining if possible)
+    recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
+    remainingAfterAllocation -= recommendedCashflowPct;
+    
+    // Check if we have enough for minimum investments (10%) and adjust allocation strategy
+    if (remainingAfterAllocation >= MIN_INVEST_PCT + MIN_SAVE_PCT) {
+      // We have enough for both minimum investments and at least minimum savings
+      
+      // Reserve 10% for investments first
+      const reservedForInvestments = MIN_INVEST_PCT;
+      const availableForSavings = remainingAfterAllocation - reservedForInvestments;
+      
+      // Step 2: Allocate to Savings (up to 15% of remaining after expenses)
+      recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSavings);
+      
+      // Step 3: Allocate to Investments (minimum 10%, up to 20% with remaining)
+      const remainingAfterSavings = remainingAfterAllocation - recommendedSavingsPct;
+      recommendedInvestmentsPct = Math.min(MAX_INVEST_PCT, Math.max(MIN_INVEST_PCT, remainingAfterSavings));
+      
+      // Calculate any leftover after both allocations
+      const leftover = remainingAfterAllocation - recommendedSavingsPct - recommendedInvestmentsPct;
+      
+      // Step 4: If there's still leftover, add it to Cashflow
+      if (leftover > 0) {
+        recommendedCashflowPct += leftover;
+      }
     } else {
-      // Should not happen in this zone, but as a fallback...
-      recommendedCashflowPct += surplus;
+      // Not enough for both minimum investments and minimum savings
+      // Prioritize investments at 10% if possible
+      if (remainingAfterAllocation >= MIN_INVEST_PCT) {
+        recommendedInvestmentsPct = MIN_INVEST_PCT;
+        recommendedSavingsPct = remainingAfterAllocation - MIN_INVEST_PCT;
+      } else {
+        // Not even enough for minimum investments
+        recommendedInvestmentsPct = remainingAfterAllocation;
+        recommendedSavingsPct = 0;
+      }
+    }
+  } else if (expensesPercentage >= 80 && expensesPercentage <= 85) {
+    // RED ZONE (80% - 85% expenses): 
+    // Priority: Ensure cashflow is at least 10%, allocate 5-10% to savings if possible,
+    // and any remaining goes to cashflow
+    
+    // Step 1: Allocate to Cashflow (always at least 10% if possible)
+    recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
+    remainingAfterAllocation -= recommendedCashflowPct;
+    
+    // Step 2: Allocate to Savings (5-10% in this zone)
+    if (remainingAfterAllocation > 0) {
+      // Allocate between 5-10% to savings, but not more than what's available
+      recommendedSavingsPct = Math.min(10, Math.max(MIN_SAVE_PCT, remainingAfterAllocation));
+      
+      // If we can't meet minimum savings of 5%, allocate whatever is left
+      if (recommendedSavingsPct < MIN_SAVE_PCT) {
+        recommendedSavingsPct = remainingAfterAllocation;
+      }
+      
+      remainingAfterAllocation -= recommendedSavingsPct;
+    } else {
+      recommendedSavingsPct = 0;
+    }
+    
+    // Step 3: No investments in this zone
+    recommendedInvestmentsPct = 0;
+    
+    // Step 4: Add any leftover to Cashflow
+    if (remainingAfterAllocation > 0) {
+      recommendedCashflowPct += remainingAfterAllocation;
     }
   } else {
-    // COMPROMISE ZONE: Not enough for dynamic scaling. Prioritize filling cashflow, then savings.
-    recommendedInvestmentsPct = 0; // No investments in this zone.
-
-    if (availablePool >= minCashflowAndSavings) {
-      // Can fund minimums for both cashflow and savings.
-      recommendedSavingsPct = MIN_SAVE_PCT;
-      // Give the rest to cashflow, as it's the top priority.
-      recommendedCashflowPct = availablePool - recommendedSavingsPct;
-    } else if (availablePool >= MIN_CASHFLOW_PCT) {
-      // Can only fund cashflow.
-      recommendedCashflowPct = availablePool;
-      recommendedSavingsPct = 0;
-    } else {
-      // Not even enough for minimum cashflow. It gets everything.
-      recommendedCashflowPct = availablePool;
-      recommendedSavingsPct = 0;
-    }
-  } // Final check to ensure no negative cashflow
+    // EXTREME RED ZONE (85.1% or more expenses):
+    // All remaining percentage goes directly to cashflow
+    recommendedCashflowPct = remainingPct;
+    recommendedSavingsPct = 0;
+    recommendedInvestmentsPct = 0;
+  }
+  
+  // Special case: If exactly 70% expenses, use fixed allocation
+  if (expensesPercentage === 70) {
+    recommendedCashflowPct = 10;
+    recommendedSavingsPct = 10;
+    recommendedInvestmentsPct = 10;
+  }
+  
+  // Verify total allocation doesn't exceed remaining percentage
+  const totalAllocation = recommendedCashflowPct + recommendedSavingsPct + recommendedInvestmentsPct;
+  if (Math.abs(totalAllocation - remainingPct) > 0.01) { // Allow for small rounding errors
+    // Adjust to ensure total is exactly the remaining percentage
+    const adjustment = remainingPct - totalAllocation;
+    recommendedCashflowPct += adjustment; // Add any difference to cashflow
+  }
+  // Final check to ensure no negative cashflow
 
   // Calculate recommended amounts based on the new percentages of disposable income
   const recommendedAllocations = {
@@ -292,7 +366,7 @@ function calculateBudget(
   };
 }
 
-// Determines the user's budget zone (Green, Moderate, Red) based on expense ratio.
+// Determines the user's budget zone (Green, Moderate, Red, Extreme Red) based on expense ratio.
 function determineBudgetZoneAndOptions(expensesPercentage) {
   if (expensesPercentage <= 70) {
     return [
@@ -308,12 +382,19 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
       true,
       false, // Investments not recommended in this zone
     ];
-  } else {
+  } else if (expensesPercentage <= 85) {
     return [
       "RED",
-      "Your expenses exceed a healthy limit. Prioritize increasing cashflow and reducing expenses immediately.",
-      false,
-      false,
+      "Your expenses exceed a healthy limit. Prioritize at least 10% cashflow, 5-10% savings if possible, and focus on reducing expenses immediately.",
+      true, // Savings are now recommended in this zone (5-10%)  
+      false, // Investments still not recommended in this zone
+    ];
+  } else {
+    return [
+      "EXTREME RED",
+      "Your expenses are critically high. All remaining funds should go to cashflow while you focus on reducing expenses urgently.",
+      false, // No savings in this zone
+      false, // No investments in this zone
     ];
   }
 }
@@ -688,6 +769,7 @@ function updateAllUI(budget) {
     GREEN: { bg: "bg-green-500/20", border: "border-green-500/50" },
     MODERATE: { bg: "bg-yellow-500/20", border: "border-yellow-500/50" },
     RED: { bg: "bg-red-500/20", border: "border-red-500/50" },
+    "EXTREME RED": { bg: "bg-red-900/30", border: "border-red-700/70" },
   };
   const zoneColor = zoneColors[budget.budget_zone];
   integratedExpenseSummary.className = `mt-8 glass-effect p-4 rounded-xl text-white animate-slide-up ${zoneColor.bg} ${zoneColor.border}`;
@@ -840,7 +922,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     housing: [
       "rent-mortgage",
       "electricity",
-      "utilities",
+      "water",
       "gas-heating",
       "home-insurance",
       "housing-others",
@@ -857,14 +939,14 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
       "student-loans",
       "credit-cards",
       "personal-loans",
-      "business-loans",
+      "life-insurance",
       "line-of-credit",
       "loan-others",
     ],
     living: [
       "groceries",
-      "dining-out",
       "phone-bills",
+      "subscriptions",
       "internet",
       "clothing",
       "living-others",
@@ -872,7 +954,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     miscellaneous: [
       "healthcare",
       "entertainment",
-      "subscriptions",
+      "dining-out",
       "pets",
       "gifts-donations",
       "misc-others",
@@ -910,7 +992,9 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     if (categoryTotalSpan) {
       if (categoryTotal > 0) {
         const totalPercentage = (categoryTotal / monthlyDisposableIncome) * 100;
-        categoryTotalSpan.textContent = `${formatCurrency(categoryTotal)} (${formatPercentage(totalPercentage)} of your MDI)`;
+        categoryTotalSpan.textContent = `${formatCurrency(
+          categoryTotal
+        )} (${formatPercentage(totalPercentage)} of your MDI)`;
       } else {
         categoryTotalSpan.textContent = "";
       }
