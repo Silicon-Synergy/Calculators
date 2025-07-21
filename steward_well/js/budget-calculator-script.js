@@ -1061,6 +1061,57 @@ function setupEventListeners() {
       handlePrimaryInputChange();
     }
   });
+  
+  // Custom Allocations Toggle Button
+  const toggleCustomAllocationsBtn = document.getElementById("toggleCustomAllocationsBtn");
+  const customAllocationsSection = document.getElementById("customAllocationsSection");
+  
+  // Add transition styles for smooth animation
+  if (customAllocationsSection) {
+    customAllocationsSection.style.overflow = "hidden";
+    customAllocationsSection.style.transition = "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out";
+    customAllocationsSection.style.maxHeight = "0";
+    customAllocationsSection.style.opacity = "0";
+  }
+  
+  if (toggleCustomAllocationsBtn && customAllocationsSection) {
+    toggleCustomAllocationsBtn.addEventListener("click", () => {
+      const isHidden = customAllocationsSection.classList.contains("hidden");
+      
+      if (isHidden) {
+        // Show with animation
+        customAllocationsSection.classList.remove("hidden");
+        // Set a small delay to ensure the hidden class is removed first
+        setTimeout(() => {
+          customAllocationsSection.style.maxHeight = "5000px"; // Large enough to contain all content
+          customAllocationsSection.style.opacity = "1";
+        }, 10);
+        
+        toggleCustomAllocationsBtn.innerHTML = `
+          <span>Hide Custom Allocations</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+          </svg>
+        `;
+      } else {
+        // Hide with animation
+        customAllocationsSection.style.maxHeight = "0";
+        customAllocationsSection.style.opacity = "0";
+        
+        // Add the hidden class after animation completes
+        setTimeout(() => {
+          customAllocationsSection.classList.add("hidden");
+        }, 500); // Match the transition duration
+        
+        toggleCustomAllocationsBtn.innerHTML = `
+          <span>Enter Custom Allocations</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        `;
+      }
+    });
+  }
 
   // All living expense inputs
   const expenseInputs = document.querySelectorAll(
