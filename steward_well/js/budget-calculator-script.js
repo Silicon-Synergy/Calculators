@@ -9,13 +9,19 @@ const calculatorState = {
   annualDisposable: 0,
   // Default values for compound interest calculation
   compoundInterest: {
-    years: 5,           // Default number of years
-    returnRate: 6,      // Default annual return rate (6%)
+    years: 5, // Default number of years
+    returnRate: 6, // Default annual return rate (6%)
     compoundFrequency: 12, // Monthly compounding
-    currentChartType: 'savings' // Default chart type (savings, investments, or both)
+    currentChartType: "savings", // Default chart type (savings, investments, or both)
+  },
+  customCompoundInterest: {
+    years: 5,
+    returnRate: 6, // percentage
+    compoundFrequency: 12, // monthly
+    currentChartType: 'savings' // 'savings', 'investments', 'both'
   },
   // Store the current budget calculation results
-  currentBudget: null
+  currentBudget: null,
 };
 
 // Core tax and deduction calculation functions.
@@ -767,7 +773,7 @@ function handleExpenseOrAllocationChange() {
     userSavingsPct,
     userInvestmentsPct
   );
-  
+
   // Store the current budget in calculatorState for access by other functions
   calculatorState.currentBudget = budget;
 
@@ -935,9 +941,12 @@ function updateAllUI(budget) {
 
   // Update individual expense percentage labels
   updateExpensePercentageLabels(budget.monthly_disposable_income);
-  
+
   // Update the projection chart with the new budget data
   updateProjectionChart();
+  
+  // Update the custom projection chart with the new budget data
+  updateCustomProjectionChart();
 }
 
 /**
@@ -1070,55 +1079,113 @@ function setupEventListeners() {
     // No need to set isInvestmentsCustom here, as handleExpenseOrAllocationChange reads directly from input.
     handleExpenseOrAllocationChange();
   });
-  
+
   // Chart projection buttons
-  const savingsChartBtn = document.getElementById('savingsChartBtn');
-  const investmentsChartBtn = document.getElementById('investmentsChartBtn');
-  const bothChartBtn = document.getElementById('bothChartBtn');
-  const projectionYearsInput = document.getElementById('projectionYears');
-  const projectionRateInput = document.getElementById('projectionRate');
-  
+  const savingsChartBtn = document.getElementById("savingsChartBtn");
+  const investmentsChartBtn = document.getElementById("investmentsChartBtn");
+  const bothChartBtn = document.getElementById("bothChartBtn");
+  const projectionYearsInput = document.getElementById("projectionYears");
+  const projectionRateInput = document.getElementById("projectionRate");
+
   if (savingsChartBtn && investmentsChartBtn && bothChartBtn) {
     // Helper function to update active button styling
     const updateActiveButton = (activeBtn) => {
-      [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach(btn => {
+      [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach((btn) => {
+        btn.classList.remove("active");
+      });
+      activeBtn.classList.add("active");
+    };
+
+    savingsChartBtn.addEventListener("click", () => {
+      calculatorState.compoundInterest.currentChartType = "savings";
+      updateActiveButton(savingsChartBtn);
+      updateProjectionChart();
+    });
+
+    investmentsChartBtn.addEventListener("click", () => {
+      calculatorState.compoundInterest.currentChartType = "investments";
+      updateActiveButton(investmentsChartBtn);
+      updateProjectionChart();
+    });
+
+    bothChartBtn.addEventListener("click", () => {
+      calculatorState.compoundInterest.currentChartType = "both";
+      updateActiveButton(bothChartBtn);
+      updateProjectionChart();
+    });
+
+    // Add event listeners for projection parameters
+    if (projectionYearsInput) {
+      projectionYearsInput.addEventListener("input", () => {
+        const years = parseInt(projectionYearsInput.value) || 5;
+        calculatorState.compoundInterest.years = Math.max(
+          1,
+          Math.min(50, years)
+        );
+        updateProjectionChart();
+      });
+    }
+
+    if (projectionRateInput) {
+      projectionRateInput.addEventListener("input", () => {
+        const rate = parseFloat(projectionRateInput.value) || 6;
+        calculatorState.compoundInterest.returnRate = Math.max(
+          0,
+          Math.min(20, rate)
+        );
+        updateProjectionChart();
+      });
+    }
+  }
+  
+  // Custom Chart projection buttons
+  const customSavingsChartBtn = document.getElementById('customSavingsChartBtn');
+  const customInvestmentsChartBtn = document.getElementById('customInvestmentsChartBtn');
+  const customBothChartBtn = document.getElementById('customBothChartBtn');
+  const customProjectionYearsInput = document.getElementById('customProjectionYears');
+  const customProjectionRateInput = document.getElementById('customProjectionRate');
+  
+  if (customSavingsChartBtn && customInvestmentsChartBtn && customBothChartBtn) {
+    // Helper function to update active button styling for custom buttons
+    const updateCustomActiveButton = (activeBtn) => {
+      [customSavingsChartBtn, customInvestmentsChartBtn, customBothChartBtn].forEach(btn => {
         btn.classList.remove('active');
       });
       activeBtn.classList.add('active');
     };
     
-    savingsChartBtn.addEventListener('click', () => {
-      calculatorState.compoundInterest.currentChartType = 'savings';
-      updateActiveButton(savingsChartBtn);
-      updateProjectionChart();
+    customSavingsChartBtn.addEventListener('click', () => {
+      calculatorState.customCompoundInterest.currentChartType = 'savings';
+      updateCustomActiveButton(customSavingsChartBtn);
+      updateCustomProjectionChart();
     });
     
-    investmentsChartBtn.addEventListener('click', () => {
-      calculatorState.compoundInterest.currentChartType = 'investments';
-      updateActiveButton(investmentsChartBtn);
-      updateProjectionChart();
+    customInvestmentsChartBtn.addEventListener('click', () => {
+      calculatorState.customCompoundInterest.currentChartType = 'investments';
+      updateCustomActiveButton(customInvestmentsChartBtn);
+      updateCustomProjectionChart();
     });
     
-    bothChartBtn.addEventListener('click', () => {
-      calculatorState.compoundInterest.currentChartType = 'both';
-      updateActiveButton(bothChartBtn);
-      updateProjectionChart();
+    customBothChartBtn.addEventListener('click', () => {
+      calculatorState.customCompoundInterest.currentChartType = 'both';
+      updateCustomActiveButton(customBothChartBtn);
+      updateCustomProjectionChart();
     });
     
-    // Add event listeners for projection parameters
-    if (projectionYearsInput) {
-      projectionYearsInput.addEventListener('input', () => {
-        const years = parseInt(projectionYearsInput.value) || 5;
-        calculatorState.compoundInterest.years = Math.max(1, Math.min(50, years));
-        updateProjectionChart();
+    // Add event listeners for custom projection parameters
+    if (customProjectionYearsInput) {
+      customProjectionYearsInput.addEventListener('input', () => {
+        const years = parseInt(customProjectionYearsInput.value) || 5;
+        calculatorState.customCompoundInterest.years = Math.max(1, Math.min(50, years));
+        updateCustomProjectionChart();
       });
     }
     
-    if (projectionRateInput) {
-      projectionRateInput.addEventListener('input', () => {
-        const rate = parseFloat(projectionRateInput.value) || 6;
-        calculatorState.compoundInterest.returnRate = Math.max(0, Math.min(20, rate));
-        updateProjectionChart();
+    if (customProjectionRateInput) {
+      customProjectionRateInput.addEventListener('input', () => {
+        const rate = parseFloat(customProjectionRateInput.value) || 6;
+        calculatorState.customCompoundInterest.returnRate = Math.max(0, Math.min(20, rate));
+        updateCustomProjectionChart();
       });
     }
   }
@@ -1272,30 +1339,37 @@ function toggleProvinceDropdown() {
  * - r is the monthly interest rate (annual rate / 12)
  * - n is the total number of periods (years * 12)
  */
-function calculateFutureValue(monthlyContribution, years, annualRate, compoundFrequency) {
+function calculateFutureValue(
+  monthlyContribution,
+  years,
+  annualRate,
+  compoundFrequency
+) {
   // Convert annual rate to decimal
   const r = annualRate / 100;
-  
+
   // Calculate the rate per period
   const ratePerPeriod = r / compoundFrequency;
-  
+
   // Calculate total number of periods
   const totalPeriods = years * compoundFrequency;
-  
+
   // Calculate future value using the compound interest formula
   // FV = PMT * ((1 + r)^n - 1) / r
-  const futureValue = monthlyContribution * ((Math.pow(1 + ratePerPeriod, totalPeriods) - 1) / ratePerPeriod);
-  
+  const futureValue =
+    monthlyContribution *
+    ((Math.pow(1 + ratePerPeriod, totalPeriods) - 1) / ratePerPeriod);
+
   // Calculate total contributions
   const totalContributions = monthlyContribution * totalPeriods;
-  
+
   // Calculate interest earned
   const interestEarned = futureValue - totalContributions;
-  
+
   return {
     endingBalance: futureValue,
     totalContributions: totalContributions,
-    interestEarned: interestEarned
+    interestEarned: interestEarned,
   };
 }
 
@@ -1303,109 +1377,269 @@ function calculateFutureValue(monthlyContribution, years, annualRate, compoundFr
  * Updates the projection chart based on the selected allocation type (savings, investments, or both)
  */
 function updateProjectionChart() {
-  const { years, returnRate, compoundFrequency, currentChartType } = calculatorState.compoundInterest;
-  
+  const { years, returnRate, compoundFrequency, currentChartType } =
+    calculatorState.compoundInterest;
+
   // Get the chart instance
-  const chartElement = document.getElementById('myPieChart2');
+  const chartElement = document.getElementById("myPieChart2");
   let chart = Chart.getChart(chartElement);
-  
+
   // If no budget calculation has been performed yet, return early
   if (!calculatorState.currentBudget) {
-    console.log('No budget data available yet for projection chart');
+    console.log("No budget data available yet for projection chart");
     return;
   }
-  
+
   const currentBudget = calculatorState.currentBudget;
-  
+
   // Determine the monthly contribution based on the selected chart type
   let monthlyContribution = 0;
-  
-  if (currentChartType === 'savings') {
+
+  if (currentChartType === "savings") {
     monthlyContribution = currentBudget.recommended_allocations.monthly_savings;
-  } else if (currentChartType === 'investments') {
-    monthlyContribution = currentBudget.recommended_allocations.monthly_investments;
-  } else if (currentChartType === 'both') {
-    monthlyContribution = currentBudget.recommended_allocations.monthly_savings + currentBudget.recommended_allocations.monthly_investments;
+  } else if (currentChartType === "investments") {
+    monthlyContribution =
+      currentBudget.recommended_allocations.monthly_investments;
+  } else if (currentChartType === "both") {
+    monthlyContribution =
+      currentBudget.recommended_allocations.monthly_savings +
+      currentBudget.recommended_allocations.monthly_investments;
   }
-  
+
   // Calculate the future value
-  const { endingBalance, totalContributions, interestEarned } = calculateFutureValue(
-    monthlyContribution,
-    years,
-    returnRate,
-    compoundFrequency
-  );
-  
+  const { endingBalance, totalContributions, interestEarned } =
+    calculateFutureValue(
+      monthlyContribution,
+      years,
+      returnRate,
+      compoundFrequency
+    );
+
   // Update the chart data
   if (chart) {
-    chart.data.datasets[0].data = [interestEarned, totalContributions, endingBalance];
-    chart.data.labels = ['Interest Earned', 'Total Contributions', 'Ending Balance'];
+    chart.data.datasets[0].data = [
+      totalContributions,
+      interestEarned,
+      endingBalance,
+    ];
+    chart.data.labels = [
+      "Total Contributions",
+      "Interest Earned",
+      "Ending Balance",
+    ];
     chart.update();
   } else {
     // If chart doesn't exist yet, create it
-    chart = new Chart(chartElement.getContext('2d'), {
-      type: 'pie',
+    chart = new Chart(chartElement.getContext("2d"), {
+      type: "pie",
       data: {
-        labels: ['Interest Earned', 'Total Contributions', 'Ending Balance'],
-        datasets: [{
-          label: 'Projection',
-          data: [interestEarned, totalContributions, endingBalance],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.7)',  // Red for interest
-            'rgba(255, 206, 86, 0.7)',  // Yellow for contributions
-            'rgba(54, 162, 235, 0.7)'   // Blue for ending balance
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(54, 162, 235, 1)'
-          ],
-          borderWidth: 1
-        }]
+        labels: ["Total Contributions", "Interest Earned"],
+        datasets: [
+          {
+            label: "Projection",
+            data: [totalContributions, interestEarned, endingBalance],
+            backgroundColor: [
+              "rgba(255, 206, 86, 0.7)", // Yellow for contributions
+              "rgba(75, 192, 192, 0.7)", // Green for interest
+              "rgba(54, 162, 235, 0.7)", // Blue for ending balance
+            ],
+            borderColor: [
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(54, 162, 235, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
       },
       options: {
         responsive: true,
         plugins: {
           tooltip: {
             callbacks: {
-              label: function(context) {
-                const label = context.label || '';
+              label: function (context) {
+                const label = context.label || "";
                 const value = context.raw || 0;
                 return `${label}: ${formatCurrency(value)}`;
-              }
-            }
+              },
+            },
           },
           legend: {
-            position: 'bottom',
+            position: "bottom",
             labels: {
-              color: 'white',
+              color: "white",
               font: {
-                size: 12
-              }
-            }
+                size: 12,
+              },
+            },
           },
           title: {
             display: true,
             text: `Projection over ${years} years at ${returnRate}%`,
-            color: 'white',
+            color: "white",
             font: {
-              size: 14
-            }
-          }
-        }
-      }
+              size: 14,
+            },
+          },
+        },
+      },
     });
   }
-  
+
   // Display a summary of the projection below the chart
-  const summaryElement = document.getElementById('projectionSummary');
+  const summaryElement = document.getElementById("projectionSummary");
   if (summaryElement) {
-    const contributionType = currentChartType === 'savings' ? 'Savings' : 
-                            currentChartType === 'investments' ? 'Investments' : 'Combined';
-    
+    const contributionType =
+      currentChartType === "savings"
+        ? "Savings"
+        : currentChartType === "investments"
+        ? "Investments"
+        : "Combined";
+
     summaryElement.innerHTML = `
       <div class="text-white text-sm mt-4">
-        <p><strong>${contributionType} of ${formatCurrency(monthlyContribution)}/month</strong> for ${years} years at ${returnRate}% return:</p>
+        <p><strong>${contributionType} of ${formatCurrency(
+      monthlyContribution
+    )}/month</strong> for ${years} years at ${returnRate}% return:</p>
+        <ul class="list-disc pl-5 mt-2 space-y-1">
+          <li>Total Contributions: ${formatCurrency(totalContributions)}</li>
+          <li>Interest Earned: ${formatCurrency(interestEarned)}</li>
+          <li>Ending Balance: ${formatCurrency(endingBalance)}</li>
+        </ul>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Updates the custom projection chart based on the selected allocation type (savings, investments, or both)
+ */
+function updateCustomProjectionChart() {
+  const { years, returnRate, compoundFrequency, currentChartType } =
+    calculatorState.customCompoundInterest;
+
+  // Get the chart instance
+  const chartElement = document.getElementById("customPieChart");
+  let chart = Chart.getChart(chartElement);
+
+  // If no budget calculation has been performed yet, return early
+  if (!calculatorState.currentBudget) {
+    console.log("No budget data available yet for custom projection chart");
+    return;
+  }
+
+  const currentBudget = calculatorState.currentBudget;
+
+  // Determine the monthly contribution based on the selected chart type using custom allocations
+  let monthlyContribution = 0;
+
+  if (currentBudget.custom_allocations) {
+    if (currentChartType === "savings") {
+      monthlyContribution = currentBudget.custom_allocations.monthly_savings;
+    } else if (currentChartType === "investments") {
+      monthlyContribution = currentBudget.custom_allocations.monthly_investments;
+    } else if (currentChartType === "both") {
+      monthlyContribution =
+        currentBudget.custom_allocations.monthly_savings +
+        currentBudget.custom_allocations.monthly_investments;
+    }
+  }
+
+  // Calculate the future value
+  const { endingBalance, totalContributions, interestEarned } =
+    calculateFutureValue(
+      monthlyContribution,
+      years,
+      returnRate,
+      compoundFrequency
+    );
+
+  // Update the chart data
+  if (chart) {
+    chart.data.datasets[0].data = [
+      totalContributions,
+      interestEarned,
+      endingBalance,
+    ];
+    chart.data.labels = [
+      "Total Contributions",
+      "Interest Earned",
+      "Ending Balance",
+    ];
+    chart.update();
+  } else {
+    // If chart doesn't exist yet, create it
+    chart = new Chart(chartElement.getContext("2d"), {
+      type: "pie",
+      data: {
+        labels: ["Total Contributions", "Interest Earned"],
+        datasets: [
+          {
+            label: "Custom Projection",
+            data: [totalContributions, interestEarned, endingBalance],
+            backgroundColor: [
+              "rgba(255, 206, 86, 0.7)", // Yellow for contributions
+              "rgba(75, 192, 192, 0.7)", // Green for interest
+              "rgba(54, 162, 235, 0.7)", // Blue for ending balance
+            ],
+            borderColor: [
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(54, 162, 235, 1)",
+            ],
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const label = context.label || "";
+                const value = context.raw || 0;
+                return `${label}: ${formatCurrency(value)}`;
+              },
+            },
+          },
+          legend: {
+            position: "bottom",
+            labels: {
+              color: "white",
+              font: {
+                size: 12,
+              },
+            },
+          },
+          title: {
+            display: true,
+            text: `Custom Projection over ${years} years at ${returnRate}%`,
+            color: "white",
+            font: {
+              size: 14,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Display a summary of the projection below the chart
+  const summaryElement = document.getElementById("customProjectionSummary");
+  if (summaryElement) {
+    const contributionType =
+      currentChartType === "savings"
+        ? "Savings"
+        : currentChartType === "investments"
+        ? "Investments"
+        : "Combined";
+
+    summaryElement.innerHTML = `
+      <div class="text-white text-sm mt-4">
+        <p><strong>Custom ${contributionType} of ${formatCurrency(
+      monthlyContribution
+    )}/month</strong> for ${years} years at ${returnRate}% return:</p>
         <ul class="list-disc pl-5 mt-2 space-y-1">
           <li>Total Contributions: ${formatCurrency(totalContributions)}</li>
           <li>Interest Earned: ${formatCurrency(interestEarned)}</li>
