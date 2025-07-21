@@ -7,6 +7,15 @@ const calculatorState = {
   livingExpenses: {},
   totalMonthlyExpensesEntered: 0,
   annualDisposable: 0,
+  // Default values for compound interest calculation
+  compoundInterest: {
+    years: 5,           // Default number of years
+    returnRate: 6,      // Default annual return rate (6%)
+    compoundFrequency: 12, // Monthly compounding
+    currentChartType: 'savings' // Default chart type (savings, investments, or both)
+  },
+  // Store the current budget calculation results
+  currentBudget: null
 };
 
 // Core tax and deduction calculation functions.
@@ -169,23 +178,23 @@ function calculateBudget(
   // Calculate remaining percentage after living expenses
   const remainingPct = 100 - expensesPercentage;
   let remainingAfterAllocation = remainingPct;
-  
+
   // Different allocation strategies based on expense percentage zones
   if (expensesPercentage > 70 && expensesPercentage < 80) {
     // MODERATE ZONE (Yellow): 70.1% - 79.9% expenses
     // Priority: Cashflow first (10%), then maximize Savings up to 15%, no Investments
-    
+
     // Step 1: Allocate to Cashflow (always at least 10% if possible)
     recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
     remainingAfterAllocation -= recommendedCashflowPct;
-    
+
     // Step 2: Allocate to Savings (up to MAX_SAVE_PCT (15%) in this zone)
     recommendedSavingsPct = Math.min(MAX_SAVE_PCT, remainingAfterAllocation);
     remainingAfterAllocation -= recommendedSavingsPct;
-    
+
     // Step 3: No investments in this zone, add remaining to cashflow
     recommendedInvestmentsPct = 0;
-    
+
     // Add any leftover to Cashflow
     if (remainingAfterAllocation > 0) {
       recommendedCashflowPct += remainingAfterAllocation;
@@ -195,25 +204,33 @@ function calculateBudget(
     // Step 1: Allocate to Cashflow (always at least 10% of remaining if possible)
     recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
     remainingAfterAllocation -= recommendedCashflowPct;
-    
+
     // Check if we have enough for minimum investments (10%) and adjust allocation strategy
     if (remainingAfterAllocation >= MIN_INVEST_PCT + MIN_SAVE_PCT) {
       // We have enough for both minimum investments and at least minimum savings
-      
+
       // Reserve 10% for investments first
       const reservedForInvestments = MIN_INVEST_PCT;
-      const availableForSavings = remainingAfterAllocation - reservedForInvestments;
-      
+      const availableForSavings =
+        remainingAfterAllocation - reservedForInvestments;
+
       // Step 2: Allocate to Savings (up to 15% of remaining after expenses)
       recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSavings);
-      
+
       // Step 3: Allocate to Investments (minimum 10%, up to 20% with remaining)
-      const remainingAfterSavings = remainingAfterAllocation - recommendedSavingsPct;
-      recommendedInvestmentsPct = Math.min(MAX_INVEST_PCT, Math.max(MIN_INVEST_PCT, remainingAfterSavings));
-      
+      const remainingAfterSavings =
+        remainingAfterAllocation - recommendedSavingsPct;
+      recommendedInvestmentsPct = Math.min(
+        MAX_INVEST_PCT,
+        Math.max(MIN_INVEST_PCT, remainingAfterSavings)
+      );
+
       // Calculate any leftover after both allocations
-      const leftover = remainingAfterAllocation - recommendedSavingsPct - recommendedInvestmentsPct;
-      
+      const leftover =
+        remainingAfterAllocation -
+        recommendedSavingsPct -
+        recommendedInvestmentsPct;
+
       // Step 4: If there's still leftover, add it to Cashflow
       if (leftover > 0) {
         recommendedCashflowPct += leftover;
@@ -231,32 +248,35 @@ function calculateBudget(
       }
     }
   } else if (expensesPercentage >= 80 && expensesPercentage <= 85) {
-    // RED ZONE (80% - 85% expenses): 
+    // RED ZONE (80% - 85% expenses):
     // Priority: Ensure cashflow is at least 10%, allocate 5-10% to savings if possible,
     // and any remaining goes to cashflow
-    
+
     // Step 1: Allocate to Cashflow (always at least 10% if possible)
     recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
     remainingAfterAllocation -= recommendedCashflowPct;
-    
+
     // Step 2: Allocate to Savings (5-10% in this zone)
     if (remainingAfterAllocation > 0) {
       // Allocate between 5-10% to savings, but not more than what's available
-      recommendedSavingsPct = Math.min(10, Math.max(MIN_SAVE_PCT, remainingAfterAllocation));
-      
+      recommendedSavingsPct = Math.min(
+        10,
+        Math.max(MIN_SAVE_PCT, remainingAfterAllocation)
+      );
+
       // If we can't meet minimum savings of 5%, allocate whatever is left
       if (recommendedSavingsPct < MIN_SAVE_PCT) {
         recommendedSavingsPct = remainingAfterAllocation;
       }
-      
+
       remainingAfterAllocation -= recommendedSavingsPct;
     } else {
       recommendedSavingsPct = 0;
     }
-    
+
     // Step 3: No investments in this zone
     recommendedInvestmentsPct = 0;
-    
+
     // Step 4: Add any leftover to Cashflow
     if (remainingAfterAllocation > 0) {
       recommendedCashflowPct += remainingAfterAllocation;
@@ -268,17 +288,19 @@ function calculateBudget(
     recommendedSavingsPct = 0;
     recommendedInvestmentsPct = 0;
   }
-  
+
   // Special case: If exactly 70% expenses, use fixed allocation
   if (expensesPercentage === 70) {
     recommendedCashflowPct = 10;
     recommendedSavingsPct = 10;
     recommendedInvestmentsPct = 10;
   }
-  
+
   // Verify total allocation doesn't exceed remaining percentage
-  const totalAllocation = recommendedCashflowPct + recommendedSavingsPct + recommendedInvestmentsPct;
-  if (Math.abs(totalAllocation - remainingPct) > 0.01) { // Allow for small rounding errors
+  const totalAllocation =
+    recommendedCashflowPct + recommendedSavingsPct + recommendedInvestmentsPct;
+  if (Math.abs(totalAllocation - remainingPct) > 0.01) {
+    // Allow for small rounding errors
     // Adjust to ensure total is exactly the remaining percentage
     const adjustment = remainingPct - totalAllocation;
     recommendedCashflowPct += adjustment; // Add any difference to cashflow
@@ -386,7 +408,7 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
     return [
       "RED",
       "Your expenses exceed a healthy limit. Prioritize at least 10% cashflow, 5-10% savings if possible, and focus on reducing expenses immediately.",
-      true, // Savings are now recommended in this zone (5-10%)  
+      true, // Savings are now recommended in this zone (5-10%)
       false, // Investments still not recommended in this zone
     ];
   } else {
@@ -745,6 +767,9 @@ function handleExpenseOrAllocationChange() {
     userSavingsPct,
     userInvestmentsPct
   );
+  
+  // Store the current budget in calculatorState for access by other functions
+  calculatorState.currentBudget = budget;
 
   // 4. Update all UI elements with the new budget data
   updateAllUI(budget);
@@ -910,6 +935,9 @@ function updateAllUI(budget) {
 
   // Update individual expense percentage labels
   updateExpensePercentageLabels(budget.monthly_disposable_income);
+  
+  // Update the projection chart with the new budget data
+  updateProjectionChart();
 }
 
 /**
@@ -1042,6 +1070,58 @@ function setupEventListeners() {
     // No need to set isInvestmentsCustom here, as handleExpenseOrAllocationChange reads directly from input.
     handleExpenseOrAllocationChange();
   });
+  
+  // Chart projection buttons
+  const savingsChartBtn = document.getElementById('savingsChartBtn');
+  const investmentsChartBtn = document.getElementById('investmentsChartBtn');
+  const bothChartBtn = document.getElementById('bothChartBtn');
+  const projectionYearsInput = document.getElementById('projectionYears');
+  const projectionRateInput = document.getElementById('projectionRate');
+  
+  if (savingsChartBtn && investmentsChartBtn && bothChartBtn) {
+    // Helper function to update active button styling
+    const updateActiveButton = (activeBtn) => {
+      [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach(btn => {
+        btn.classList.remove('active');
+      });
+      activeBtn.classList.add('active');
+    };
+    
+    savingsChartBtn.addEventListener('click', () => {
+      calculatorState.compoundInterest.currentChartType = 'savings';
+      updateActiveButton(savingsChartBtn);
+      updateProjectionChart();
+    });
+    
+    investmentsChartBtn.addEventListener('click', () => {
+      calculatorState.compoundInterest.currentChartType = 'investments';
+      updateActiveButton(investmentsChartBtn);
+      updateProjectionChart();
+    });
+    
+    bothChartBtn.addEventListener('click', () => {
+      calculatorState.compoundInterest.currentChartType = 'both';
+      updateActiveButton(bothChartBtn);
+      updateProjectionChart();
+    });
+    
+    // Add event listeners for projection parameters
+    if (projectionYearsInput) {
+      projectionYearsInput.addEventListener('input', () => {
+        const years = parseInt(projectionYearsInput.value) || 5;
+        calculatorState.compoundInterest.years = Math.max(1, Math.min(50, years));
+        updateProjectionChart();
+      });
+    }
+    
+    if (projectionRateInput) {
+      projectionRateInput.addEventListener('input', () => {
+        const rate = parseFloat(projectionRateInput.value) || 6;
+        calculatorState.compoundInterest.returnRate = Math.max(0, Math.min(20, rate));
+        updateProjectionChart();
+      });
+    }
+  }
 
   // UI Toggles
   const dropdownBtn = document.getElementById("dropdownBtn");
@@ -1184,6 +1264,158 @@ function toggleProvinceDropdown() {
 }
 
 // Initializes the application on DOM load.
+/**
+ * Calculates the future value of an investment using compound interest.
+ * FV = PMT * ((1 + r)^n - 1) / r
+ * where:
+ * - PMT is the monthly contribution
+ * - r is the monthly interest rate (annual rate / 12)
+ * - n is the total number of periods (years * 12)
+ */
+function calculateFutureValue(monthlyContribution, years, annualRate, compoundFrequency) {
+  // Convert annual rate to decimal
+  const r = annualRate / 100;
+  
+  // Calculate the rate per period
+  const ratePerPeriod = r / compoundFrequency;
+  
+  // Calculate total number of periods
+  const totalPeriods = years * compoundFrequency;
+  
+  // Calculate future value using the compound interest formula
+  // FV = PMT * ((1 + r)^n - 1) / r
+  const futureValue = monthlyContribution * ((Math.pow(1 + ratePerPeriod, totalPeriods) - 1) / ratePerPeriod);
+  
+  // Calculate total contributions
+  const totalContributions = monthlyContribution * totalPeriods;
+  
+  // Calculate interest earned
+  const interestEarned = futureValue - totalContributions;
+  
+  return {
+    endingBalance: futureValue,
+    totalContributions: totalContributions,
+    interestEarned: interestEarned
+  };
+}
+
+/**
+ * Updates the projection chart based on the selected allocation type (savings, investments, or both)
+ */
+function updateProjectionChart() {
+  const { years, returnRate, compoundFrequency, currentChartType } = calculatorState.compoundInterest;
+  
+  // Get the chart instance
+  const chartElement = document.getElementById('myPieChart2');
+  let chart = Chart.getChart(chartElement);
+  
+  // If no budget calculation has been performed yet, return early
+  if (!calculatorState.currentBudget) {
+    console.log('No budget data available yet for projection chart');
+    return;
+  }
+  
+  const currentBudget = calculatorState.currentBudget;
+  
+  // Determine the monthly contribution based on the selected chart type
+  let monthlyContribution = 0;
+  
+  if (currentChartType === 'savings') {
+    monthlyContribution = currentBudget.recommended_allocations.monthly_savings;
+  } else if (currentChartType === 'investments') {
+    monthlyContribution = currentBudget.recommended_allocations.monthly_investments;
+  } else if (currentChartType === 'both') {
+    monthlyContribution = currentBudget.recommended_allocations.monthly_savings + currentBudget.recommended_allocations.monthly_investments;
+  }
+  
+  // Calculate the future value
+  const { endingBalance, totalContributions, interestEarned } = calculateFutureValue(
+    monthlyContribution,
+    years,
+    returnRate,
+    compoundFrequency
+  );
+  
+  // Update the chart data
+  if (chart) {
+    chart.data.datasets[0].data = [interestEarned, totalContributions, endingBalance];
+    chart.data.labels = ['Interest Earned', 'Total Contributions', 'Ending Balance'];
+    chart.update();
+  } else {
+    // If chart doesn't exist yet, create it
+    chart = new Chart(chartElement.getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: ['Interest Earned', 'Total Contributions', 'Ending Balance'],
+        datasets: [{
+          label: 'Projection',
+          data: [interestEarned, totalContributions, endingBalance],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',  // Red for interest
+            'rgba(255, 206, 86, 0.7)',  // Yellow for contributions
+            'rgba(54, 162, 235, 0.7)'   // Blue for ending balance
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(54, 162, 235, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                return `${label}: ${formatCurrency(value)}`;
+              }
+            }
+          },
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: 'white',
+              font: {
+                size: 12
+              }
+            }
+          },
+          title: {
+            display: true,
+            text: `Projection over ${years} years at ${returnRate}%`,
+            color: 'white',
+            font: {
+              size: 14
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Display a summary of the projection below the chart
+  const summaryElement = document.getElementById('projectionSummary');
+  if (summaryElement) {
+    const contributionType = currentChartType === 'savings' ? 'Savings' : 
+                            currentChartType === 'investments' ? 'Investments' : 'Combined';
+    
+    summaryElement.innerHTML = `
+      <div class="text-white text-sm mt-4">
+        <p><strong>${contributionType} of ${formatCurrency(monthlyContribution)}/month</strong> for ${years} years at ${returnRate}% return:</p>
+        <ul class="list-disc pl-5 mt-2 space-y-1">
+          <li>Total Contributions: ${formatCurrency(totalContributions)}</li>
+          <li>Interest Earned: ${formatCurrency(interestEarned)}</li>
+          <li>Ending Balance: ${formatCurrency(endingBalance)}</li>
+        </ul>
+      </div>
+    `;
+  }
+}
+
 function initializeApp() {
   initializeProvinceDropdown();
   setupEventListeners();

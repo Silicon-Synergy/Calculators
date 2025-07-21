@@ -118,6 +118,12 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
       }
 
+      /* Active button styling */
+      button.active {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+        transform: scale(1.05);
+      }
+
       .input-glow:focus {
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1),
           0 0 20px rgba(99, 102, 241, 0.2);
@@ -1739,11 +1745,16 @@
                 </p>
                 <div class="bg-blue-50 p-4 rounded-lg mb-6">
                   <p class="text-sm text-blue-800">
-                    <strong>Pro Tip:</strong> Allocation strategy varies by budget zone: <br>
-                    • Green Zone (expenses ≤70%): 10% cashflow, 5-15% savings, 10-20% investments<br>
-                    • Moderate Zone (70-80%): 10% cashflow, up to 10% savings, no investments<br>
-                    • Red Zone (80-85%): At least 10% cashflow, 5-10% savings if possible, no investments<br>
-                    • Extreme Red Zone (>85%): All remaining goes to cashflow, no savings, no investments
+                    <strong>Pro Tip:</strong> Allocation strategy varies by
+                    budget zone: <br />
+                    • Green Zone (expenses ≤70%): 10% cashflow, 5-15% savings,
+                    10-20% investments<br />
+                    • Moderate Zone (70-80%): 10% cashflow, up to 10% savings,
+                    no investments<br />
+                    • Red Zone (80-85%): At least 10% cashflow, 5-10% savings if
+                    possible, no investments<br />
+                    • Extreme Red Zone (>85%): All remaining goes to cashflow,
+                    no savings, no investments
                   </p>
                 </div>
               </div>
@@ -1795,7 +1806,8 @@
                   <div
                     class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-green-900 text-sm font-normal rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
                   >
-                    These are the suggested percentages based on prioritizing 10% cashflow, then 5-15% savings, then 10-20% investments.
+                    These are the suggested percentages based on prioritizing
+                    10% cashflow, then 5-15% savings, then 10-20% investments.
                   </div>
                 </div>
               </div>
@@ -1907,27 +1919,36 @@
             </div>
           </div>
         </div>
-        <!-- Two Column Layout -->
+        <!-- Recommended Allocations Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
           <!-- Left Column: Recommended Allocations -->
           <div class="space-y-6">
+            <h3 class="text-lg font-semibold text-white mb-4">
+              Recommended Allocations Projection
+            </h3>
             <div class="flex justify-between gap-8">
               <button
-                class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
+                id="savingsChartBtn"
+                class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md active"
               >
                 Savings
               </button>
               <button
+                id="investmentsChartBtn"
                 class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
               >
                 Investments
               </button>
               <button
+                id="bothChartBtn"
                 class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
               >
                 Both
               </button>
             </div>
+
+            <!-- Compound Interest Parameters -->
+
             <div class="flex justify-center item-center">
               <canvas
                 id="myPieChart2"
@@ -1936,6 +1957,11 @@
                 height="200"
               ></canvas>
             </div>
+            <!-- Projection Summary -->
+            <div
+              id="projectionSummary"
+              class="mt-4 p-4 bg-white/5 rounded-lg border border-white/10"
+            ></div>
           </div>
 
           <!-- Right Column: Custom User Inputs -->
