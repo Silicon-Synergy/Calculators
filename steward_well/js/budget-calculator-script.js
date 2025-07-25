@@ -1,3 +1,6 @@
+// Register Chart.js datalabels plugin
+Chart.register(ChartDataLabels);
+
 // A central object to hold the results of calculations to be used across different functions.
 const calculatorState = {
   annualIncome: 0,
@@ -1595,20 +1598,21 @@ function updateProjectionChart() {
 
   const currentColors = colorSchemes[currentChartType] || colorSchemes.savings;
 
-  // Update the chart data
+  // Update the chart data as percentages of ending balance
+  const contributionPercentage = Math.round(
+    (totalContributions / endingBalance) * 100
+  );
+  const interestPercentage = Math.round((interestEarned / endingBalance) * 100);
+  const chartData = [contributionPercentage, interestPercentage];
+  const chartLabels = ["Total Contributions", "Interest Earned"];
+  const chartTotal = 100; // Total is always 100%
+
   if (chart) {
-    chart.data.datasets[0].data = [
-      totalContributions,
-      interestEarned,
-      endingBalance,
-    ];
-    chart.data.labels = [
-      "Total Contributions",
-      "Interest Earned",
-      "Ending Balance",
-    ];
-    chart.data.datasets[0].backgroundColor = currentColors.backgroundColor;
-    chart.data.datasets[0].borderColor = currentColors.borderColor;
+    chart.data.datasets[0].data = chartData;
+    chart.data.labels = chartLabels;
+    chart.data.datasets[0].backgroundColor =
+      currentColors.backgroundColor.slice(0, 2);
+    chart.data.datasets[0].borderColor = currentColors.borderColor.slice(0, 2);
     chart.data.datasets[0].borderWidth = currentColors.borderWidth;
     chart.update();
   } else {
@@ -1616,13 +1620,13 @@ function updateProjectionChart() {
     chart = new Chart(chartElement.getContext("2d"), {
       type: "pie",
       data: {
-        labels: ["Total Contributions", "Interest Earned", "Ending Balance"],
+        labels: chartLabels,
         datasets: [
           {
             label: "Projection",
-            data: [totalContributions, interestEarned, endingBalance],
-            backgroundColor: currentColors.backgroundColor,
-            borderColor: currentColors.borderColor,
+            data: chartData,
+            backgroundColor: currentColors.backgroundColor.slice(0, 2),
+            borderColor: currentColors.borderColor.slice(0, 2),
             borderWidth: currentColors.borderWidth,
           },
         ],
@@ -1634,8 +1638,14 @@ function updateProjectionChart() {
             callbacks: {
               label: function (context) {
                 const label = context.label || "";
-                const value = context.raw || 0;
-                return `${label}: ${formatCurrency(value)}`;
+                const percentage = context.raw || 0;
+                const dollarValue =
+                  label === "Total Contributions"
+                    ? totalContributions
+                    : interestEarned;
+                return `${label}\n${formatCurrency(
+                  dollarValue
+                )} (${percentage}%)`;
               },
             },
           },
@@ -1645,6 +1655,19 @@ function updateProjectionChart() {
           title: {
             display: false,
           },
+          datalabels: {
+            color: "white",
+            font: {
+              weight: "bold",
+              size: 12,
+            },
+            formatter: function (value, context) {
+              return value + "%";
+            },
+          },
+        },
+        layout: {
+          padding: 10,
         },
       },
     });
@@ -1680,6 +1703,12 @@ function updateProjectionChart() {
           monthlyContribution
         )}/month for ${years} years at ${returnRateDescription}</p>
         <div class="space-y-1">
+          <div class="flex items-center justify-between p-2 rounded bg-white/10 mb-3">
+            <span class="text-sm font-bold">Ending Balance</span>
+            <span class="font-bold text-lg">${formatCurrency(
+              endingBalance
+            )}</span>
+          </div>
           <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(0)">
             <div class="flex items-center gap-2">
               <div class="w-4 h-3 rounded" style="background-color: ${
@@ -1699,15 +1728,6 @@ function updateProjectionChart() {
               <span class="text-sm" id="legend-1">Interest Earned</span>
             </div>
             <span class="font-semibold">${formatCurrency(interestEarned)}</span>
-          </div>
-          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(2)">
-            <div class="flex items-center gap-2">
-              <div class="w-4 h-3 rounded" style="background-color: ${
-                currentColors.backgroundColor[2]
-              }"></div>
-              <span class="text-sm" id="legend-2">Ending Balance</span>
-            </div>
-            <span class="font-semibold">${formatCurrency(endingBalance)}</span>
           </div>
         </div>
       </div>
@@ -1812,21 +1832,29 @@ function updateCustomProjectionChart() {
   const currentCustomColors =
     customColorSchemes[currentChartType] || customColorSchemes.savings;
 
-  // Update the chart data
+  // Update the chart data as percentages of ending balance
+  const customContributionPercentage = Math.round(
+    (totalContributions / endingBalance) * 100
+  );
+  const customInterestPercentage = Math.round(
+    (interestEarned / endingBalance) * 100
+  );
+  const customChartData = [
+    customContributionPercentage,
+    customInterestPercentage,
+  ];
+  const customChartLabels = ["Total Contributions", "Interest Earned"];
+  const customChartTotal = 100; // Total is always 100%
+
   if (chart) {
-    chart.data.datasets[0].data = [
-      totalContributions,
-      interestEarned,
-      endingBalance,
-    ];
-    chart.data.labels = [
-      "Total Contributions",
-      "Interest Earned",
-      "Ending Balance",
-    ];
+    chart.data.datasets[0].data = customChartData;
+    chart.data.labels = customChartLabels;
     chart.data.datasets[0].backgroundColor =
-      currentCustomColors.backgroundColor;
-    chart.data.datasets[0].borderColor = currentCustomColors.borderColor;
+      currentCustomColors.backgroundColor.slice(0, 2);
+    chart.data.datasets[0].borderColor = currentCustomColors.borderColor.slice(
+      0,
+      2
+    );
     chart.data.datasets[0].borderWidth = currentCustomColors.borderWidth;
     chart.update();
   } else {
@@ -1834,13 +1862,13 @@ function updateCustomProjectionChart() {
     chart = new Chart(chartElement.getContext("2d"), {
       type: "pie",
       data: {
-        labels: ["Total Contributions", "Interest Earned", "Ending Balance"],
+        labels: customChartLabels,
         datasets: [
           {
             label: "Custom Projection",
-            data: [totalContributions, interestEarned, endingBalance],
-            backgroundColor: currentCustomColors.backgroundColor,
-            borderColor: currentCustomColors.borderColor,
+            data: customChartData,
+            backgroundColor: currentCustomColors.backgroundColor.slice(0, 2),
+            borderColor: currentCustomColors.borderColor.slice(0, 2),
             borderWidth: currentCustomColors.borderWidth,
           },
         ],
@@ -1852,8 +1880,14 @@ function updateCustomProjectionChart() {
             callbacks: {
               label: function (context) {
                 const label = context.label || "";
-                const value = context.raw || 0;
-                return `${label}: ${formatCurrency(value)}`;
+                const percentage = context.raw || 0;
+                const dollarValue =
+                  label === "Total Contributions"
+                    ? totalContributions
+                    : interestEarned;
+                return `${label}\n${formatCurrency(
+                  dollarValue
+                )} (${percentage}%)`;
               },
             },
           },
@@ -1863,6 +1897,19 @@ function updateCustomProjectionChart() {
           title: {
             display: false,
           },
+          datalabels: {
+            color: "white",
+            font: {
+              weight: "bold",
+              size: 12,
+            },
+            formatter: function (value, context) {
+              return value + "%";
+            },
+          },
+        },
+        layout: {
+          padding: 10,
         },
       },
     });
@@ -1897,6 +1944,12 @@ function updateCustomProjectionChart() {
           monthlyContribution
         )}/month for ${years} years at ${returnRateDescription}</p>
         <div class="space-y-1">
+          <div class="flex items-center justify-between p-2 rounded bg-white/10 mb-3">
+            <span class="text-sm font-bold">Ending Balance</span>
+            <span class="font-bold text-lg">${formatCurrency(
+              endingBalance
+            )}</span>
+          </div>
           <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(0)">
             <div class="flex items-center gap-1">
               <div class="w-4 h-3 rounded" style="background-color: ${
@@ -1916,15 +1969,6 @@ function updateCustomProjectionChart() {
               <span class="text-sm" id="custom-legend-1">Interest Earned</span>
             </div>
             <span class="font-semibold">${formatCurrency(interestEarned)}</span>
-          </div>
-          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(2)">
-            <div class="flex items-center gap-1">
-              <div class="w-4 h-3 rounded" style="background-color: ${
-                currentCustomColors.backgroundColor[2]
-              }"></div>
-              <span class="text-sm" id="custom-legend-2">Ending Balance</span>
-            </div>
-            <span class="font-semibold">${formatCurrency(endingBalance)}</span>
           </div>
         </div>
       </div>
