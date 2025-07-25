@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="94287369-434d-4bde-a1d4-d620224652a4" name="Changes" comment="Adjusted and improved some designs" />
+    <list default="true" id="94287369-434d-4bde-a1d4-d620224652a4" name="Changes" comment="working on responsiveness" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,7 +35,7 @@
     </favorite-branches>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="col2.0" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -63,28 +63,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "JavaScript Debug.budget-calculator.html.executor": "Run",
-    "JavaScript Debug.index.html.executor": "Run",
-    "JavaScript Debug.old.html.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Node.js.script.js.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/ayo/Documents/GitHub/Finance Calculators",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.codeium.AppSettingsConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.budget-calculator.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.old.html.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.script.js.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;col2.0&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/ayo/Documents/GitHub/Finance Calculators&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.codeium.AppSettingsConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Sieg calculator" />
@@ -127,6 +127,9 @@
       <workItem from="1751375787966" duration="1814000" />
       <workItem from="1751431245398" duration="13114000" />
       <workItem from="1751444642980" duration="948000" />
+      <workItem from="1751447220518" duration="767000" />
+      <workItem from="1751448345705" duration="5746000" />
+      <workItem from="1753009355152" duration="5181000" />
     </task>
     <task id="LOCAL-00001" summary="New calculator UI">
       <option name="closed" value="true" />
@@ -312,7 +315,39 @@
       <option name="project" value="LOCAL" />
       <updated>1751444940730</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751446812935</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1751446812935</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751447250094</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1751447250094</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751447888227</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1751447888227</updated>
+    </task>
+    <task id="LOCAL-00027" summary="working on responsiveness">
+      <option name="closed" value="true" />
+      <created>1751449898576</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1751449898576</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -354,6 +389,7 @@
     <MESSAGE value="adjusted logic for recommendations" />
     <MESSAGE value="adjusted logic and moved tax config for easier updates" />
     <MESSAGE value="Adjusted and improved some designs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adjusted and improved some designs" />
+    <MESSAGE value="working on responsiveness" />
+    <option name="LAST_COMMIT_MESSAGE" value="working on responsiveness" />
   </component>
 </project>
