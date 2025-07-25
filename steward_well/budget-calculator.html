@@ -423,6 +423,23 @@
                         <div style="font-weight: 600; margin-bottom: 2px">
                           Budgeting & Cashflow Calculator
                         </div>
+
+                        <style>
+                          .chart-btn-active {
+                            transform: scale(1.1);
+                            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+                          }
+
+                          .chart-btn-inactive {
+                            transform: scale(0.95);
+                            opacity: 0.7;
+                          }
+
+                          .chart-btn:hover {
+                            transform: scale(1.05) !important;
+                            opacity: 1 !important;
+                          }
+                        </style>
                         <div style="font-size: 12px; color: #6b7280">
                           Manage your monthly budget and cash flow
                         </div>
@@ -1046,7 +1063,6 @@
                       min="0"
                     />
                   </div>
-                  // Subscriptions
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
                       >Subscriptions <span id="subscriptions-percentage"></span
@@ -1776,42 +1792,37 @@
         </p>
 
         <!-- Two Column Layout -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <!-- Left Column: Recommended Allocations -->
           <div class="space-y-6">
-            <span
-              class="text-xl font-semibold text-white/90 mb-4 border-b border-white/20 pb-2 flex-row flex items-center gap-2"
-            >
+            <div class="flex items-center gap-2 mb-6">
               <span>📊</span>
-
-              <div class="flex items-center">
-                <h3 class="text-lg font-semibold text-white">
-                  Recommended Allocations
-                </h3>
-                <div class="relative group ml-2 inline-block cursor-pointer">
-                  <svg
-                    class="w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                  <div
-                    class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-green-900 text-sm font-normal rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
-                  >
-                    These are the suggested percentages based on prioritizing
-                    10% cashflow, then 5-15% savings, then 10-20% investments.
-                  </div>
+              <h3 class="text-xl font-semibold text-white">
+                Recommended Allocations
+              </h3>
+              <div class="relative group ml-2 inline-block cursor-pointer">
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                <div
+                  class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-green-900 text-sm font-normal rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
+                >
+                  These are the suggested percentages based on prioritizing 10%
+                  cashflow, then 5-15% savings, then 10-20% investments.
                 </div>
               </div>
-            </span>
+            </div>
             <!-- Recommended Savings -->
             <div class="space-y-3">
               <label class="block text-sm font-medium text-white/80">
@@ -1890,46 +1901,54 @@
             </div>
           </div>
 
-          <!-- Recommended Allocations Projection Section -->
-        <div class="mt-8">
-          <h3 class="text-xl font-semibold text-white mb-4">
-            Recommended Allocations Projection
-          </h3>
-            <div class="flex justify-between gap-8">
+          <!-- Right Column: Recommended Allocations Projection Section -->
+          <div class="space-y-6">
+            <h3 class="text-xl font-semibold text-white mb-6">
+              Recommended Allocations Projection
+            </h3>
+
+            <!-- Chart Type Buttons with Enhanced Styling -->
+            <div class="flex justify-between gap-4 mb-6">
               <button
                 id="savingsChartBtn"
-                class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md active"
+                class="chart-btn chart-btn-active flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-lg transform scale-110 bg-gradient-to-r from-emerald-600 to-emerald-700"
               >
                 Savings
               </button>
               <button
                 id="investmentsChartBtn"
-                class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
+                class="chart-btn chart-btn-inactive flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-md bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
               >
                 Investments
               </button>
               <button
                 id="bothChartBtn"
-                class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
+                class="chart-btn chart-btn-inactive flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-md bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
               >
                 Both
               </button>
             </div>
 
-            <!-- Compound Interest Parameters -->
-            <div class="flex justify-center item-center">
-              <canvas
-                id="myPieChart2"
-                class="!w-[200px] !h-[200px]"
-                width="200"
-                height="200"
-              ></canvas>
+            <!-- Chart and Summary Layout -->
+            <div class="flex gap-6 items-start">
+              <!-- Chart on the left -->
+              <div class="flex-shrink-0 mt-4">
+                <canvas
+                  id="myPieChart2"
+                  class="!w-[150px] !h-[150px]"
+                  width="160"
+                  height="160"
+                ></canvas>
+              </div>
+
+              <!-- Summary on the right -->
+              <div class="flex-1">
+                <div
+                  id="projectionSummary"
+                  class="p-4 bg-white/5 rounded-lg border border-white/10 h-full"
+                ></div>
+              </div>
             </div>
-            <!-- Projection Summary -->
-            <div
-              id="projectionSummary"
-              class="mt-4 p-4 bg-white/5 rounded-lg border border-white/10"
-            ></div>
           </div>
         </div>
 
@@ -1939,96 +1958,32 @@
             id="toggleCustomAllocationsBtn"
             class="px-6 py-3 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md flex items-center gap-2"
           >
-            <span>Enter Custom Allocations</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            <span style="color: white; font-weight: 500"
+              >Enter Custom Allocations</span
+            >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
             </svg>
           </button>
         </div>
-        
+
         <!-- Custom Allocations Section -->
         <div id="customAllocationsSection" class="mt-16 hidden">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Left Column: Custom Allocations Projection -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column: Custom User Inputs -->
             <div class="space-y-6">
-              <h3 class="text-lg font-semibold text-white mb-4">
-                Your Custom Allocations Projection
-              </h3>
-              <div class="flex justify-between gap-8">
-                <button
-                  id="customSavingsChartBtn"
-                  class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md active"
-                >
-                  Savings
-                </button>
-                <button
-                  id="customInvestmentsChartBtn"
-                  class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
-                >
-                  Investments
-                </button>
-                <button
-                  id="customBothChartBtn"
-                  class="px-6 py-2 flex-1 rounded-lg font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md"
-                >
-                  Both
-                </button>
-              </div>
-
-              <!-- Compound Interest Parameters for Custom -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="flex justify-center items-center">
-                  <canvas
-                    id="customPieChart"
-                    class="!w-[250px] !h-[250px]"
-                    width="250"
-                    height="250"
-                  ></canvas>
-                </div>
-                <div class="space-y-4 p-4 bg-white/5 rounded-lg border border-white/10 shadow-lg">
-                  <h4 class="text-md font-semibold text-white">Custom Parameters</h4>
-                  <div class="space-y-3">
-                    <div class="flex flex-col">
-                      <label for="customProjectionYears" class="block text-sm font-medium text-gray-300 mb-2">Years:</label>
-                      <input 
-                        type="number" 
-                        id="customProjectionYears" 
-                        class="input-field w-full pl-4 pr-4 py-3 bg-[#dfece6] border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" 
-                        min="1" 
-                        max="50" 
-                        value="5"
-                      >
-                    </div>
-                    <div class="flex flex-col mt-3">
-                      <label for="customProjectionRate" class="block text-sm font-medium text-gray-300 mb-2">Annual Interest Rate (%):</label>
-                      <input 
-                        type="number" 
-                        id="customProjectionRate" 
-                        class="input-field w-full pl-4 pr-4 py-3 bg-[#dfece6] border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" 
-                        min="0" 
-                        max="20" 
-                        step="0.1" 
-                        value="6"
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Custom Projection Summary -->
-              <div
-                id="customProjectionSummary"
-                class="mt-4 p-4 bg-white/5 rounded-lg border border-white/10"
-              ></div>
-            </div>
-
-            <!-- Right Column: Custom User Inputs -->
-            <div class="space-y-6">
-              <span
-                class="text-xl font-semibold text-white/90 mb-4 border-b border-white/20 pb-2 flex flex-row items-center gap-2"
-              >
-              <span class="text-white"></span>✏️
-              <div class="flex items-center">
-                <h3 class="text-lg font-semibold text-white">
+              <div class="flex items-center gap-2 mb-6">
+                <span>✏️</span>
+                <h3 class="text-xl font-semibold text-white">
                   Your Custom Allocations
                 </h3>
                 <div class="relative group ml-2 inline-block cursor-pointer">
@@ -2054,102 +2009,151 @@
                   </div>
                 </div>
               </div>
-            </span>
 
-            <!-- Custom Savings -->
-            <div class="space-y-3">
-              <label class="block text-sm font-medium text-white/80">
-                Your Desired Monthly Savings
-              </label>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="input-group">
-                  <label class="text-xs text-white/60 mt-1">Percentage</label>
-                  <input
-                    type="number"
-                    id="savingsPercentage"
-                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                    placeholder="0"
-                    min="0"
-                    value=""
-                  />
+              <!-- Custom Savings -->
+              <div class="space-y-3">
+                <label class="block text-sm font-medium text-white/80">
+                  Your Desired Monthly Savings
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="input-group">
+                    <label class="text-xs text-white/60 mt-1">Percentage</label>
+                    <input
+                      type="number"
+                      id="savingsPercentage"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="0"
+                      min="0"
+                      value=""
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="text-xs text-white/60 mt-1">Amount ($)</label>
+                    <input
+                      type="text"
+                      id="customSavingsAmount"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="$0.00"
+                      readonly
+                      value=""
+                    />
+                  </div>
                 </div>
-                <div class="input-group">
-                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
-                  <input
-                    type="text"
-                    id="customSavingsAmount"
-                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                    placeholder="$0.00"
-                    readonly
-                    value=""
-                  />
-                </div>
+                <p
+                  id="savingsPercentageError"
+                  class="error-message text-sm text-red-400"
+                ></p>
               </div>
-              <p
-                id="savingsPercentageError"
-                class="error-message text-sm text-red-400"
-              ></p>
-            </div>
 
-            <!-- Allocation Error Message -->
-            <div
-              id="allocationError"
-              class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50"
-            >
-              <!-- Error message will be inserted here by JavaScript -->
-            </div>
-
-            <!-- Custom Investments -->
-            <div class="space-y-3">
-              <label class="block text-sm font-medium text-white/80">
-                Your Desired Monthly Investments
-              </label>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="input-group">
-                  <label class="text-xs text-white/60 mt-1">Percentage</label>
-                  <input
-                    type="number"
-                    id="investmentsPercentage"
-                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                    placeholder="0"
-                    min="0"
-                    value=""
-                  />
-                </div>
-                <div class="input-group">
-                  <label class="text-xs text-white/60 mt-1">Amount ($)</label>
-                  <input
-                    type="text"
-                    id="customInvestmentsAmount"
-                    class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
-                    placeholder="$0.00"
-                    readonly
-                    value=""
-                  />
-                </div>
-              </div>
-              <p
-                id="investmentsPercentageError"
-                class="error-message text-sm text-red-400"
-              ></p>
-            </div>
-
-            <!-- Custom Cashflow -->
-            <div class="space-y-3">
-              <label class="block text-sm font-medium text-white/80">
-                Your Calculated Monthly Cashflow
-              </label>
+              <!-- Allocation Error Message -->
               <div
-                class="w-full pl-4 pr-4 py-3 border border-white/20 rounded-xl text-white bg-[#dfece6]"
+                id="allocationError"
+                class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50"
               >
-                <span id="custom-cashflow-amount" class="text-white"
-                  >$0.00</span
+                <!-- Error message will be inserted here by JavaScript -->
+              </div>
+
+              <!-- Custom Investments -->
+              <div class="space-y-3">
+                <label class="block text-sm font-medium text-white/80">
+                  Your Desired Monthly Investments
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="input-group">
+                    <label class="text-xs text-white/60 mt-1">Percentage</label>
+                    <input
+                      type="number"
+                      id="investmentsPercentage"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="0"
+                      min="0"
+                      value=""
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="text-xs text-white/60 mt-1">Amount ($)</label>
+                    <input
+                      type="text"
+                      id="customInvestmentsAmount"
+                      class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="$0.00"
+                      readonly
+                      value=""
+                    />
+                  </div>
+                </div>
+                <p
+                  id="investmentsPercentageError"
+                  class="error-message text-sm text-red-400"
+                ></p>
+              </div>
+
+              <!-- Custom Cashflow -->
+              <div class="space-y-3">
+                <label class="block text-sm font-medium text-white/80">
+                  Your Calculated Monthly Cashflow
+                </label>
+                <div
+                  class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
                 >
-                <span id="custom-cashflow-percentage" class="text-white/80"
-                  >(0.0%)</span
-                >
+                  <span id="customCashflowAmount" class="text-white"
+                    >$0.00</span
+                  >
+                  <span id="customCashflowPercentage" class="text-red"
+                    >(0.0%)</span
+                  >
+                </div>
               </div>
             </div>
+
+            <!-- Right Column: Custom Allocations Projection -->
+            <div class="space-y-6">
+              <h3 class="text-xl font-semibold text-white mb-6">
+                Your Custom Allocations Projection
+              </h3>
+
+              <!-- Chart Type Buttons with Enhanced Styling -->
+              <div class="flex justify-between gap-4 mb-6">
+                <button
+                  id="customSavingsChartBtn"
+                  class="chart-btn chart-btn-active flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-lg transform scale-110 bg-gradient-to-r from-emerald-600 to-emerald-700"
+                >
+                  Savings
+                </button>
+                <button
+                  id="customInvestmentsChartBtn"
+                  class="chart-btn chart-btn-inactive flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-md bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+                >
+                  Investments
+                </button>
+                <button
+                  id="customBothChartBtn"
+                  class="chart-btn chart-btn-inactive flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-md bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+                >
+                  Both
+                </button>
+              </div>
+
+              <!-- Chart and Summary Layout -->
+              <div class="flex gap-6 items-start">
+                <!-- Chart on the left -->
+                <div class="flex-shrink-0 mt-4">
+                  <canvas
+                    id="customPieChart"
+                    class="!w-[150px] !h-[150px]"
+                    width="160"
+                    height="160"
+                  ></canvas>
+                </div>
+
+                <!-- Summary on the right -->
+                <div class="flex-1">
+                  <div
+                    id="customProjectionSummary"
+                    class="p-4 bg-white/5 rounded-lg border border-white/10 h-full"
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -2202,36 +2206,7 @@
         }
       );
     </script>
-    <script>
-      const ctx2 = document.getElementById("myPieChart2").getContext("2d");
 
-      new Chart(ctx2, {
-        type: "pie",
-        data: {
-          labels: ["Interest", "Ending balance", "Total contribution"], // Labels for your data
-          datasets: [
-            {
-              label: "Sample Data",
-              data: [30, 50, 20], // Your three values here
-              backgroundColor: [
-                "rgba(255, 99, 132, 0.7)",
-                "rgba(54, 162, 235, 0.7)",
-                "rgba(255, 206, 86, 0.7)",
-              ],
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-              ],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-        },
-      });
-    </script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const calculatorToggle = document.getElementById("calculatorToggle");

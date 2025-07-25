@@ -82,6 +82,49 @@ function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
     name: "Federal Tax",
   };
 
+  // Define custom color schemes for custom charts
+  const customColorSchemes = {
+    savings: {
+      backgroundColor: [
+        "rgba(233, 30, 99, 0.8)", // Pink for contributions
+        "rgba(0, 188, 212, 0.8)", // Cyan for interest
+        "rgba(63, 81, 181, 0.8)", // Indigo for ending balance
+      ],
+      borderColor: [
+        "rgba(233, 30, 99, 1)",
+        "rgba(0, 188, 212, 1)",
+        "rgba(63, 81, 181, 1)",
+      ],
+      borderWidth: 2,
+    },
+    investments: {
+      backgroundColor: [
+        "rgba(255, 87, 34, 0.8)", // Deep orange for contributions
+        "rgba(139, 195, 74, 0.8)", // Light green for interest
+        "rgba(156, 39, 176, 0.8)", // Purple for ending balance
+      ],
+      borderColor: [
+        "rgba(255, 87, 34, 1)",
+        "rgba(139, 195, 74, 1)",
+        "rgba(156, 39, 176, 1)",
+      ],
+      borderWidth: 3,
+    },
+    both: {
+      backgroundColor: [
+        "rgba(121, 85, 72, 0.8)", // Brown for contributions
+        "rgba(96, 125, 139, 0.8)", // Blue grey for interest
+        "rgba(255, 152, 0, 0.8)", // Orange for ending balance
+      ],
+      borderColor: [
+        "rgba(121, 85, 72, 1)",
+        "rgba(96, 125, 139, 1)",
+        "rgba(255, 152, 0, 1)",
+      ],
+      borderWidth: 1,
+    },
+  };
+
   // Provincial Tax
   if (province && config.provinces[province]) {
     const provincialTax = calculateProgressiveTax(
@@ -875,16 +918,16 @@ function updateAllUI(budget) {
   // Custom Cashflow Amount and Percentage
   if (hasAnyUserCustomInputForCashflow) {
     if (budget.custom_allocations) {
-      document.getElementById("custom-cashflow-amount").textContent =
+      document.getElementById("customCashflowAmount").textContent =
         formatCurrency(budget.custom_allocations.monthly_cashflow);
       document.getElementById(
-        "custom-cashflow-percentage"
+        "customCashflowPercentage"
       ).textContent = `(${budget.custom_cashflow_pct.toFixed(1)}%)`;
     } else {
-      document.getElementById("custom-cashflow-amount").textContent =
+      document.getElementById("customCashflowAmount").textContent =
         formatCurrency(0);
       document.getElementById(
-        "custom-cashflow-percentage"
+        "customCashflowPercentage"
       ).textContent = `(0.0%)`;
     }
   } else {
@@ -892,10 +935,10 @@ function updateAllUI(budget) {
     const currentCashflowAmount =
       budget.monthly_disposable_income - budget.total_monthly_expenses;
     const currentCashflowPct = 100 - budget.expenses_percentage;
-    document.getElementById("custom-cashflow-amount").textContent =
+    document.getElementById("customCashflowAmount").textContent =
       formatCurrency(currentCashflowAmount);
     document.getElementById(
-      "custom-cashflow-percentage"
+      "customCashflowPercentage"
     ).textContent = `(${currentCashflowPct.toFixed(1)}%)`;
   }
 
@@ -1061,23 +1104,28 @@ function setupEventListeners() {
       handlePrimaryInputChange();
     }
   });
-  
+
   // Custom Allocations Toggle Button
-  const toggleCustomAllocationsBtn = document.getElementById("toggleCustomAllocationsBtn");
-  const customAllocationsSection = document.getElementById("customAllocationsSection");
-  
+  const toggleCustomAllocationsBtn = document.getElementById(
+    "toggleCustomAllocationsBtn"
+  );
+  const customAllocationsSection = document.getElementById(
+    "customAllocationsSection"
+  );
+
   // Add transition styles for smooth animation
   if (customAllocationsSection) {
     customAllocationsSection.style.overflow = "hidden";
-    customAllocationsSection.style.transition = "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out";
+    customAllocationsSection.style.transition =
+      "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out";
     customAllocationsSection.style.maxHeight = "0";
     customAllocationsSection.style.opacity = "0";
   }
-  
+
   if (toggleCustomAllocationsBtn && customAllocationsSection) {
     toggleCustomAllocationsBtn.addEventListener("click", () => {
       const isHidden = customAllocationsSection.classList.contains("hidden");
-      
+
       if (isHidden) {
         // Show with animation
         customAllocationsSection.classList.remove("hidden");
@@ -1086,9 +1134,9 @@ function setupEventListeners() {
           customAllocationsSection.style.maxHeight = "5000px"; // Large enough to contain all content
           customAllocationsSection.style.opacity = "1";
         }, 10);
-        
+
         toggleCustomAllocationsBtn.innerHTML = `
-          <span>Hide Custom Allocations</span>
+          <span style="color: white; font-weight: 500">Hide Custom Allocations</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
           </svg>
@@ -1097,12 +1145,12 @@ function setupEventListeners() {
         // Hide with animation
         customAllocationsSection.style.maxHeight = "0";
         customAllocationsSection.style.opacity = "0";
-        
+
         // Add the hidden class after animation completes
         setTimeout(() => {
           customAllocationsSection.classList.add("hidden");
         }, 500); // Match the transition duration
-        
+
         toggleCustomAllocationsBtn.innerHTML = `
           <span>Enter Custom Allocations</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -1142,9 +1190,25 @@ function setupEventListeners() {
     // Helper function to update active button styling
     const updateActiveButton = (activeBtn) => {
       [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach((btn) => {
-        btn.classList.remove("active");
+        btn.classList.remove("chart-btn-active");
+        btn.classList.add("chart-btn-inactive");
+        // Remove active styling classes
+        btn.classList.remove("shadow-lg", "transform", "scale-110");
+        btn.classList.add("shadow-md");
+        btn.className = btn.className.replace(
+          /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+          "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+        );
       });
-      activeBtn.classList.add("active");
+      activeBtn.classList.remove("chart-btn-inactive");
+      activeBtn.classList.add("chart-btn-active");
+      // Add active styling classes
+      activeBtn.classList.remove("shadow-md");
+      activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+      activeBtn.className = activeBtn.className.replace(
+        /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+        "bg-gradient-to-r from-emerald-600 to-emerald-700"
+      );
     };
 
     savingsChartBtn.addEventListener("click", () => {
@@ -1197,12 +1261,8 @@ function setupEventListeners() {
     "customInvestmentsChartBtn"
   );
   const customBothChartBtn = document.getElementById("customBothChartBtn");
-  const customProjectionYearsInput = document.getElementById(
-    "customProjectionYears"
-  );
-  const customProjectionRateInput = document.getElementById(
-    "customProjectionRate"
-  );
+  // Custom projection now uses same parameters as recommended allocations
+  // No need for separate input elements
 
   if (
     customSavingsChartBtn &&
@@ -1216,9 +1276,25 @@ function setupEventListeners() {
         customInvestmentsChartBtn,
         customBothChartBtn,
       ].forEach((btn) => {
-        btn.classList.remove("active");
+        btn.classList.remove("chart-btn-active");
+        btn.classList.add("chart-btn-inactive");
+        // Remove active styling classes
+        btn.classList.remove("shadow-lg", "transform", "scale-110");
+        btn.classList.add("shadow-md");
+        btn.className = btn.className.replace(
+          /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+          "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+        );
       });
-      activeBtn.classList.add("active");
+      activeBtn.classList.remove("chart-btn-inactive");
+      activeBtn.classList.add("chart-btn-active");
+      // Add active styling classes
+      activeBtn.classList.remove("shadow-md");
+      activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+      activeBtn.className = activeBtn.className.replace(
+        /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+        "bg-gradient-to-r from-emerald-600 to-emerald-700"
+      );
     };
 
     customSavingsChartBtn.addEventListener("click", () => {
@@ -1239,28 +1315,8 @@ function setupEventListeners() {
       updateCustomProjectionChart();
     });
 
-    // Add event listeners for custom projection parameters
-    if (customProjectionYearsInput) {
-      customProjectionYearsInput.addEventListener("input", () => {
-        const years = parseInt(customProjectionYearsInput.value) || 5;
-        calculatorState.customCompoundInterest.years = Math.max(
-          1,
-          Math.min(50, years)
-        );
-        updateCustomProjectionChart();
-      });
-    }
-
-    if (customProjectionRateInput) {
-      customProjectionRateInput.addEventListener("input", () => {
-        const rate = parseFloat(customProjectionRateInput.value) || 6;
-        calculatorState.customCompoundInterest.returnRate = Math.max(
-          0,
-          Math.min(20, rate)
-        );
-        updateCustomProjectionChart();
-      });
-    }
+    // Custom projection now uses same parameters as recommended allocations
+    // No separate event listeners needed
   }
 
   // UI Toggles
@@ -1450,7 +1506,7 @@ function calculateFutureValue(
  * Updates the projection chart based on the selected allocation type (savings, investments, or both)
  */
 function updateProjectionChart() {
-  const { years, returnRate, compoundFrequency, currentChartType } =
+  const { years, compoundFrequency, currentChartType } =
     calculatorState.compoundInterest;
 
   // Get the chart instance
@@ -1465,18 +1521,24 @@ function updateProjectionChart() {
 
   const currentBudget = calculatorState.currentBudget;
 
-  // Determine the monthly contribution based on the selected chart type
+  // Determine the monthly contribution and return rate based on the selected chart type
   let monthlyContribution = 0;
+  let returnRate = 0;
 
   if (currentChartType === "savings") {
     monthlyContribution = currentBudget.recommended_allocations.monthly_savings;
+    returnRate = 3; // 3% for savings
   } else if (currentChartType === "investments") {
     monthlyContribution =
       currentBudget.recommended_allocations.monthly_investments;
+    returnRate = 10; // 10% for investments
   } else if (currentChartType === "both") {
-    monthlyContribution =
-      currentBudget.recommended_allocations.monthly_savings +
+    const savingsAmount = currentBudget.recommended_allocations.monthly_savings;
+    const investmentsAmount =
       currentBudget.recommended_allocations.monthly_investments;
+    monthlyContribution = savingsAmount + investmentsAmount;
+    // Use simple average of 3% and 10%
+    returnRate = (3 + 10) / 2; // 6.5%
   }
 
   // Calculate the future value
@@ -1487,6 +1549,51 @@ function updateProjectionChart() {
       returnRate,
       compoundFrequency
     );
+
+  // Define color schemes for different chart types
+  const colorSchemes = {
+    savings: {
+      backgroundColor: [
+        "rgba(239, 68, 68, 0.8)", // Red for contributions
+        "rgba(59, 130, 246, 0.8)", // Blue for interest
+        "rgba(251, 191, 36, 0.8)", // Yellow for ending balance
+      ],
+      borderColor: [
+        "rgba(239, 68, 68, 1)",
+        "rgba(59, 130, 246, 1)",
+        "rgba(251, 191, 36, 1)",
+      ],
+      borderWidth: 2,
+    },
+    investments: {
+      backgroundColor: [
+        "rgba(34, 197, 94, 0.8)", // Green for contributions
+        "rgba(168, 85, 247, 0.8)", // Purple for interest
+        "rgba(249, 115, 22, 0.8)", // Orange for ending balance
+      ],
+      borderColor: [
+        "rgba(34, 197, 94, 1)",
+        "rgba(168, 85, 247, 1)",
+        "rgba(249, 115, 22, 1)",
+      ],
+      borderWidth: 2,
+    },
+    both: {
+      backgroundColor: [
+        "rgba(99, 102, 241, 0.8)", // Indigo for contributions
+        "rgba(236, 72, 153, 0.8)", // Pink for interest
+        "rgba(14, 165, 233, 0.8)", // Sky blue for ending balance
+      ],
+      borderColor: [
+        "rgba(99, 102, 241, 1)",
+        "rgba(236, 72, 153, 1)",
+        "rgba(14, 165, 233, 1)",
+      ],
+      borderWidth: 2,
+    },
+  };
+
+  const currentColors = colorSchemes[currentChartType] || colorSchemes.savings;
 
   // Update the chart data
   if (chart) {
@@ -1500,6 +1607,9 @@ function updateProjectionChart() {
       "Interest Earned",
       "Ending Balance",
     ];
+    chart.data.datasets[0].backgroundColor = currentColors.backgroundColor;
+    chart.data.datasets[0].borderColor = currentColors.borderColor;
+    chart.data.datasets[0].borderWidth = currentColors.borderWidth;
     chart.update();
   } else {
     // If chart doesn't exist yet, create it
@@ -1511,17 +1621,9 @@ function updateProjectionChart() {
           {
             label: "Projection",
             data: [totalContributions, interestEarned, endingBalance],
-            backgroundColor: [
-              "rgba(255, 206, 86, 0.7)", // Yellow for contributions
-              "rgba(75, 192, 192, 0.7)", // Green for interest
-              "rgba(54, 162, 235, 0.7)", // Blue for ending balance
-            ],
-            borderColor: [
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(54, 162, 235, 1)",
-            ],
-            borderWidth: 1,
+            backgroundColor: currentColors.backgroundColor,
+            borderColor: currentColors.borderColor,
+            borderWidth: currentColors.borderWidth,
           },
         ],
       },
@@ -1538,21 +1640,10 @@ function updateProjectionChart() {
             },
           },
           legend: {
-            position: "bottom",
-            labels: {
-              color: "white",
-              font: {
-                size: 12,
-              },
-            },
+            display: false,
           },
           title: {
-            display: true,
-            text: `Projection over ${years} years at ${returnRate}%`,
-            color: "white",
-            font: {
-              size: 14,
-            },
+            display: false,
           },
         },
       },
@@ -1569,22 +1660,56 @@ function updateProjectionChart() {
         ? "Investments"
         : "Combined";
 
+    // Create return rate description based on chart type
+    let returnRateDescription = "";
+    if (currentChartType === "savings") {
+      returnRateDescription = `${returnRate}% 
+        return (savings rate)`;
+    } else if (currentChartType === "investments") {
+      returnRateDescription = `${returnRate}% 
+        return (investment rate)`;
+    } else if (currentChartType === "both") {
+      returnRateDescription = `${returnRate.toFixed(1)}% 
+        return (average of savings 3% and investments 10%)`;
+    }
+
     summaryElement.innerHTML = `
-      <div class="text-white text-sm mt-4">
-        <p><strong>${contributionType} of ${formatCurrency(
-      monthlyContribution
-    )}/month</strong> for ${years} years at ${returnRate}% return:</p>
-        <ul class="list-disc pl-5 mt-2 space-y-1">
-          <li><span class="font-semibold">Total Contributions:</span> ${formatCurrency(
-            totalContributions
-          )}</li>
-          <li><span class="font-semibold">Interest Earned:</span> ${formatCurrency(
-            interestEarned
-          )}</li>
-          <li><span class="font-semibold">Ending Balance:</span> ${formatCurrency(
-            endingBalance
-          )}</li>
-        </ul>
+      <div class="text-white text-sm">
+        <p class="font-semibold mb-2 text-center">${contributionType} Projection</p>
+        <p class="text-xs text-white/70 mb-2 text-center">${formatCurrency(
+          monthlyContribution
+        )}/month for ${years} years at ${returnRateDescription}</p>
+        <div class="space-y-1">
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(0)">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentColors.backgroundColor[0]
+              }"></div>
+              <span class="text-sm" id="legend-0">Total Contributions</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(
+              totalContributions
+            )}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(1)">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentColors.backgroundColor[1]
+              }"></div>
+              <span class="text-sm" id="legend-1">Interest Earned</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(interestEarned)}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(2)">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentColors.backgroundColor[2]
+              }"></div>
+              <span class="text-sm" id="legend-2">Ending Balance</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(endingBalance)}</span>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -1594,8 +1719,9 @@ function updateProjectionChart() {
  * Updates the custom projection chart based on the selected allocation type (savings, investments, or both)
  */
 function updateCustomProjectionChart() {
-  const { years, returnRate, compoundFrequency, currentChartType } =
-    calculatorState.customCompoundInterest;
+  // Use the same years as recommended allocations
+  const { years, compoundFrequency } = calculatorState.compoundInterest;
+  const { currentChartType } = calculatorState.customCompoundInterest;
 
   // Get the chart instance
   const chartElement = document.getElementById("customPieChart");
@@ -1609,19 +1735,25 @@ function updateCustomProjectionChart() {
 
   const currentBudget = calculatorState.currentBudget;
 
-  // Determine the monthly contribution based on the selected chart type using custom allocations
+  // Determine the monthly contribution and return rate based on the selected chart type using custom allocations
   let monthlyContribution = 0;
+  let returnRate = 0;
 
   if (currentBudget.custom_allocations) {
     if (currentChartType === "savings") {
       monthlyContribution = currentBudget.custom_allocations.monthly_savings;
+      returnRate = 3; // 3% for savings
     } else if (currentChartType === "investments") {
       monthlyContribution =
         currentBudget.custom_allocations.monthly_investments;
+      returnRate = 10; // 10% for investments
     } else if (currentChartType === "both") {
-      monthlyContribution =
-        currentBudget.custom_allocations.monthly_savings +
+      const savingsAmount = currentBudget.custom_allocations.monthly_savings;
+      const investmentsAmount =
         currentBudget.custom_allocations.monthly_investments;
+      monthlyContribution = savingsAmount + investmentsAmount;
+      // Use simple average of 3% and 10%
+      returnRate = (3 + 10) / 2; // 6.5%
     }
   }
 
@@ -1633,6 +1765,52 @@ function updateCustomProjectionChart() {
       returnRate,
       compoundFrequency
     );
+
+  // Define custom color schemes for custom charts
+  const customColorSchemes = {
+    savings: {
+      backgroundColor: [
+        "rgba(233, 30, 99, 0.8)", // Pink for contributions
+        "rgba(0, 188, 212, 0.8)", // Cyan for interest
+        "rgba(63, 81, 181, 0.8)", // Indigo for ending balance
+      ],
+      borderColor: [
+        "rgba(233, 30, 99, 1)",
+        "rgba(0, 188, 212, 1)",
+        "rgba(63, 81, 181, 1)",
+      ],
+      borderWidth: 2,
+    },
+    investments: {
+      backgroundColor: [
+        "rgba(255, 87, 34, 0.8)", // Deep orange for contributions
+        "rgba(139, 195, 74, 0.8)", // Light green for interest
+        "rgba(156, 39, 176, 0.8)", // Purple for ending balance
+      ],
+      borderColor: [
+        "rgba(255, 87, 34, 1)",
+        "rgba(139, 195, 74, 1)",
+        "rgba(156, 39, 176, 1)",
+      ],
+      borderWidth: 3,
+    },
+    both: {
+      backgroundColor: [
+        "rgba(121, 85, 72, 0.8)", // Brown for contributions
+        "rgba(96, 125, 139, 0.8)", // Blue grey for interest
+        "rgba(255, 152, 0, 0.8)", // Orange for ending balance
+      ],
+      borderColor: [
+        "rgba(121, 85, 72, 1)",
+        "rgba(96, 125, 139, 1)",
+        "rgba(255, 152, 0, 1)",
+      ],
+      borderWidth: 1,
+    },
+  };
+
+  const currentCustomColors =
+    customColorSchemes[currentChartType] || customColorSchemes.savings;
 
   // Update the chart data
   if (chart) {
@@ -1646,28 +1824,24 @@ function updateCustomProjectionChart() {
       "Interest Earned",
       "Ending Balance",
     ];
+    chart.data.datasets[0].backgroundColor =
+      currentCustomColors.backgroundColor;
+    chart.data.datasets[0].borderColor = currentCustomColors.borderColor;
+    chart.data.datasets[0].borderWidth = currentCustomColors.borderWidth;
     chart.update();
   } else {
     // If chart doesn't exist yet, create it
     chart = new Chart(chartElement.getContext("2d"), {
       type: "pie",
       data: {
-        labels: ["Total Contributions", "Interest Earned"],
+        labels: ["Total Contributions", "Interest Earned", "Ending Balance"],
         datasets: [
           {
             label: "Custom Projection",
             data: [totalContributions, interestEarned, endingBalance],
-            backgroundColor: [
-              "rgba(255, 206, 86, 0.7)", // Yellow for contributions
-              "rgba(75, 192, 192, 0.7)", // Green for interest
-              "rgba(54, 162, 235, 0.7)", // Blue for ending balance
-            ],
-            borderColor: [
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(54, 162, 235, 1)",
-            ],
-            borderWidth: 1,
+            backgroundColor: currentCustomColors.backgroundColor,
+            borderColor: currentCustomColors.borderColor,
+            borderWidth: currentCustomColors.borderWidth,
           },
         ],
       },
@@ -1684,21 +1858,10 @@ function updateCustomProjectionChart() {
             },
           },
           legend: {
-            position: "bottom",
-            labels: {
-              color: "white",
-              font: {
-                size: 12,
-              },
-            },
+            display: false,
           },
           title: {
-            display: true,
-            text: `Custom Projection over ${years} years at ${returnRate}%`,
-            color: "white",
-            font: {
-              size: 14,
-            },
+            display: false,
           },
         },
       },
@@ -1715,24 +1878,113 @@ function updateCustomProjectionChart() {
         ? "Investments"
         : "Combined";
 
+    // Create descriptive return rate message
+    let returnRateDescription;
+    if (currentChartType === "savings") {
+      returnRateDescription = `${returnRate.toFixed(1)}% savings rate`;
+    } else if (currentChartType === "investments") {
+      returnRateDescription = `${returnRate.toFixed(1)}% investment rate`;
+    } else {
+      returnRateDescription = `${returnRate.toFixed(
+        1
+      )}% average of savings 3% and investments 10%`;
+    }
+
     summaryElement.innerHTML = `
-      <div class="text-white text-sm mt-4">
-        <p><strong>Custom ${contributionType} of ${formatCurrency(
-      monthlyContribution
-    )}/month</strong> for ${years} years at ${returnRate}% return:</p>
-        <ul class="list-disc pl-5 mt-2 space-y-1">
-          <li><span class="font-semibold">Total Contributions:</span> ${formatCurrency(
-            totalContributions
-          )}</li>
-          <li><span class="font-semibold">Interest Earned:</span> ${formatCurrency(
-            interestEarned
-          )}</li>
-          <li><span class="font-semibold">Ending Balance:</span> ${formatCurrency(
-            endingBalance
-          )}</li>
-        </ul>
+      <div class="text-white text-sm">
+        <p class="font-semibold mb-2 text-center">${contributionType} Projection</p>
+        <p class="text-xs text-white/70 mb-2 text-center">${formatCurrency(
+          monthlyContribution
+        )}/month for ${years} years at ${returnRateDescription}</p>
+        <div class="space-y-1">
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(0)">
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentCustomColors.backgroundColor[0]
+              }"></div>
+              <span class="text-sm" id="custom-legend-0">Total Contributions</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(
+              totalContributions
+            )}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(1)">
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentCustomColors.backgroundColor[1]
+              }"></div>
+              <span class="text-sm" id="custom-legend-1">Interest Earned</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(interestEarned)}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(2)">
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentCustomColors.backgroundColor[2]
+              }"></div>
+              <span class="text-sm" id="custom-legend-2">Ending Balance</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(endingBalance)}</span>
+          </div>
+        </div>
       </div>
     `;
+  }
+}
+
+// Function to toggle chart segment visibility (for interactive legends)
+function toggleChartSegment(segmentIndex) {
+  const chartElement = document.getElementById("myPieChart2");
+  const chart = Chart.getChart(chartElement);
+
+  if (chart && chart.data.datasets[0]) {
+    const meta = chart.getDatasetMeta(0);
+    if (meta.data[segmentIndex]) {
+      meta.data[segmentIndex].hidden = !meta.data[segmentIndex].hidden;
+
+      // Toggle strikethrough on legend text
+      const legendElement = document.getElementById(`legend-${segmentIndex}`);
+      if (legendElement) {
+        if (meta.data[segmentIndex].hidden) {
+          legendElement.style.textDecoration = "line-through";
+          legendElement.style.opacity = "0.5";
+        } else {
+          legendElement.style.textDecoration = "none";
+          legendElement.style.opacity = "1";
+        }
+      }
+
+      chart.update();
+    }
+  }
+}
+
+// Function to toggle custom chart segment visibility
+function toggleCustomChartSegment(segmentIndex) {
+  const chartElement = document.getElementById("customPieChart");
+  const chart = Chart.getChart(chartElement);
+
+  if (chart && chart.data.datasets[0]) {
+    const meta = chart.getDatasetMeta(0);
+    if (meta.data[segmentIndex]) {
+      meta.data[segmentIndex].hidden = !meta.data[segmentIndex].hidden;
+
+      // Toggle strikethrough on legend text
+      const legendElement = document.getElementById(
+        `custom-legend-${segmentIndex}`
+      );
+      if (legendElement) {
+        if (meta.data[segmentIndex].hidden) {
+          legendElement.style.textDecoration = "line-through";
+          legendElement.style.opacity = "0.5";
+        } else {
+          legendElement.style.textDecoration = "none";
+          legendElement.style.opacity = "1";
+        }
+      }
+
+      chart.update();
+    }
   }
 }
 
