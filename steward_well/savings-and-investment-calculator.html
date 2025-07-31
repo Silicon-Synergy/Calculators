@@ -450,7 +450,7 @@
             </div>
 
             <div id="default-input-section" class="input-group">
-              <div class="input-group h-[500px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
                 <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
                   <div class="relative w-[100%] max-sm:w-full">
                     <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
@@ -470,7 +470,6 @@
                     <div class="relative">
                       <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
                       <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
                     </div>
                   </div>
 
@@ -526,7 +525,7 @@
                     <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
                   </div>
                   <div class="mt-6">
-                    <canvas id="investmentPieChart" width="200" height="200" class="mx-auto"></canvas>
+                    <canvas id="investmentPieChart-end" width="200" height="200" class="mx-auto"></canvas>
                     <div class="mt-4 flex justify-center gap-4 text-sm ">
                       <div class="flex items-center gap-1">
                         <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
@@ -542,8 +541,9 @@
                 </div>
               </div>
             </div>
+
             <div id="contribution-input-section" class="input-group hidden">
-              <div class="input-group h-[500px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
                 <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
                   <div class="relative w-[100%] max-sm:w-full">
                     <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
@@ -620,7 +620,7 @@
                     <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
                   </div>
                   <div class="mt-6">
-                    <canvas id="investmentPieChart" width="120" height="120" class="mx-auto"></canvas>
+                    <canvas id="investmentPieChart-contribution" width="200" height="200" class="mx-auto"></canvas>
                     <div class="mt-4 flex justify-center gap-4 text-sm ">
                       <div class="flex items-center gap-1">
                         <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
@@ -637,7 +637,7 @@
               </div>
             </div>
             <div id="return-rate-section" class="input-group hidden">
-              <div class="input-group h-[500px] mt-10 overflow-hidden  p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="input-group h-[600px] mt-10 overflow-hidden  p-1 flex flex-row pb-3 gap-10 w-full justify-between">
                 <div class=" flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
                   <div class="relative w-[100%] max-sm:w-full">
                     <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
@@ -680,7 +680,7 @@
                     <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
                   </div>
                   <div class="mt-6">
-                    <canvas id="investmentPieChart" width="120" height="120" class="mx-auto"></canvas>
+                    <canvas id="investmentPieChart-return" width="200" height="200" class="mx-auto"></canvas>
                     <div class="mt-4 flex justify-center gap-4 text-sm ">
                       <div class="flex items-center gap-1">
                         <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
@@ -697,68 +697,9 @@
               </div>
             </div>
           </div>
-          <div id="return-rate-section" class="input-group hidden">
-            <div class="input-group h-[500px] mt-10 overflow-hidden  p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-              <div class=" flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
-                <div class="relative w-[100%] max-sm:w-full">
-                  <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
-                  <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000,000" min="0" />
-                </div>
 
-                <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="target-starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
-                  <div class="relative">
-                    <input type="number" id="target-starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$20,000" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">years </p>
-
-                  </div>
-                </div>
-                <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="target-after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
-                  <div class="relative">
-                    <input type="number" id="target-after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="10 years" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
-                  </div>
-                </div>
-
-                <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="target-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Condition</label>
-                  <div class="relative">
-                    <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1000" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
-                  </div>
-                </div>
-              </div>
-              <div class="w-full md:w-[50%] p-6 rounded-3xl  bg-[#e9f5ec] text-[#0f172a] shadow-md">
-                <h3 class="text-2xl font-bold mb-4">Results</h3>
-                <p class="text-[.8rem] mb-[2rem]">This is where the result will go</p>
-                <div class="space-y-2 text-[1rem] font-medium">
-                  <p><span class="font-semibold">End Balance:</span> <span id="result-balance" class="float-right font-bold text-green-700">$198,290.40</span></p>
-                  <p><span class="font-semibold">Starting Amount:</span> <span id="result-start" class="float-right">$20,000.00</span></p>
-                  <p><span class="font-semibold">Total Contributions:</span> <span id="result-contrib" class="float-right">$120,000.00</span></p>
-                  <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
-                </div>
-                <div class="mt-6">
-                  <canvas id="investmentPieChart" width="120" height="120" class="mx-auto"></canvas>
-                  <div class="mt-4 flex justify-center gap-4 text-sm ">
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-green-400"></div>Total Contributions
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-red-400"></div>Interest
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div id="starting-amount-section" class="input-group hidden">
-            <div class="input-group h-[500px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+            <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
               <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
                 <div class="relative w-[100%] max-sm:w-full">
                   <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
@@ -834,7 +775,7 @@
                   <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
                 </div>
                 <div class="mt-6">
-                  <canvas id="investmentPieChart" width="200" height="200" class="mx-auto"></canvas>
+                  <canvas id="investmentPieChart-start" width="200" height="200" class="mx-auto"></canvas>
                   <div class="mt-4 flex justify-center gap-4 text-sm ">
                     <div class="flex items-center gap-1">
                       <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
@@ -852,7 +793,7 @@
           </div>
 
           <div id="investment-length-section" class="input-group hidden">
-            <div class="input-group h-[500px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+            <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
               <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
                 <div class="relative w-[100%] max-sm:w-full">
                   <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
@@ -928,7 +869,7 @@
                   <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
                 </div>
                 <div class="mt-6">
-                  <canvas id="investmentPieChart" width="200" height="200" class="mx-auto"></canvas>
+                  <canvas id="investmentPieChart-investment" width="200" height="200" class="mx-auto"></canvas>
                   <div class="mt-4 flex justify-center gap-4 text-sm ">
                     <div class="flex items-center gap-1">
                       <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
