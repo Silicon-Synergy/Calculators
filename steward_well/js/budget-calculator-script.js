@@ -1,3 +1,6 @@
+// Register Chart.js datalabels plugin
+Chart.register(ChartDataLabels);
+
 // A central object to hold the results of calculations to be used across different functions.
 const calculatorState = {
   annualIncome: 0,
@@ -7,6 +10,21 @@ const calculatorState = {
   livingExpenses: {},
   totalMonthlyExpensesEntered: 0,
   annualDisposable: 0,
+  // Default values for compound interest calculation
+  compoundInterest: {
+    years: 5, // Default number of years
+    returnRate: 6, // Default annual return rate (6%)
+    compoundFrequency: 12, // Monthly compounding
+    currentChartType: "savings", // Default chart type (savings, investments, or both)
+  },
+  customCompoundInterest: {
+    years: 5,
+    returnRate: 6, // percentage
+    compoundFrequency: 12, // monthly
+    currentChartType: "savings", // 'savings', 'investments', 'both'
+  },
+  // Store the current budget calculation results
+  currentBudget: null,
 };
 
 // Core tax and deduction calculation functions.
@@ -65,6 +83,49 @@ function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
     amount: federalTax,
     percentage: (federalTax / grossIncome) * 100,
     name: "Federal Tax",
+  };
+
+  // Define custom color schemes for custom charts
+  const customColorSchemes = {
+    savings: {
+      backgroundColor: [
+        "rgba(233, 30, 99, 0.8)", // Pink for contributions
+        "rgba(0, 188, 212, 0.8)", // Cyan for interest
+        "rgba(63, 81, 181, 0.8)", // Indigo for ending balance
+      ],
+      borderColor: [
+        "rgba(233, 30, 99, 1)",
+        "rgba(0, 188, 212, 1)",
+        "rgba(63, 81, 181, 1)",
+      ],
+      borderWidth: 2,
+    },
+    investments: {
+      backgroundColor: [
+        "rgba(255, 87, 34, 0.8)", // Deep orange for contributions
+        "rgba(139, 195, 74, 0.8)", // Light green for interest
+        "rgba(156, 39, 176, 0.8)", // Purple for ending balance
+      ],
+      borderColor: [
+        "rgba(255, 87, 34, 1)",
+        "rgba(139, 195, 74, 1)",
+        "rgba(156, 39, 176, 1)",
+      ],
+      borderWidth: 3,
+    },
+    both: {
+      backgroundColor: [
+        "rgba(121, 85, 72, 0.8)", // Brown for contributions
+        "rgba(96, 125, 139, 0.8)", // Blue grey for interest
+        "rgba(255, 152, 0, 0.8)", // Orange for ending balance
+      ],
+      borderColor: [
+        "rgba(121, 85, 72, 1)",
+        "rgba(96, 125, 139, 1)",
+        "rgba(255, 152, 0, 1)",
+      ],
+      borderWidth: 1,
+    },
   };
 
   // Provincial Tax
@@ -154,62 +215,149 @@ function calculateBudget(
   let recommendedCashflowPct = 0;
 
   const MIN_CASHFLOW_PCT = 10;
-  const MIN_SAVE_PCT = 10;
+  const MIN_SAVE_PCT = 5;
   const MAX_SAVE_PCT = 15;
   const MIN_INVEST_PCT = 10;
   const MAX_INVEST_PCT = 20;
 
   const idealAllocationTotal = MAX_SAVE_PCT + MAX_INVEST_PCT + MIN_CASHFLOW_PCT; // 15 + 20 + 10 = 45%
   const minimumAllocationTotal =
-    MIN_SAVE_PCT + MIN_INVEST_PCT + MIN_CASHFLOW_PCT; // 10 + 10 + 10 = 30%
-  const minCashflowAndSavings = MIN_CASHFLOW_PCT + MIN_SAVE_PCT; // 20%
+    MIN_SAVE_PCT + MIN_INVEST_PCT + MIN_CASHFLOW_PCT; // 5 + 10 + 10 = 25%
+  const minCashflowAndSavings = MIN_CASHFLOW_PCT + MIN_SAVE_PCT; // 10 + 5 = 15%
 
   const availablePool = 100 - expensesPercentage;
 
-  if (availablePool >= idealAllocationTotal) {
-    // ABUNDANCE ZONE: Fund ideal amounts, rest to cashflow.
-    recommendedSavingsPct = MAX_SAVE_PCT;
-    recommendedInvestmentsPct = MAX_INVEST_PCT;
-    recommendedCashflowPct =
-      availablePool - recommendedSavingsPct - recommendedInvestmentsPct;
-  } else if (availablePool >= minimumAllocationTotal) {
-    // DYNAMIC SQUEEZE ZONE: Meet all minimums, then distribute surplus proportionally.
-    recommendedCashflowPct = MIN_CASHFLOW_PCT;
-    recommendedSavingsPct = MIN_SAVE_PCT;
-    recommendedInvestmentsPct = MIN_INVEST_PCT;
+  // Calculate remaining percentage after living expenses
+  const remainingPct = 100 - expensesPercentage;
+  let remainingAfterAllocation = remainingPct;
 
-    const surplus = availablePool - minimumAllocationTotal;
-    const savingsHeadroom = MAX_SAVE_PCT - MIN_SAVE_PCT; // 5
-    const investmentsHeadroom = MAX_INVEST_PCT - MIN_INVEST_PCT; // 10
-    const totalHeadroom = savingsHeadroom + investmentsHeadroom; // 15
+  // Different allocation strategies based on expense percentage zones
+  if (expensesPercentage > 70 && expensesPercentage < 80) {
+    // MODERATE ZONE (Yellow): 70.1% - 79.9% expenses
+    // Priority: Cashflow first (10%), then maximize Savings up to 15%, no Investments
 
-    if (totalHeadroom > 0) {
-      recommendedSavingsPct += surplus * (savingsHeadroom / totalHeadroom);
-      recommendedInvestmentsPct +=
-        surplus * (investmentsHeadroom / totalHeadroom);
+    // Step 1: Allocate to Cashflow (always at least 10% if possible)
+    recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
+    remainingAfterAllocation -= recommendedCashflowPct;
+
+    // Step 2: Allocate to Savings (up to MAX_SAVE_PCT (15%) in this zone)
+    recommendedSavingsPct = Math.min(MAX_SAVE_PCT, remainingAfterAllocation);
+    remainingAfterAllocation -= recommendedSavingsPct;
+
+    // Step 3: No investments in this zone, add remaining to cashflow
+    recommendedInvestmentsPct = 0;
+
+    // Add any leftover to Cashflow
+    if (remainingAfterAllocation > 0) {
+      recommendedCashflowPct += remainingAfterAllocation;
+    }
+  } else if (expensesPercentage < 70) {
+    // GREEN ZONE: Less than 70% expenses
+    // Step 1: Allocate to Cashflow (always at least 10% of remaining if possible)
+    recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
+    remainingAfterAllocation -= recommendedCashflowPct;
+
+    // Check if we have enough for minimum investments (10%) and adjust allocation strategy
+    if (remainingAfterAllocation >= MIN_INVEST_PCT + MIN_SAVE_PCT) {
+      // We have enough for both minimum investments and at least minimum savings
+
+      // Reserve 10% for investments first
+      const reservedForInvestments = MIN_INVEST_PCT;
+      const availableForSavings =
+        remainingAfterAllocation - reservedForInvestments;
+
+      // Step 2: Allocate to Savings (up to 15% of remaining after expenses)
+      recommendedSavingsPct = Math.min(MAX_SAVE_PCT, availableForSavings);
+
+      // Step 3: Allocate to Investments (minimum 10%, up to 20% with remaining)
+      const remainingAfterSavings =
+        remainingAfterAllocation - recommendedSavingsPct;
+      recommendedInvestmentsPct = Math.min(
+        MAX_INVEST_PCT,
+        Math.max(MIN_INVEST_PCT, remainingAfterSavings)
+      );
+
+      // Calculate any leftover after both allocations
+      const leftover =
+        remainingAfterAllocation -
+        recommendedSavingsPct -
+        recommendedInvestmentsPct;
+
+      // Step 4: If there's still leftover, add it to Cashflow
+      if (leftover > 0) {
+        recommendedCashflowPct += leftover;
+      }
     } else {
-      // Should not happen in this zone, but as a fallback...
-      recommendedCashflowPct += surplus;
+      // Not enough for both minimum investments and minimum savings
+      // Prioritize investments at 10% if possible
+      if (remainingAfterAllocation >= MIN_INVEST_PCT) {
+        recommendedInvestmentsPct = MIN_INVEST_PCT;
+        recommendedSavingsPct = remainingAfterAllocation - MIN_INVEST_PCT;
+      } else {
+        // Not even enough for minimum investments
+        recommendedInvestmentsPct = remainingAfterAllocation;
+        recommendedSavingsPct = 0;
+      }
+    }
+  } else if (expensesPercentage >= 80 && expensesPercentage <= 85) {
+    // RED ZONE (80% - 85% expenses):
+    // Priority: Ensure cashflow is at least 10%, allocate 5-10% to savings if possible,
+    // and any remaining goes to cashflow
+
+    // Step 1: Allocate to Cashflow (always at least 10% if possible)
+    recommendedCashflowPct = Math.min(MIN_CASHFLOW_PCT, remainingPct);
+    remainingAfterAllocation -= recommendedCashflowPct;
+
+    // Step 2: Allocate to Savings (5-10% in this zone)
+    if (remainingAfterAllocation > 0) {
+      // Allocate between 5-10% to savings, but not more than what's available
+      recommendedSavingsPct = Math.min(
+        10,
+        Math.max(MIN_SAVE_PCT, remainingAfterAllocation)
+      );
+
+      // If we can't meet minimum savings of 5%, allocate whatever is left
+      if (recommendedSavingsPct < MIN_SAVE_PCT) {
+        recommendedSavingsPct = remainingAfterAllocation;
+      }
+
+      remainingAfterAllocation -= recommendedSavingsPct;
+    } else {
+      recommendedSavingsPct = 0;
+    }
+
+    // Step 3: No investments in this zone
+    recommendedInvestmentsPct = 0;
+
+    // Step 4: Add any leftover to Cashflow
+    if (remainingAfterAllocation > 0) {
+      recommendedCashflowPct += remainingAfterAllocation;
     }
   } else {
-    // COMPROMISE ZONE: Not enough for dynamic scaling. Prioritize filling cashflow, then savings.
-    recommendedInvestmentsPct = 0; // No investments in this zone.
+    // EXTREME RED ZONE (85.1% or more expenses):
+    // All remaining percentage goes directly to cashflow
+    recommendedCashflowPct = remainingPct;
+    recommendedSavingsPct = 0;
+    recommendedInvestmentsPct = 0;
+  }
 
-    if (availablePool >= minCashflowAndSavings) {
-      // Can fund minimums for both cashflow and savings.
-      recommendedSavingsPct = MIN_SAVE_PCT;
-      // Give the rest to cashflow, as it's the top priority.
-      recommendedCashflowPct = availablePool - recommendedSavingsPct;
-    } else if (availablePool >= MIN_CASHFLOW_PCT) {
-      // Can only fund cashflow.
-      recommendedCashflowPct = availablePool;
-      recommendedSavingsPct = 0;
-    } else {
-      // Not even enough for minimum cashflow. It gets everything.
-      recommendedCashflowPct = availablePool;
-      recommendedSavingsPct = 0;
-    }
-  } // Final check to ensure no negative cashflow
+  // Special case: If exactly 70% expenses, use fixed allocation
+  if (expensesPercentage === 70) {
+    recommendedCashflowPct = 10;
+    recommendedSavingsPct = 10;
+    recommendedInvestmentsPct = 10;
+  }
+
+  // Verify total allocation doesn't exceed remaining percentage
+  const totalAllocation =
+    recommendedCashflowPct + recommendedSavingsPct + recommendedInvestmentsPct;
+  if (Math.abs(totalAllocation - remainingPct) > 0.01) {
+    // Allow for small rounding errors
+    // Adjust to ensure total is exactly the remaining percentage
+    const adjustment = remainingPct - totalAllocation;
+    recommendedCashflowPct += adjustment; // Add any difference to cashflow
+  }
+  // Final check to ensure no negative cashflow
 
   // Calculate recommended amounts based on the new percentages of disposable income
   const recommendedAllocations = {
@@ -292,7 +440,7 @@ function calculateBudget(
   };
 }
 
-// Determines the user's budget zone (Green, Moderate, Red) based on expense ratio.
+// Determines the user's budget zone (Green, Moderate, Red, Extreme Red) based on expense ratio.
 function determineBudgetZoneAndOptions(expensesPercentage) {
   if (expensesPercentage <= 70) {
     return [
@@ -308,12 +456,19 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
       true,
       false, // Investments not recommended in this zone
     ];
-  } else {
+  } else if (expensesPercentage <= 85) {
     return [
       "RED",
-      "Your expenses exceed a healthy limit. Prioritize increasing cashflow and reducing expenses immediately.",
-      false,
-      false,
+      "Your expenses exceed a healthy limit. Prioritize at least 10% cashflow, 5-10% savings if possible, and focus on reducing expenses immediately.",
+      true, // Savings are now recommended in this zone (5-10%)
+      false, // Investments still not recommended in this zone
+    ];
+  } else {
+    return [
+      "EXTREME RED",
+      "Your expenses are critically high. All remaining funds should go to cashflow while you focus on reducing expenses urgently.",
+      false, // No savings in this zone
+      false, // No investments in this zone
     ];
   }
 }
@@ -665,6 +820,9 @@ function handleExpenseOrAllocationChange() {
     userInvestmentsPct
   );
 
+  // Store the current budget in calculatorState for access by other functions
+  calculatorState.currentBudget = budget;
+
   // 4. Update all UI elements with the new budget data
   updateAllUI(budget);
 }
@@ -688,6 +846,7 @@ function updateAllUI(budget) {
     GREEN: { bg: "bg-green-500/20", border: "border-green-500/50" },
     MODERATE: { bg: "bg-yellow-500/20", border: "border-yellow-500/50" },
     RED: { bg: "bg-red-500/20", border: "border-red-500/50" },
+    "EXTREME RED": { bg: "bg-red-900/30", border: "border-red-700/70" },
   };
   const zoneColor = zoneColors[budget.budget_zone];
   integratedExpenseSummary.className = `mt-8 glass-effect p-4 rounded-xl text-white animate-slide-up ${zoneColor.bg} ${zoneColor.border}`;
@@ -762,16 +921,16 @@ function updateAllUI(budget) {
   // Custom Cashflow Amount and Percentage
   if (hasAnyUserCustomInputForCashflow) {
     if (budget.custom_allocations) {
-      document.getElementById("custom-cashflow-amount").textContent =
+      document.getElementById("customCashflowAmount").textContent =
         formatCurrency(budget.custom_allocations.monthly_cashflow);
       document.getElementById(
-        "custom-cashflow-percentage"
+        "customCashflowPercentage"
       ).textContent = `(${budget.custom_cashflow_pct.toFixed(1)}%)`;
     } else {
-      document.getElementById("custom-cashflow-amount").textContent =
+      document.getElementById("customCashflowAmount").textContent =
         formatCurrency(0);
       document.getElementById(
-        "custom-cashflow-percentage"
+        "customCashflowPercentage"
       ).textContent = `(0.0%)`;
     }
   } else {
@@ -779,10 +938,10 @@ function updateAllUI(budget) {
     const currentCashflowAmount =
       budget.monthly_disposable_income - budget.total_monthly_expenses;
     const currentCashflowPct = 100 - budget.expenses_percentage;
-    document.getElementById("custom-cashflow-amount").textContent =
+    document.getElementById("customCashflowAmount").textContent =
       formatCurrency(currentCashflowAmount);
     document.getElementById(
-      "custom-cashflow-percentage"
+      "customCashflowPercentage"
     ).textContent = `(${currentCashflowPct.toFixed(1)}%)`;
   }
 
@@ -828,6 +987,12 @@ function updateAllUI(budget) {
 
   // Update individual expense percentage labels
   updateExpensePercentageLabels(budget.monthly_disposable_income);
+
+  // Update the projection chart with the new budget data
+  updateProjectionChart();
+
+  // Update the custom projection chart with the new budget data
+  updateCustomProjectionChart();
 }
 
 /**
@@ -840,7 +1005,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     housing: [
       "rent-mortgage",
       "electricity",
-      "utilities",
+      "water",
       "gas-heating",
       "home-insurance",
       "housing-others",
@@ -857,14 +1022,14 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
       "student-loans",
       "credit-cards",
       "personal-loans",
-      "business-loans",
+      "life-insurance",
       "line-of-credit",
       "loan-others",
     ],
     living: [
       "groceries",
-      "dining-out",
       "phone-bills",
+      "subscriptions",
       "internet",
       "clothing",
       "living-others",
@@ -872,7 +1037,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     miscellaneous: [
       "healthcare",
       "entertainment",
-      "subscriptions",
+      "dining-out",
       "pets",
       "gifts-donations",
       "misc-others",
@@ -910,7 +1075,9 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
     if (categoryTotalSpan) {
       if (categoryTotal > 0) {
         const totalPercentage = (categoryTotal / monthlyDisposableIncome) * 100;
-        categoryTotalSpan.textContent = `${formatCurrency(categoryTotal)} (${formatPercentage(totalPercentage)} of your MDI)`;
+        categoryTotalSpan.textContent = `${formatCurrency(
+          categoryTotal
+        )} (${formatPercentage(totalPercentage)} of your MDI)`;
       } else {
         categoryTotalSpan.textContent = "";
       }
@@ -941,6 +1108,62 @@ function setupEventListeners() {
     }
   });
 
+  // Custom Allocations Toggle Button
+  const toggleCustomAllocationsBtn = document.getElementById(
+    "toggleCustomAllocationsBtn"
+  );
+  const customAllocationsSection = document.getElementById(
+    "customAllocationsSection"
+  );
+
+  // Add transition styles for smooth animation
+  if (customAllocationsSection) {
+    customAllocationsSection.style.overflow = "hidden";
+    customAllocationsSection.style.transition =
+      "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out";
+    customAllocationsSection.style.maxHeight = "0";
+    customAllocationsSection.style.opacity = "0";
+  }
+
+  if (toggleCustomAllocationsBtn && customAllocationsSection) {
+    toggleCustomAllocationsBtn.addEventListener("click", () => {
+      const isHidden = customAllocationsSection.classList.contains("hidden");
+
+      if (isHidden) {
+        // Show with animation
+        customAllocationsSection.classList.remove("hidden");
+        // Set a small delay to ensure the hidden class is removed first
+        setTimeout(() => {
+          customAllocationsSection.style.maxHeight = "5000px"; // Large enough to contain all content
+          customAllocationsSection.style.opacity = "1";
+        }, 10);
+
+        toggleCustomAllocationsBtn.innerHTML = `
+          <span style="color: white; font-weight: 500">Hide Custom Allocations</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+          </svg>
+        `;
+      } else {
+        // Hide with animation
+        customAllocationsSection.style.maxHeight = "0";
+        customAllocationsSection.style.opacity = "0";
+
+        // Add the hidden class after animation completes
+        setTimeout(() => {
+          customAllocationsSection.classList.add("hidden");
+        }, 500); // Match the transition duration
+
+        toggleCustomAllocationsBtn.innerHTML = `
+          <span>Enter Custom Allocations</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        `;
+      }
+    });
+  }
+
   // All living expense inputs
   const expenseInputs = document.querySelectorAll(
     '#living-expenses-section input[type="number"]'
@@ -958,6 +1181,146 @@ function setupEventListeners() {
     // No need to set isInvestmentsCustom here, as handleExpenseOrAllocationChange reads directly from input.
     handleExpenseOrAllocationChange();
   });
+
+  // Chart projection buttons
+  const savingsChartBtn = document.getElementById("savingsChartBtn");
+  const investmentsChartBtn = document.getElementById("investmentsChartBtn");
+  const bothChartBtn = document.getElementById("bothChartBtn");
+  const projectionYearsInput = document.getElementById("projectionYears");
+  const projectionRateInput = document.getElementById("projectionRate");
+
+  if (savingsChartBtn && investmentsChartBtn && bothChartBtn) {
+    // Helper function to update active button styling
+    const updateActiveButton = (activeBtn) => {
+      [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach((btn) => {
+        btn.classList.remove("chart-btn-active");
+        btn.classList.add("chart-btn-inactive");
+        // Remove active styling classes
+        btn.classList.remove("shadow-lg", "transform", "scale-110");
+        btn.classList.add("shadow-md");
+        btn.className = btn.className.replace(
+          /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+          "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+        );
+      });
+      activeBtn.classList.remove("chart-btn-inactive");
+      activeBtn.classList.add("chart-btn-active");
+      // Add active styling classes
+      activeBtn.classList.remove("shadow-md");
+      activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+      activeBtn.className = activeBtn.className.replace(
+        /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+        "bg-gradient-to-r from-emerald-600 to-emerald-700"
+      );
+    };
+
+    savingsChartBtn.addEventListener("click", () => {
+      calculatorState.compoundInterest.currentChartType = "savings";
+      updateActiveButton(savingsChartBtn);
+      updateProjectionChart();
+    });
+
+    investmentsChartBtn.addEventListener("click", () => {
+      calculatorState.compoundInterest.currentChartType = "investments";
+      updateActiveButton(investmentsChartBtn);
+      updateProjectionChart();
+    });
+
+    bothChartBtn.addEventListener("click", () => {
+      calculatorState.compoundInterest.currentChartType = "both";
+      updateActiveButton(bothChartBtn);
+      updateProjectionChart();
+    });
+
+    // Add event listeners for projection parameters
+    if (projectionYearsInput) {
+      projectionYearsInput.addEventListener("input", () => {
+        const years = parseInt(projectionYearsInput.value) || 5;
+        calculatorState.compoundInterest.years = Math.max(
+          1,
+          Math.min(50, years)
+        );
+        updateProjectionChart();
+      });
+    }
+
+    if (projectionRateInput) {
+      projectionRateInput.addEventListener("input", () => {
+        const rate = parseFloat(projectionRateInput.value) || 6;
+        calculatorState.compoundInterest.returnRate = Math.max(
+          0,
+          Math.min(20, rate)
+        );
+        updateProjectionChart();
+      });
+    }
+  }
+
+  // Custom Chart projection buttons
+  const customSavingsChartBtn = document.getElementById(
+    "customSavingsChartBtn"
+  );
+  const customInvestmentsChartBtn = document.getElementById(
+    "customInvestmentsChartBtn"
+  );
+  const customBothChartBtn = document.getElementById("customBothChartBtn");
+  // Custom projection now uses same parameters as recommended allocations
+  // No need for separate input elements
+
+  if (
+    customSavingsChartBtn &&
+    customInvestmentsChartBtn &&
+    customBothChartBtn
+  ) {
+    // Helper function to update active button styling for custom buttons
+    const updateCustomActiveButton = (activeBtn) => {
+      [
+        customSavingsChartBtn,
+        customInvestmentsChartBtn,
+        customBothChartBtn,
+      ].forEach((btn) => {
+        btn.classList.remove("chart-btn-active");
+        btn.classList.add("chart-btn-inactive");
+        // Remove active styling classes
+        btn.classList.remove("shadow-lg", "transform", "scale-110");
+        btn.classList.add("shadow-md");
+        btn.className = btn.className.replace(
+          /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+          "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+        );
+      });
+      activeBtn.classList.remove("chart-btn-inactive");
+      activeBtn.classList.add("chart-btn-active");
+      // Add active styling classes
+      activeBtn.classList.remove("shadow-md");
+      activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+      activeBtn.className = activeBtn.className.replace(
+        /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+        "bg-gradient-to-r from-emerald-600 to-emerald-700"
+      );
+    };
+
+    customSavingsChartBtn.addEventListener("click", () => {
+      calculatorState.customCompoundInterest.currentChartType = "savings";
+      updateCustomActiveButton(customSavingsChartBtn);
+      updateCustomProjectionChart();
+    });
+
+    customInvestmentsChartBtn.addEventListener("click", () => {
+      calculatorState.customCompoundInterest.currentChartType = "investments";
+      updateCustomActiveButton(customInvestmentsChartBtn);
+      updateCustomProjectionChart();
+    });
+
+    customBothChartBtn.addEventListener("click", () => {
+      calculatorState.customCompoundInterest.currentChartType = "both";
+      updateCustomActiveButton(customBothChartBtn);
+      updateCustomProjectionChart();
+    });
+
+    // Custom projection now uses same parameters as recommended allocations
+    // No separate event listeners needed
+  }
 
   // UI Toggles
   const dropdownBtn = document.getElementById("dropdownBtn");
@@ -1100,6 +1463,575 @@ function toggleProvinceDropdown() {
 }
 
 // Initializes the application on DOM load.
+/**
+ * Calculates the future value of an investment using compound interest.
+ * FV = PMT * ((1 + r)^n - 1) / r
+ * where:
+ * - PMT is the monthly contribution
+ * - r is the monthly interest rate (annual rate / 12)
+ * - n is the total number of periods (years * 12)
+ */
+function calculateFutureValue(
+  monthlyContribution,
+  years,
+  annualRate,
+  compoundFrequency
+) {
+  // Convert annual rate to decimal
+  const r = annualRate / 100;
+
+  // Calculate the rate per period
+  const ratePerPeriod = r / compoundFrequency;
+
+  // Calculate total number of periods
+  const totalPeriods = years * compoundFrequency;
+
+  // Calculate future value using the compound interest formula
+  // FV = PMT * ((1 + r)^n - 1) / r
+  const futureValue =
+    monthlyContribution *
+    ((Math.pow(1 + ratePerPeriod, totalPeriods) - 1) / ratePerPeriod);
+
+  // Calculate total contributions
+  const totalContributions = monthlyContribution * totalPeriods;
+
+  // Calculate interest earned
+  const interestEarned = futureValue - totalContributions;
+
+  return {
+    endingBalance: futureValue,
+    totalContributions: totalContributions,
+    interestEarned: interestEarned,
+  };
+}
+
+/**
+ * Updates the projection chart based on the selected allocation type (savings, investments, or both)
+ */
+function updateProjectionChart() {
+  const { years, compoundFrequency, currentChartType } =
+    calculatorState.compoundInterest;
+
+  // Get the chart instance
+  const chartElement = document.getElementById("myPieChart2");
+  let chart = Chart.getChart(chartElement);
+
+  // If no budget calculation has been performed yet, return early
+  if (!calculatorState.currentBudget) {
+    console.log("No budget data available yet for projection chart");
+    return;
+  }
+
+  const currentBudget = calculatorState.currentBudget;
+
+  // Determine the monthly contribution and return rate based on the selected chart type
+  let monthlyContribution = 0;
+  let returnRate = 0;
+
+  if (currentChartType === "savings") {
+    monthlyContribution = currentBudget.recommended_allocations.monthly_savings;
+    returnRate = 3; // 3% for savings
+  } else if (currentChartType === "investments") {
+    monthlyContribution =
+      currentBudget.recommended_allocations.monthly_investments;
+    returnRate = 10; // 10% for investments
+  } else if (currentChartType === "both") {
+    const savingsAmount = currentBudget.recommended_allocations.monthly_savings;
+    const investmentsAmount =
+      currentBudget.recommended_allocations.monthly_investments;
+    monthlyContribution = savingsAmount + investmentsAmount;
+    // Use simple average of 3% and 10%
+    returnRate = (3 + 10) / 2; // 6.5%
+  }
+
+  // Calculate the future value
+  const { endingBalance, totalContributions, interestEarned } =
+    calculateFutureValue(
+      monthlyContribution,
+      years,
+      returnRate,
+      compoundFrequency
+    );
+
+  // Define color schemes for different chart types
+  const colorSchemes = {
+    savings: {
+      backgroundColor: [
+        "rgba(239, 68, 68, 0.8)", // Red for contributions
+        "rgba(59, 130, 246, 0.8)", // Blue for interest
+        "rgba(251, 191, 36, 0.8)", // Yellow for ending balance
+      ],
+      borderColor: [
+        "rgba(239, 68, 68, 1)",
+        "rgba(59, 130, 246, 1)",
+        "rgba(251, 191, 36, 1)",
+      ],
+      borderWidth: 2,
+    },
+    investments: {
+      backgroundColor: [
+        "rgba(34, 197, 94, 0.8)", // Green for contributions
+        "rgba(168, 85, 247, 0.8)", // Purple for interest
+        "rgba(249, 115, 22, 0.8)", // Orange for ending balance
+      ],
+      borderColor: [
+        "rgba(34, 197, 94, 1)",
+        "rgba(168, 85, 247, 1)",
+        "rgba(249, 115, 22, 1)",
+      ],
+      borderWidth: 2,
+    },
+    both: {
+      backgroundColor: [
+        "rgba(99, 102, 241, 0.8)", // Indigo for contributions
+        "rgba(236, 72, 153, 0.8)", // Pink for interest
+        "rgba(14, 165, 233, 0.8)", // Sky blue for ending balance
+      ],
+      borderColor: [
+        "rgba(99, 102, 241, 1)",
+        "rgba(236, 72, 153, 1)",
+        "rgba(14, 165, 233, 1)",
+      ],
+      borderWidth: 2,
+    },
+  };
+
+  const currentColors = colorSchemes[currentChartType] || colorSchemes.savings;
+
+  // Update the chart data as percentages of ending balance
+  const contributionPercentage = Math.round(
+    (totalContributions / endingBalance) * 100
+  );
+  const interestPercentage = Math.round((interestEarned / endingBalance) * 100);
+  const chartData = [contributionPercentage, interestPercentage];
+  const chartLabels = ["Total Contributions", "Interest Earned"];
+  const chartTotal = 100; // Total is always 100%
+
+  if (chart) {
+    chart.data.datasets[0].data = chartData;
+    chart.data.labels = chartLabels;
+    chart.data.datasets[0].backgroundColor =
+      currentColors.backgroundColor.slice(0, 2);
+    chart.data.datasets[0].borderColor = currentColors.borderColor.slice(0, 2);
+    chart.data.datasets[0].borderWidth = currentColors.borderWidth;
+    chart.update();
+  } else {
+    // If chart doesn't exist yet, create it
+    chart = new Chart(chartElement.getContext("2d"), {
+      type: "pie",
+      data: {
+        labels: chartLabels,
+        datasets: [
+          {
+            label: "Projection",
+            data: chartData,
+            backgroundColor: currentColors.backgroundColor.slice(0, 2),
+            borderColor: currentColors.borderColor.slice(0, 2),
+            borderWidth: currentColors.borderWidth,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const label = context.label || "";
+                const percentage = context.raw || 0;
+                const dollarValue =
+                  label === "Total Contributions"
+                    ? totalContributions
+                    : interestEarned;
+                return `${label}\n${formatCurrency(
+                  dollarValue
+                )} (${percentage}%)`;
+              },
+            },
+          },
+          legend: {
+            display: false,
+          },
+          title: {
+            display: false,
+          },
+          datalabels: {
+            color: "white",
+            font: {
+              weight: "bold",
+              size: 12,
+            },
+            formatter: function (value, context) {
+              return value + "%";
+            },
+          },
+        },
+        layout: {
+          padding: 10,
+        },
+      },
+    });
+  }
+
+  // Display a summary of the projection below the chart
+  const summaryElement = document.getElementById("projectionSummary");
+  if (summaryElement) {
+    const contributionType =
+      currentChartType === "savings"
+        ? "Savings"
+        : currentChartType === "investments"
+        ? "Investments"
+        : "Combined";
+
+    // Create return rate description based on chart type
+    let returnRateDescription = "";
+    if (currentChartType === "savings") {
+      returnRateDescription = `${returnRate}% 
+        return (savings rate)`;
+    } else if (currentChartType === "investments") {
+      returnRateDescription = `${returnRate}% 
+        return (investment rate)`;
+    } else if (currentChartType === "both") {
+      returnRateDescription = `${returnRate.toFixed(1)}% 
+        return (average of savings 3% and investments 10%)`;
+    }
+
+    summaryElement.innerHTML = `
+      <div class="text-white text-sm">
+        <p class="font-semibold mb-2 text-center">${contributionType} Projection</p>
+        <p class="text-xs text-white/70 mb-2 text-center">${formatCurrency(
+          monthlyContribution
+        )}/month for ${years} years at ${returnRateDescription}</p>
+        <div class="space-y-1">
+          <div class="flex items-center justify-between p-2 rounded bg-white/10 mb-3">
+            <span class="text-sm font-bold">Ending Balance</span>
+            <span class="font-bold text-lg">${formatCurrency(
+              endingBalance
+            )}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(0)">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentColors.backgroundColor[0]
+              }"></div>
+              <span class="text-sm" id="legend-0">Total Contributions</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(
+              totalContributions
+            )}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleChartSegment(1)">
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentColors.backgroundColor[1]
+              }"></div>
+              <span class="text-sm" id="legend-1">Interest Earned</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(interestEarned)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Updates the custom projection chart based on the selected allocation type (savings, investments, or both)
+ */
+function updateCustomProjectionChart() {
+  // Use the same years as recommended allocations
+  const { years, compoundFrequency } = calculatorState.compoundInterest;
+  const { currentChartType } = calculatorState.customCompoundInterest;
+
+  // Get the chart instance
+  const chartElement = document.getElementById("customPieChart");
+  let chart = Chart.getChart(chartElement);
+
+  // If no budget calculation has been performed yet, return early
+  if (!calculatorState.currentBudget) {
+    console.log("No budget data available yet for custom projection chart");
+    return;
+  }
+
+  const currentBudget = calculatorState.currentBudget;
+
+  // Determine the monthly contribution and return rate based on the selected chart type using custom allocations
+  let monthlyContribution = 0;
+  let returnRate = 0;
+
+  if (currentBudget.custom_allocations) {
+    if (currentChartType === "savings") {
+      monthlyContribution = currentBudget.custom_allocations.monthly_savings;
+      returnRate = 3; // 3% for savings
+    } else if (currentChartType === "investments") {
+      monthlyContribution =
+        currentBudget.custom_allocations.monthly_investments;
+      returnRate = 10; // 10% for investments
+    } else if (currentChartType === "both") {
+      const savingsAmount = currentBudget.custom_allocations.monthly_savings;
+      const investmentsAmount =
+        currentBudget.custom_allocations.monthly_investments;
+      monthlyContribution = savingsAmount + investmentsAmount;
+      // Use simple average of 3% and 10%
+      returnRate = (3 + 10) / 2; // 6.5%
+    }
+  }
+
+  // Calculate the future value
+  const { endingBalance, totalContributions, interestEarned } =
+    calculateFutureValue(
+      monthlyContribution,
+      years,
+      returnRate,
+      compoundFrequency
+    );
+
+  // Define custom color schemes for custom charts
+  const customColorSchemes = {
+    savings: {
+      backgroundColor: [
+        "rgba(233, 30, 99, 0.8)", // Pink for contributions
+        "rgba(0, 188, 212, 0.8)", // Cyan for interest
+        "rgba(63, 81, 181, 0.8)", // Indigo for ending balance
+      ],
+      borderColor: [
+        "rgba(233, 30, 99, 1)",
+        "rgba(0, 188, 212, 1)",
+        "rgba(63, 81, 181, 1)",
+      ],
+      borderWidth: 2,
+    },
+    investments: {
+      backgroundColor: [
+        "rgba(255, 87, 34, 0.8)", // Deep orange for contributions
+        "rgba(139, 195, 74, 0.8)", // Light green for interest
+        "rgba(156, 39, 176, 0.8)", // Purple for ending balance
+      ],
+      borderColor: [
+        "rgba(255, 87, 34, 1)",
+        "rgba(139, 195, 74, 1)",
+        "rgba(156, 39, 176, 1)",
+      ],
+      borderWidth: 3,
+    },
+    both: {
+      backgroundColor: [
+        "rgba(121, 85, 72, 0.8)", // Brown for contributions
+        "rgba(96, 125, 139, 0.8)", // Blue grey for interest
+        "rgba(255, 152, 0, 0.8)", // Orange for ending balance
+      ],
+      borderColor: [
+        "rgba(121, 85, 72, 1)",
+        "rgba(96, 125, 139, 1)",
+        "rgba(255, 152, 0, 1)",
+      ],
+      borderWidth: 1,
+    },
+  };
+
+  const currentCustomColors =
+    customColorSchemes[currentChartType] || customColorSchemes.savings;
+
+  // Update the chart data as percentages of ending balance
+  const customContributionPercentage = Math.round(
+    (totalContributions / endingBalance) * 100
+  );
+  const customInterestPercentage = Math.round(
+    (interestEarned / endingBalance) * 100
+  );
+  const customChartData = [
+    customContributionPercentage,
+    customInterestPercentage,
+  ];
+  const customChartLabels = ["Total Contributions", "Interest Earned"];
+  const customChartTotal = 100; // Total is always 100%
+
+  if (chart) {
+    chart.data.datasets[0].data = customChartData;
+    chart.data.labels = customChartLabels;
+    chart.data.datasets[0].backgroundColor =
+      currentCustomColors.backgroundColor.slice(0, 2);
+    chart.data.datasets[0].borderColor = currentCustomColors.borderColor.slice(
+      0,
+      2
+    );
+    chart.data.datasets[0].borderWidth = currentCustomColors.borderWidth;
+    chart.update();
+  } else {
+    // If chart doesn't exist yet, create it
+    chart = new Chart(chartElement.getContext("2d"), {
+      type: "pie",
+      data: {
+        labels: customChartLabels,
+        datasets: [
+          {
+            label: "Custom Projection",
+            data: customChartData,
+            backgroundColor: currentCustomColors.backgroundColor.slice(0, 2),
+            borderColor: currentCustomColors.borderColor.slice(0, 2),
+            borderWidth: currentCustomColors.borderWidth,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const label = context.label || "";
+                const percentage = context.raw || 0;
+                const dollarValue =
+                  label === "Total Contributions"
+                    ? totalContributions
+                    : interestEarned;
+                return `${label}\n${formatCurrency(
+                  dollarValue
+                )} (${percentage}%)`;
+              },
+            },
+          },
+          legend: {
+            display: false,
+          },
+          title: {
+            display: false,
+          },
+          datalabels: {
+            color: "white",
+            font: {
+              weight: "bold",
+              size: 12,
+            },
+            formatter: function (value, context) {
+              return value + "%";
+            },
+          },
+        },
+        layout: {
+          padding: 10,
+        },
+      },
+    });
+  }
+
+  // Display a summary of the projection below the chart
+  const summaryElement = document.getElementById("customProjectionSummary");
+  if (summaryElement) {
+    const contributionType =
+      currentChartType === "savings"
+        ? "Savings"
+        : currentChartType === "investments"
+        ? "Investments"
+        : "Combined";
+
+    // Create descriptive return rate message
+    let returnRateDescription;
+    if (currentChartType === "savings") {
+      returnRateDescription = `${returnRate.toFixed(1)}% savings rate`;
+    } else if (currentChartType === "investments") {
+      returnRateDescription = `${returnRate.toFixed(1)}% investment rate`;
+    } else {
+      returnRateDescription = `${returnRate.toFixed(
+        1
+      )}% average of savings 3% and investments 10%`;
+    }
+
+    summaryElement.innerHTML = `
+      <div class="text-white text-sm">
+        <p class="font-semibold mb-2 text-center">${contributionType} Projection</p>
+        <p class="text-xs text-white/70 mb-2 text-center">${formatCurrency(
+          monthlyContribution
+        )}/month for ${years} years at ${returnRateDescription}</p>
+        <div class="space-y-1">
+          <div class="flex items-center justify-between p-2 rounded bg-white/10 mb-3">
+            <span class="text-sm font-bold">Ending Balance</span>
+            <span class="font-bold text-lg">${formatCurrency(
+              endingBalance
+            )}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(0)">
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentCustomColors.backgroundColor[0]
+              }"></div>
+              <span class="text-sm" id="custom-legend-0">Total Contributions</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(
+              totalContributions
+            )}</span>
+          </div>
+          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(1)">
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-3 rounded" style="background-color: ${
+                currentCustomColors.backgroundColor[1]
+              }"></div>
+              <span class="text-sm" id="custom-legend-1">Interest Earned</span>
+            </div>
+            <span class="font-semibold">${formatCurrency(interestEarned)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Function to toggle chart segment visibility (for interactive legends)
+function toggleChartSegment(segmentIndex) {
+  const chartElement = document.getElementById("myPieChart2");
+  const chart = Chart.getChart(chartElement);
+
+  if (chart && chart.data.datasets[0]) {
+    const meta = chart.getDatasetMeta(0);
+    if (meta.data[segmentIndex]) {
+      meta.data[segmentIndex].hidden = !meta.data[segmentIndex].hidden;
+
+      // Toggle strikethrough on legend text
+      const legendElement = document.getElementById(`legend-${segmentIndex}`);
+      if (legendElement) {
+        if (meta.data[segmentIndex].hidden) {
+          legendElement.style.textDecoration = "line-through";
+          legendElement.style.opacity = "0.5";
+        } else {
+          legendElement.style.textDecoration = "none";
+          legendElement.style.opacity = "1";
+        }
+      }
+
+      chart.update();
+    }
+  }
+}
+
+// Function to toggle custom chart segment visibility
+function toggleCustomChartSegment(segmentIndex) {
+  const chartElement = document.getElementById("customPieChart");
+  const chart = Chart.getChart(chartElement);
+
+  if (chart && chart.data.datasets[0]) {
+    const meta = chart.getDatasetMeta(0);
+    if (meta.data[segmentIndex]) {
+      meta.data[segmentIndex].hidden = !meta.data[segmentIndex].hidden;
+
+      // Toggle strikethrough on legend text
+      const legendElement = document.getElementById(
+        `custom-legend-${segmentIndex}`
+      );
+      if (legendElement) {
+        if (meta.data[segmentIndex].hidden) {
+          legendElement.style.textDecoration = "line-through";
+          legendElement.style.opacity = "0.5";
+        } else {
+          legendElement.style.textDecoration = "none";
+          legendElement.style.opacity = "1";
+        }
+      }
+
+      chart.update();
+    }
+  }
+}
+
 function initializeApp() {
   initializeProvinceDropdown();
   setupEventListeners();

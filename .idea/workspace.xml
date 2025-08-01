@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="94287369-434d-4bde-a1d4-d620224652a4" name="Changes" comment="working on responsiveness" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="JavaScript File" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="sieg-branch" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;S13G&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Silicon-Synergy/Calculators.git&quot;,
+    &quot;accountId&quot;: &quot;ca17bc03-84bf-4f94-813e-49e97a1eddc7&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2yKsK0eSH8e0IpE8Uui6LVUCfoM" />
+  <component name="ProjectLevelVcsManager">
+    <OptionsSetting value="false" id="Update" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.budget-calculator.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.old.html.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.script.js.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;col2.0&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/ayo/Documents/GitHub/Finance Calculators&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.codeium.AppSettingsConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Sieg calculator" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-WS-251.26094.131" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="94287369-434d-4bde-a1d4-d620224652a4" name="Changes" comment="" />
+      <created>1749594532024</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1749594532024</updated>
+      <workItem from="1749594533210" duration="997000" />
+      <workItem from="1749827405577" duration="7665000" />
+      <workItem from="1750002185194" duration="531000" />
+      <workItem from="1750160168492" duration="118000" />
+      <workItem from="1750170379449" duration="2201000" />
+      <workItem from="1750187372641" duration="1607000" />
+      <workItem from="1750257496473" duration="688000" />
+      <workItem from="1750301701666" duration="5165000" />
+      <workItem from="1750523375863" duration="1493000" />
+      <workItem from="1750708787690" duration="1051000" />
+      <workItem from="1750775015905" duration="326000" />
+      <workItem from="1750776372631" duration="3942000" />
+      <workItem from="1750833830262" duration="585000" />
+      <workItem from="1750883583632" duration="9845000" />
+      <workItem from="1750894284920" duration="4735000" />
+      <workItem from="1750929937854" duration="46930000" />
+      <workItem from="1751015457759" duration="2646000" />
+      <workItem from="1751099507187" duration="14703000" />
+      <workItem from="1751126514813" duration="2451000" />
+      <workItem from="1751280509716" duration="108000" />
+      <workItem from="1751375787966" duration="1814000" />
+      <workItem from="1751431245398" duration="13114000" />
+      <workItem from="1751444642980" duration="948000" />
+      <workItem from="1751447220518" duration="767000" />
+      <workItem from="1751448345705" duration="5746000" />
+      <workItem from="1753009355152" duration="5181000" />
+    </task>
+    <task id="LOCAL-00001" summary="New calculator UI">
+      <option name="closed" value="true" />
+      <created>1749852008292</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1749852008292</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Old calculator UI">
+      <option name="closed" value="true" />
+      <created>1749852035366</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1749852035366</updated>
+    </task>
+    <task id="LOCAL-00003" summary="New Ui and calculations for the new taxing logic">
+      <option name="closed" value="true" />
+      <created>1750306339918</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1750306339918</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Tasks and some little changes added">
+      <option name="closed" value="true" />
+      <created>1750524854852</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1750524854852</updated>
+    </task>
+    <task id="LOCAL-00005" summary="new commit">
+      <option name="closed" value="true" />
+      <created>1750779041666</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1750779041666</updated>
+    </task>
+    <task id="LOCAL-00006" summary="new commit">
+      <option name="closed" value="true" />
+      <created>1750887315054</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1750887315054</updated>
+    </task>
+    <task id="LOCAL-00007" summary="new commit">
+      <option name="closed" value="true" />
+      <created>1750891178972</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1750891178972</updated>
+    </task>
+    <task id="LOCAL-00008" summary="new design and implementation">
+      <option name="closed" value="true" />
+      <created>1750961474480</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1750961474480</updated>
+    </task>
+    <task id="LOCAL-00009" summary="all new design and implementation done">
+      <option name="closed" value="true" />
+      <created>1750963673667</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1750963673667</updated>
+    </task>
+    <task id="LOCAL-00010" summary="all new design and implementation done">
+      <option name="closed" value="true" />
+      <created>1750973711910</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1750973711910</updated>
+    </task>
+    <task id="LOCAL-00011" summary="all new design and implementation done">
+      <option name="closed" value="true" />
+      <created>1750974240710</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1750974240710</updated>
+    </task>
+    <task id="LOCAL-00012" summary="all new design and implementation done">
+      <option name="closed" value="true" />
+      <created>1750975274277</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1750975274278</updated>
+    </task>
+    <task id="LOCAL-00013" summary="all new design and implementation done">
+      <option name="closed" value="true" />
+      <created>1750975540672</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1750975540672</updated>
+    </task>
+    <task id="LOCAL-00014" summary="all new design and implementation done">
+      <option name="closed" value="true" />
+      <created>1750982560772</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1750982560772</updated>
+    </task>
+    <task id="LOCAL-00015" summary="made adjustments to UI">
+      <option name="closed" value="true" />
+      <created>1751102268411</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1751102268411</updated>
+    </task>
+    <task id="LOCAL-00016" summary="added percentage and amount to monthly expenses categories and sub-categories label">
+      <option name="closed" value="true" />
+      <created>1751103486092</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1751103486092</updated>
+    </task>
+    <task id="LOCAL-00017" summary="adjusted logic for recommendations">
+      <option name="closed" value="true" />
+      <created>1751104628696</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1751104628696</updated>
+    </task>
+    <task id="LOCAL-00018" summary="adjusted logic for recommendations">
+      <option name="closed" value="true" />
+      <created>1751105981387</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1751105981387</updated>
+    </task>
+    <task id="LOCAL-00019" summary="adjusted logic and moved tax config for easier updates">
+      <option name="closed" value="true" />
+      <created>1751121707440</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1751121707440</updated>
+    </task>
+    <task id="LOCAL-00020" summary="adjusted logic and moved tax config for easier updates">
+      <option name="closed" value="true" />
+      <created>1751377475205</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1751377475205</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751444432024</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1751444432024</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751444716240</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1751444716240</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751444940730</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1751444940730</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751446812935</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1751446812935</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751447250094</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1751447250094</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Adjusted and improved some designs">
+      <option name="closed" value="true" />
+      <created>1751447888227</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1751447888227</updated>
+    </task>
+    <task id="LOCAL-00027" summary="working on responsiveness">
+      <option name="closed" value="true" />
+      <created>1751449898576</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1751449898576</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="sieg-branch" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="New calculator UI" />
+    <MESSAGE value="Old calculator UI" />
+    <MESSAGE value="New Ui and calculations for the new taxing logic" />
+    <MESSAGE value="Tasks and some little changes added" />
+    <MESSAGE value="new commit" />
+    <MESSAGE value="new design and implementation" />
+    <MESSAGE value="all new design and implementation done" />
+    <MESSAGE value="made adjustments to UI" />
+    <MESSAGE value="added percentage and amount to monthly expenses categories and sub-categories label" />
+    <MESSAGE value="adjusted logic for recommendations" />
+    <MESSAGE value="adjusted logic and moved tax config for easier updates" />
+    <MESSAGE value="Adjusted and improved some designs" />
+    <MESSAGE value="working on responsiveness" />
+    <option name="LAST_COMMIT_MESSAGE" value="working on responsiveness" />
+  </component>
+</project>
