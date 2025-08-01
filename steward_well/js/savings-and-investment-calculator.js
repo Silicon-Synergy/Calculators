@@ -22,49 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const body = document.body;
 
-  const ctx = document
-    .getElementById("investmentPieChart-end")
-    .getContext("2d");
-
-  new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["Starting Amount", "Total Contributions", "Interest"],
-      datasets: [
-        {
-          label: "Investment Breakdown",
-          data: [20000, 120000, 58290.4],
-          backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-          borderColor: "#ffffff",
-          borderWidth: 2,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            color: "#0f172a",
-            font: {
-              weight: "500",
-            },
-          },
-        },
-      },
-    },
-  });
-
   endAmountTab.addEventListener("click", function () {
-    const ctx = document
-      .getElementById("investmentPieChart-end")
-      .getContext("2d");
-
-    if (charts['end']) {
-      charts['end'].destroy();
-    }
-
     defaultSection.classList.remove("hidden");
     defaultSection.classList.add("block");
 
@@ -74,41 +32,52 @@ document.addEventListener("DOMContentLoaded", function () {
     returnRateSection.classList.add("hidden");
     returnRateSection.classList.remove("block");
 
-    startingAmountSection.classList.remove("hidden");
-    startingAmountSection.classList.add("block");
+    startingAmountSection.classList.remove("block");
+    startingAmountSection.classList.add("hidden");
 
     investmentSection.classList.add("hidden");
     investmentSection.classList.remove("block");
 
-    charts['end'] = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["Starting Amount", "Total Contributions", "Interest"],
-        datasets: [
-          {
-            label: "Investment Breakdown",
-            data: [20000, 120000, 58290.4],
-            backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: "#0f172a",
-              font: {
-                weight: "500",
+    setTimeout(() => {
+      if (charts['end']) {
+        charts['end'].destroy();
+      }
+
+      const canvas = document.getElementById("investmentPieChart-end");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+
+      charts['end'] = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: ["Starting Amount", "Total Contributions", "Interest"],
+          datasets: [
+            {
+              label: "Investment Breakdown",
+              data: [20000, 120000, 58290.4],
+              backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
+              borderColor: "#ffffff",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: "#0f172a",
+                font: {
+                  weight: "500",
+                },
               },
             },
           },
         },
-      },
-    });
+      });
+    }, 50);
   });
 
   contributionTab.addEventListener("click", function () {
@@ -325,4 +294,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }, 50);
   });
+
+  endAmountTab.click();
 });

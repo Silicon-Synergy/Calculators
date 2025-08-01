@@ -498,7 +498,7 @@
                     </div>
                   </div>
                   <div class="w-full max-sm:w-full">
-                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Timing</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
                     <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
                       <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
@@ -526,17 +526,6 @@
                   </div>
                   <div class="mt-6">
                     <canvas id="investmentPieChart-end" width="200" height="200" class="mx-auto"></canvas>
-                    <div class="mt-4 flex justify-center gap-4 text-sm ">
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-green-400"></div>Total Contributions
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-red-400"></div>Interest
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -593,7 +582,7 @@
                     </div>
                   </div>
                   <div class="w-full max-sm:w-full">
-                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Timing</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
                     <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
                       <label class="inline-flex items-center cursor-pointer">
                         <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
@@ -666,7 +655,23 @@
                     <div class="relative">
                       <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1000" min="0" />
                       <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
+                    </div>
+                  </div>
+                  <div class="w-full max-sm:w-full">
+                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
+                    <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
+                      <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
+                        <span class="ml-2">Beginning of Each Month</span>
+                      </label>
+                      <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
+                        <span class="ml-2">End of Each Month</span>
+                      </label>
+                      <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
+                        <span class="ml-2">End of Year</span>
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -681,17 +686,6 @@
                   </div>
                   <div class="mt-6">
                     <canvas id="investmentPieChart-return" width="200" height="200" class="mx-auto"></canvas>
-                    <div class="mt-4 flex justify-center gap-4 text-sm ">
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-green-400"></div>Total Contributions
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-red-400"></div>Interest
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -748,7 +742,7 @@
                   </div>
                 </div>
                 <div class="w-full max-sm:w-full">
-                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Timing</label>
+                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
                   <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
                     <label class="inline-flex items-center cursor-pointer">
                       <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
@@ -776,17 +770,6 @@
                 </div>
                 <div class="mt-6">
                   <canvas id="investmentPieChart-start" width="200" height="200" class="mx-auto"></canvas>
-                  <div class="mt-4 flex justify-center gap-4 text-sm ">
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-green-400"></div>Total Contributions
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-red-400"></div>Interest
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -842,7 +825,7 @@
                   </div>
                 </div>
                 <div class="w-full max-sm:w-full">
-                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Timing</label>
+                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
                   <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
                     <label class="inline-flex items-center cursor-pointer">
                       <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
@@ -870,17 +853,6 @@
                 </div>
                 <div class="mt-6">
                   <canvas id="investmentPieChart-investment" width="200" height="200" class="mx-auto"></canvas>
-                  <div class="mt-4 flex justify-center gap-4 text-sm ">
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-green-400"></div>Total Contributions
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <div class="w-3 h-3 rounded-full bg-red-400"></div>Interest
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
