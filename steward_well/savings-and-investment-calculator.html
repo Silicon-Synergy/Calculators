@@ -1,719 +1,865 @@
-  <!DOCTYPE html>
-  <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Savings and investment calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./css/style.css" />
-    <link href="css/normalize.css" rel="stylesheet" type="text/css" />
-    <link href="css/webflow.css" rel="stylesheet" type="text/css" />
-    <link href="css/stewardwellcapital.webflow.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#6366f1",
-              secondary: "#8b5cf6",
-              accent: "#06b6d4",
-              dark: "#0f172a",
-              "dark-light": "#1e293b",
-            },
-            animation: {
-              "fade-in": "fadeIn 0.5s ease-in-out",
-              "slide-up": "slideUp 0.3s ease-out",
-              "slide-down": "slideDown 0.3s ease-out",
-              glow: "glow 2s ease-in-out infinite alternate",
-            },
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Networth and Investment Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link href="css/normalize.css" rel="stylesheet" type="text/css" />
+  <link href="css/webflow.css" rel="stylesheet" type="text/css" />
+  <link href="css/stewardwellcapital.webflow.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#6366f1",
+            secondary: "#8b5cf6",
+            accent: "#06b6d4",
+            dark: "#0f172a",
+            "dark-light": "#1e293b",
+          },
+          animation: {
+            "fade-in": "fadeIn 0.5s ease-in-out",
+            "slide-up": "slideUp 0.3s ease-out",
+            "slide-down": "slideDown 0.3s ease-out",
+            glow: "glow 2s ease-in-out infinite alternate",
           },
         },
-      };
-    </script>
-    <style>
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      },
+    };
+  </script>
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
       }
 
-      @keyframes slideUp {
-        from {
-          transform: translateY(30px);
-          opacity: 0;
-        }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
       }
 
-      @keyframes slideDown {
-        from {
-          transform: translateY(-10px);
-          opacity: 0;
-        }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
+    @keyframes slideDown {
+      from {
+        transform: translateY(-10px);
+        opacity: 0;
       }
 
-      @keyframes glow {
-        from {
-          box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
-        to {
-          box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
-        }
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
       }
 
-      input {
-        -moz-appearance: textfield;
-        /* Firefox */
+      to {
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
       }
+    }
 
-      input::-webkit-outer-spin-button,
-      input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        /* Chrome, Safari, Edge */
-        margin: 0;
-      }
+    input {
+      -moz-appearance: textfield;
+      /* Firefox */
+    }
 
-      .nav_cta {
-        background-color: #000;
-        background-image: linear-gradient(135deg,
-            var(--base-color-brand--brand-green),
-            #16418a);
-        color: var(--text-color--text-alternate);
-        text-align: center;
-        text-transform: uppercase;
-        border-radius: 0.4rem;
-        padding: 0.75rem 2rem;
-        font-size: 1rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: background-color 0.5s;
-      }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      /* Chrome, Safari, Edge */
+      margin: 0;
+    }
 
-      .glass-effect {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
+    .nav_cta {
+      background-color: #000;
+      background-image: linear-gradient(135deg,
+          var(--base-color-brand--brand-green),
+          #16418a);
+      color: var(--text-color--text-alternate);
+      text-align: center;
+      text-transform: uppercase;
+      border-radius: 0.4rem;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 0.5s;
+    }
 
-      .input-glow:focus {
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1),
-          0 0 20px rgba(99, 102, 241, 0.2);
-      }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-      /* Calculator Dropdown Styles */
-      .calculator-dropdown {
-        position: relative;
-        display: inline-block;
+    .input-glow:focus {
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1),
+        0 0 20px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Calculator Dropdown Styles */
+    .calculator-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .menu_links-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .nav_menu_link {
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      min-width: 300px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      padding: 8px 0;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-content.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .dropdown-item {
+      display: block;
+      padding: 12px 20px;
+      color: #374151;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f3f4f6;
+      font-weight: 500;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f8fafc;
+      color: #6366f1;
+      transform: translateX(4px);
+    }
+
+    .dropdown-item.active {
+      background-color: #e0e7ff;
+      color: #6366f1;
+      font-weight: 600;
+    }
+
+    .calculator-dropdown:hover .dropdown-content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav_menu_link {
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .nav_menu_link:hover {
+      color: #6366f1;
+    }
+
+    .dropdown-arrow {
+      display: inline-block;
+      margin-left: 6px;
+      transition: transform 0.3s ease;
+    }
+
+    .calculator-dropdown:hover .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* Background for the "Your Income" container */
+    #annual-income-section .glass-effect {
+      background-color: #e6f2e6;
+      /* Soft Muted Green */
+    }
+
+    /* Background for the "Tax Deductions & Income Overview" container */
+    #deductions-disposable-section {
+      background-color: white;
+      /* Light Airy Blue */
+    }
+
+    /* Background for the "Monthly Living Expenses" container */
+    #living-expenses-section {
+      background-color: white;
+      /* Gentle Warm Sand */
+    }
+
+    /* We also need to adjust the text color for better readability on the new backgrounds */
+    #main-calculator-card h1,
+    #main-calculator-card h2,
+    #main-calculator-card h3,
+    #main-calculator-card p,
+    #main-calculator-card label,
+    #main-calculator-card button,
+    #main-calculator-card span,
+    #main-calculator-card div,
+    #main-calculator-card a {
+      color: #0f172a;
+      /* A dark color like 'dark' from your tailwind config */
+    }
+
+    /* Make sure input fields have dark text too */
+    .input-field,
+    #dropdownSelected {
+      color: #0f172a !important;
+    }
+
+    .input-field {
+      background-color: #dfece6;
+    }
+
+    /* The dropdown list needs a background and dark text */
+    #customProvinceOptions {
+      background-color: #ffffff;
+      color: #0f172a;
+    }
+
+    #customProvinceOptions li:hover {
+      background-color: #f1f5f3;
+    }
+
+    /* Adjusting some specific elements that were styled for a dark background */
+    .text-white {
+      color: #0f172a;
+    }
+
+    .text-white\/80 {
+      color: rgba(15, 23, 42, 0.8);
+    }
+
+    .text-gray-300 {
+      color: #475569;
+      /* A medium gray */
+    }
+
+    .text-red-400 {
+      color: #ef4444;
+      /* Keep error/deduction colors */
+    }
+
+    .text-green-400 {
+      color: #22c55e;
+      /* Keep income colors */
+    }
+
+    .text-blue-400 {
+      color: #3b82f6;
+      /* Keep monthly income colors */
+    }
+
+    .category-toggle:hover {
+      filter: brightness(0.95);
+    }
+
+    .tooltip-text {
+      color: #0f172a;
+      /* dark color */
+    }
+
+
+    /* Mobile responsive for dropdown */
+    @media (max-width: 768px) {
+      .dropdown-content {
+        min-width: 280px;
+        left: 0;
+        width: 100%;
       }
 
       .menu_links-wrapper {
-        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 2rem;
+        gap: 1rem;
         flex-wrap: wrap;
       }
 
-      .nav_menu_link {
-        display: inline-block;
-      }
-
-      .dropdown-content {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background: white;
-        min-width: 300px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        border-radius: 12px;
-        padding: 8px 0;
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      }
-
-      .dropdown-content.show {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-        animation: slideDown 0.3s ease-out;
+      .lite-header {
+        display: block !important;
       }
 
       .dropdown-item {
-        display: block;
-        padding: 12px 20px;
-        color: #374151;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        border-bottom: 1px solid #f3f4f6;
-        font-weight: 500;
+        padding: 10px 15px;
+        font-size: 14px;
       }
 
-      .dropdown-item:last-child {
-        border-bottom: none;
+      .dropdown-item>div>div:last-child {
+        font-size: 11px !important;
       }
 
-      .dropdown-item:hover {
-        background-color: #f8fafc;
-        color: #6366f1;
-        transform: translateX(4px);
-      }
-
-      .dropdown-item.active {
-        background-color: #e0e7ff;
-        color: #6366f1;
-        font-weight: 600;
-      }
-
-      .calculator-dropdown:hover .dropdown-content {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-      }
-
-      .nav_menu_link {
-        position: relative;
-        transition: color 0.3s ease;
-      }
-
-      .nav_menu_link:hover {
-        color: #6366f1;
-      }
-
-      .dropdown-arrow {
-        display: inline-block;
-        margin-left: 6px;
-        transition: transform 0.3s ease;
-      }
-
-      .calculator-dropdown:hover .dropdown-arrow {
-        transform: rotate(180deg);
-      }
-
-      /* Background for the "Your Income" container */
-      #annual-income-section .glass-effect {
-        background-color: #e6f2e6;
-        /* Soft Muted Green */
-      }
-
-      /* Background for the "Tax Deductions & Income Overview" container */
-      #deductions-disposable-section {
-        background-color: white;
-        /* Light Airy Blue */
-      }
-
-      /* Background for the "Monthly Living Expenses" container */
-      #living-expenses-section {
-        background-color: white;
-        /* Gentle Warm Sand */
-      }
-
-      /* We also need to adjust the text color for better readability on the new backgrounds */
-      #main-calculator-card h1,
       #main-calculator-card h2,
-      #main-calculator-card h3,
-      #main-calculator-card p,
-      #main-calculator-card label,
-      #main-calculator-card button,
-      #main-calculator-card span,
-      #main-calculator-card div,
-      #main-calculator-card a {
-        color: #0f172a;
-        /* A dark color like 'dark' from your tailwind config */
+      #main-calculator-card h3 {
+        letter-spacing: 0.025em;
+        /* Adjust as needed */
       }
+    }
 
-      /* Make sure input fields have dark text too */
-      .input-field,
-      #dropdownSelected {
-        color: #0f172a !important;
+    @media (max-width: 640px) {
+      .input-group.flex {
+        gap: 10px !important;
+        /* Reduce gap for very small screens */
       }
+    }
 
-      .input-field {
-        background-color: #dfece6;
+    @media (min-width: 992px) {
+      .lite-header {
+        display: none !important;
       }
+    }
+  </style>
+</head>
 
-      /* The dropdown list needs a background and dark text */
-      #customProvinceOptions {
-        background-color: #ffffff;
-        color: #0f172a;
-      }
+<body class="min-h-screen bg-[#C7DFD2]" style="overflow-x: hidden">
+  <div class="nav_fixed">
+    <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="nav_component w-nav">
+      <div class="padding-global">
+        <div class="nav_container">
+          <a href="index.html" aria-current="page" class="nav_brand w-nav-brand w--current"><img src="images/Logo.svg" loading="lazy" alt="Steward Well Capital Logo" class="nav_logo" /></a>
+          <nav role="navigation" class="nav_menu w-nav-menu">
+            <div class="menu_links-wrapper">
+              <div class="lite-header" style="display: none">Menu</div>
+              <a href="index.html#about-us" class="nav_menu_link w-nav-link">About us</a>
+              <a href="index.html#services" class="nav_menu_link w-nav-link">Services</a>
+              <a href="./index.html#testimonials" class="nav_menu_link w-nav-link">Testimonials</a>
 
-      #customProvinceOptions li:hover {
-        background-color: #f1f5f3;
-      }
-
-      /* Adjusting some specific elements that were styled for a dark background */
-      .text-white {
-        color: #0f172a;
-      }
-
-      .text-white\/80 {
-        color: rgba(15, 23, 42, 0.8);
-      }
-
-      .text-gray-300 {
-        color: #475569;
-        /* A medium gray */
-      }
-
-      .text-red-400 {
-        color: #ef4444;
-        /* Keep error/deduction colors */
-      }
-
-      .text-green-400 {
-        color: #22c55e;
-        /* Keep income colors */
-      }
-
-      .text-blue-400 {
-        color: #3b82f6;
-        /* Keep monthly income colors */
-      }
-
-      .category-toggle:hover {
-        filter: brightness(0.95);
-      }
-
-      .tooltip-text {
-        color: #0f172a;
-        /* dark color */
-      }
-
-      /* Mobile responsive for dropdown */
-      @media (max-width: 768px) {
-        .dropdown-content {
-          min-width: 280px;
-          left: 0;
-          width: 100%;
-        }
-
-        .menu_links-wrapper {
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .lite-header {
-          display: block !important;
-        }
-
-        .dropdown-item {
-          padding: 10px 15px;
-          font-size: 14px;
-        }
-
-        .dropdown-item>div>div:last-child {
-          font-size: 11px !important;
-        }
-
-        #main-calculator-card h2,
-        #main-calculator-card h3 {
-          letter-spacing: 0.025em;
-          /* Adjust as needed */
-        }
-      }
-
-      @media (max-width: 640px) {
-        .input-group.flex {
-          gap: 10px !important;
-          /* Reduce gap for very small screens */
-        }
-      }
-
-      @media (min-width: 992px) {
-        .lite-header {
-          display: none !important;
-        }
-      }
-    </style>
-  </head>
-
-  <body class="min-h-screen bg-[#C7DFD2]" style="overflow-x: hidden;">
-    <div class="nav_fixed">
-      <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="nav_component w-nav">
-        <div class="padding-global">
-          <div class="nav_container">
-            <a href="index.html" aria-current="page" class="nav_brand w-nav-brand w--current"><img src="images/Logo.svg" loading="lazy" alt="Steward Well Capital Logo" class="nav_logo" /></a>
-            <nav role="navigation" class="nav_menu w-nav-menu">
-              <div class="menu_links-wrapper">
-                <div class="lite-header" style="display: none;">Menu</div>
-                <a href="index.html#about-us" class="nav_menu_link w-nav-link">About us</a>
-                <a href="index.html#services" class="nav_menu_link w-nav-link">Services</a>
-                <a href="./index.html#testimonials" class="nav_menu_link w-nav-link">Testimonials</a>
-
-                <!-- Updated Calculator Dropdown -->
-                <div class="calculator-dropdown" style="display: inline-block;">
-                  <a href="#" class="nav_menu_link w-nav-link" id="calculatorToggle" style="display: inline-flex; align-items: center;">
-                    Calculators
-                    <span class="dropdown-arrow">
-                      <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    </span>
+              <!-- Updated Calculator Dropdown -->
+              <div class="calculator-dropdown" style="display: inline-block">
+                <a href="#" class="nav_menu_link w-nav-link" id="calculatorToggle" style="display: inline-flex; align-items: center">
+                  Calculators
+                  <span class="dropdown-arrow">
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                </a>
+                <div class="dropdown-content" id="calculatorDropdown">
+                  <a href="budget-calculator.html" class="dropdown-item active">
+                    <div>
+                      <div style="font-weight: 600; margin-bottom: 2px">
+                        Budgeting & Cashflow Calculator
+                      </div>
+                      <div style="font-size: 12px; color: #6b7280">
+                        Manage your monthly budget and cash flow
+                      </div>
+                    </div>
                   </a>
-                  <div class="dropdown-content" id="calculatorDropdown">
-                    <a href="budget-calculator.html" class="dropdown-item active">
-                      <div>
-                        <div style="font-weight: 600; margin-bottom: 2px;">Budgeting & Cashflow Calculator</div>
-                        <div style="font-size: 12px; color: #6b7280;">Manage your monthly budget and cash flow</div>
+                  <a href="#" class="dropdown-item">
+                    <div>
+                      <div style="font-weight: 600; margin-bottom: 2px">
+                        Savings & Investment Calculator
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                      <div>
-                        <div style="font-weight: 600; margin-bottom: 2px;">Savings & Investment Calculator</div>
-                        <div style="font-size: 12px; color: #6b7280;">Plan your savings and investment goals</div>
+                      <div style="font-size: 12px; color: #6b7280">
+                        Plan your savings and investment goals
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                      <div>
-                        <div style="font-weight: 600; margin-bottom: 2px;">Debt & Credit Management Calculator</div>
-                        <div style="font-size: 12px; color: #6b7280;">Track and manage your debt payments</div>
+                    </div>
+                  </a>
+                  <a href="./savings-and-investment-calculator.html" class="dropdown-item">
+                    <div>
+                      <div style="font-weight: 600; margin-bottom: 2px;">Networth and investment Calculator</div>
+                      <div style="font-size: 12px; color: #6b7280;">Track and manage your networth</div>
+                    </div>
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <div>
+                      <div style="font-weight: 600; margin-bottom: 2px">
+                        Debt & Credit Management Calculator
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item">
-                      <div>
-                        <div style="font-weight: 600; margin-bottom: 2px;">Protection & Legacy Planning Calculator</div>
-                        <div style="font-size: 12px; color: #6b7280;">Plan for insurance and estate needs</div>
+                      <div style="font-size: 12px; color: #6b7280">
+                        Track and manage your debt payments
                       </div>
-                    </a>
-                  </div>
+                    </div>
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <div>
+                      <div style="font-weight: 600; margin-bottom: 2px">
+                        Protection & Legacy Planning Calculator
+                      </div>
+                      <div style="font-size: 12px; color: #6b7280">
+                        Plan for insurance and estate needs
+                      </div>
+                    </div>
+                  </a>
                 </div>
+              </div>
 
-                <a href="index.html#contact-us" class="nav_menu_link w-nav-link">Contact us</a>
-                <a href="index.html#contact-us" class="nav_cta hide-desktop">Talk to an expert</a>
-              </div>
-              <div class="menu_socials hide-desktop">
-                <div class="lite-header">Follow us</div>
-                <div class="menu_socials_content">
-                  <a href="https://www.instagram.com/stewardwellcapital?igsh=MW11eG1panppNXF0Mg%3D%3D&amp;utm_source=qr" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/IG_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                  <a href="https://x.com/stewardwellcap?s=11" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/X_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                  <a href="#" class="social-link-wrapper hide w-inline-block"><img src="images/FB_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                  <a href="https://www.linkedin.com/company/stewardwell-capital/" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/LI_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                </div>
-              </div>
-            </nav>
-            <a href="index.html#contact-us" class="nav_cta hide-tablet">Talk to an expert</a>
-            <div data-w-id="396176c6-906a-9f74-c6d0-8a4663dfdeb3" class="nav_button w-nav-button">
-              <div class="nav_menu-line _1"></div>
-              <div class="nav_menu-line _2"></div>
+              <a href="index.html#contact-us" class="nav_menu_link w-nav-link">Contact us</a>
+              <a href="index.html#contact-us" class="nav_cta hide-desktop">Talk to an expert</a>
             </div>
+            <div class="menu_socials hide-desktop">
+              <div class="lite-header">Follow us</div>
+              <div class="menu_socials_content">
+                <a href="https://www.instagram.com/stewardwellcapital?igsh=MW11eG1panppNXF0Mg%3D%3D&amp;utm_source=qr" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/IG_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
+                <a href="https://x.com/stewardwellcap?s=11" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/X_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
+                <a href="#" class="social-link-wrapper hide w-inline-block"><img src="images/FB_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
+                <a href="https://www.linkedin.com/company/stewardwell-capital/" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/LI_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
+              </div>
+            </div>
+          </nav>
+          <a href="index.html#contact-us" class="nav_cta hide-tablet">Talk to an expert</a>
+          <div data-w-id="396176c6-906a-9f74-c6d0-8a4663dfdeb3" class="nav_button w-nav-button">
+            <div class="nav_menu-line _1"></div>
+            <div class="nav_menu-line _2"></div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div id="main-calculator-card" class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
-      <!-- Hero Section -->
-      <div class="text-center mt-40 mb-12 animate-fade-in">
-        <h2 class="text-4xl md:text-5xl font-bold text-white mb-4 md:leading-loose">
-          Savings and Investment Calculator
-        </h2>
-      </div>
+  <div id="main-calculator-card" class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+    <!-- Hero Section -->
+    <div class="text-center mt-40 mb-12 animate-fade-in">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-4 md:leading-loose">
+        Networth and Investment Calculator
+      </h2>
+    </div>
 
-      <!-- Annual Income Input -->
-      <section id="annual-income-section" class="mb-10">
-        <div class="rounded-3xl px-8 pt-8 pb-5 border bg-white border-white/10 hover:border-primary/30 transition-all duration-300">
-          <div class="flex items-center space-x-3 mb-6">
-
-            <h2 class="text-2xl font-bold text-white max-sm:text-center">Modify the values and click the calculate button to use</h2>
-          </div>
-
-          <div class="relative">
-            <div class="h-[80px] bg-white flex p-2 gap-5 justify-between items-center">
-              <div id="end-amount" style="color:white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer"> End Amount</div>
-              <div id="additional-contribution-tab" style='color:white' class="border-2 nav_cta p-2 rounded-md cursor-pointer">Additional Contribution</div>
-              <div id="return-rate-tab" style="color:white" class="border-2 nav_cta p-2 rounded-md cursor-pointer"> Return rate</div>
-              <div id="starting-amount-tab" style="color:white" class="border-2 nav_cta p-2 rounded-md cursor-pointer"> Starting Amount</div>
-              <div id="investment-length-tab" style="color:white" class="border-2 nav_cta p-2 rounded-md cursor-pointer"> Investment Length</div>
+    <!-- Update the networth section with proper IDs -->
+    <section id="networth-section" class="mb-10">
+      <section id="networth-calculator-section" class="mt-10 bg-white rounded-3xl p-6 md:p-8 transition-colors duration-500 ease-in-out shadow-lg">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
             </div>
-
-            <div id="default-input-section" class="input-group">
-              <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-                <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
-                  <div class="relative w-[100%] max-sm:w-full">
-                    <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
-                    <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
-                    <div class="relative">
-                      <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">years </p>
-
-                    </div>
-                  </div>
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
-                    <div class="relative">
-                      <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-                    </div>
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
-                    <div class="relative">
-                      <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
-                        <option value="annually">Annually</option>
-                        <option value="semiannually">Semiannually</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="semimonthly">Semimonthly</option>
-                        <option value="biweekly">Biweekly</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="daily">Daily</option>
-                        <option value="continuously">Continuously</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
-                    <div class="relative">
-                      <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-                    </div>
-                  </div>
-                  <div class="w-full max-sm:w-full">
-                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
-                    <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
-                        <span class="ml-2">Beginning of Each Month</span>
-                      </label>
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
-                        <span class="ml-2">End of Each Month</span>
-                      </label>
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
-                        <span class="ml-2">End of Year</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
-                  <h3 class="text-2xl font-bold mb-4">Results</h3>
-                  <p class="text-[.8rem] mb-[2rem]">This is where the result will go</p>
-                  <div class="space-y-2 text-[1rem] font-medium">
-                    <p><span class="font-semibold">End Balance:</span> <span id="result-balance" class="float-right font-bold text-green-700">$198,290.40</span></p>
-                    <p><span class="font-semibold">Starting Amount:</span> <span id="result-start" class="float-right">$20,000.00</span></p>
-                    <p><span class="font-semibold">Total Contributions:</span> <span id="result-contrib" class="float-right">$120,000.00</span></p>
-                    <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
-                  </div>
-                  <div class="mt-6">
-                    <canvas id="investmentPieChart-end" width="200" height="200" class="mx-auto"></canvas>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div id="contribution-input-section" class="input-group hidden">
-              <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-                <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
-                  <div class="relative w-[100%] max-sm:w-full">
-                    <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
-                    <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000,000" min="0" />
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="target-starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
-                    <div class="relative">
-                      <input type="number" id="target-starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$20,000" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">years </p>
-
-                    </div>
-                  </div>
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="target-after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
-                    <div class="relative">
-                      <input type="number" id="target-after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="10 years" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
-                    </div>
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="target-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
-                    <div class="relative">
-                      <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="6" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
-                    </div>
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
-                    <div class="relative">
-                      <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
-                        <option value="annually">Annually</option>
-                        <option value="semiannually">Semiannually</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="semimonthly">Semimonthly</option>
-                        <option value="biweekly">Biweekly</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="daily">Daily</option>
-                        <option value="continuously">Continuously</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="w-full max-sm:w-full">
-                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
-                    <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
-                        <span class="ml-2">Beginning of Each Month</span>
-                      </label>
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
-                        <span class="ml-2">End of Each Month</span>
-                      </label>
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
-                        <span class="ml-2">End of Year</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
-                  <h3 class="text-2xl font-bold mb-4">Results</h3>
-                  <p class="text-[.8rem] mb-[2rem]">This is where the result will go</p>
-                  <div class="space-y-2 text-[1rem] font-medium">
-                    <p><span class="font-semibold">End Balance:</span> <span id="result-balance" class="float-right font-bold text-green-700">$198,290.40</span></p>
-                    <p><span class="font-semibold">Starting Amount:</span> <span id="result-start" class="float-right">$20,000.00</span></p>
-                    <p><span class="font-semibold">Total Contributions:</span> <span id="result-contrib" class="float-right">$120,000.00</span></p>
-                    <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
-                  </div>
-                  <div class="mt-6">
-                    <canvas id="investmentPieChart-contribution" width="200" height="200" class="mx-auto"></canvas>
-                    <div class="mt-4 flex justify-center gap-4 text-sm ">
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-blue-400"></div>Starting Amount
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-green-400"></div>Total Contributions
-                      </div>
-                      <div class="flex items-center gap-1">
-                        <div class="w-3 h-3 rounded-full bg-red-400"></div>Interest
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div id="return-rate-section" class="input-group hidden">
-              <div class="input-group h-[600px] mt-10 overflow-hidden  p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-                <div class=" flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
-                  <div class="relative w-[100%] max-sm:w-full">
-                    <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
-                    <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000,000" min="0" />
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="target-starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
-                    <div class="relative">
-                      <input type="number" id="target-starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$20,000" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">years </p>
-
-                    </div>
-                  </div>
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="target-after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
-                    <div class="relative">
-                      <input type="number" id="target-after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="10 years" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
-                    </div>
-                  </div>
-
-                  <div class="w-[100%] max-sm:w-[100%]">
-                    <label for="target-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Condition</label>
-                    <div class="relative">
-                      <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1000" min="0" />
-                      <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-                    </div>
-                  </div>
-                  <div class="w-full max-sm:w-full">
-                    <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
-                    <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
-                        <span class="ml-2">Beginning of Each Month</span>
-                      </label>
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
-                        <span class="ml-2">End of Each Month</span>
-                      </label>
-                      <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
-                        <span class="ml-2">End of Year</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div class="w-full md:w-[50%] p-6 rounded-3xl  bg-[#e9f5ec] text-[#0f172a] shadow-md">
-                  <h3 class="text-2xl font-bold mb-4">Results</h3>
-                  <p class="text-[.8rem] mb-[2rem]">This is where the result will go</p>
-                  <div class="space-y-2 text-[1rem] font-medium">
-                    <p><span class="font-semibold">End Balance:</span> <span id="result-balance" class="float-right font-bold text-green-700">$198,290.40</span></p>
-                    <p><span class="font-semibold">Starting Amount:</span> <span id="result-start" class="float-right">$20,000.00</span></p>
-                    <p><span class="font-semibold">Total Contributions:</span> <span id="result-contrib" class="float-right">$120,000.00</span></p>
-                    <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
-                  </div>
-                  <div class="mt-6">
-                    <canvas id="investmentPieChart-return" width="200" height="200" class="mx-auto"></canvas>
-                  </div>
+            <div class="relative flex items-center">
+              <h2 class="text-2xl font-bold text-white">
+                Networth Calculator
+              </h2>
+              <div class="group relative ml-2">
+                <svg class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Calculate your total networth by entering your assets and
+                  liabilities
                 </div>
               </div>
             </div>
           </div>
+          <button id="toggle-all-networth" class="text-sm font-medium text-white/80 hover:text-white transition-colors duration-200 focus:outline-none">
+            Expand All
+          </button>
+        </div>
 
-          <div id="starting-amount-section" class="input-group hidden">
+        <!-- Networth Summary -->
+        <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Assets</p>
+              <p id="total-assets" class="text-xl font-bold text-green-600">
+                $0.00
+              </p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-600">
+                Total Liabilities
+              </p>
+              <p id="total-liabilities" class="text-xl font-bold text-red-600">
+                $0.00
+              </p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-600">Net Worth</p>
+              <p id="total-networth" class="text-2xl font-bold">$0.00</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Container -->
+        <div class="space-y-4">
+          <!-- Category 1: Assets -->
+          <div class="networth-category glass-effect rounded-2xl border border-white/10">
+            <button class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent bg-gradient-to-r from-green-200 to-emerald-200 transition-all duration-300 rounded-2xl" onclick="toggleNetworthCategory('assets')">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                  </svg>
+                </div>
+                <span class="font-medium">Your household assets</span>
+                <span id="assets-total" class="text-green-400">$0.00</span>
+              </div>
+              <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+
+            <div class="category-content overflow-border transition-all duration-500 ease-in-out max-h-0">
+              <div class="p-4 pt-4">
+                <div class="mb-[20px] font-bold text-[1.2rem]">Your savings and investments:</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="input-group relative">
+                    <div class="flex gap-2 items-center">
+                      <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Registered retirement savings
+                        <span id="rent_mortgage-percentage"></span>
+                      </label>
+
+                      <svg id="tooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+
+                    <!-- Tooltip -->
+                    <div id="tooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200">
+                      This includes all of your registered accounts such as registered retirement savings plans (RRSP), group RSPs,
+                      defined contribution pension plans (DCPP), defined benefit pension plans (DBPP), locked-in RSPs/LIRAs, etc.
+                    </div>
+
+                    <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+
+                  <div class="input-group relative">
+                    <div class="flex gap-2 items-center">
+                      <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Tax free savings accounts (TFSA)
+                        <span id="rent_mortgage-percentage"></span>
+                      </label>
+
+                      <svg id="tfsaTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+
+                    <!-- Tooltip -->
+                    <div id="tfsaTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-[2000px]">
+                      A TFSA lets you save for any purpose, without paying taxes on the investment growth.
+                      In this calculator, we’re assuming you’re not putting in more than the annual TFSA limit.
+                    </div>
+
+                    <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+
+                  <div class="input-group relative">
+                    <div class="flex gap-2 items-center">
+                      <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Non-registered savings and investments
+                        <span id="rent_mortgage-percentage"></span>
+                      </label>
+
+                      <svg id="nonRegisteredTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+
+                    <!-- Tooltip -->
+                    <div id="nonRegisteredTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                      This includes other taxable non-registered savings and investment accounts such as cash, chequing and savings
+                      accounts, guaranteed investment certificates (GIC), mutual funds, annuities, stocks, bonds, etc.
+                    </div>
+
+                    <input type="number" id="water" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+                </div>
+
+                <div class="mt-[40px] mb-[20px] font-bold text-[1.2rem]">Your property and other assets:</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div class="input-group relative">
+                    <div class="flex gap-2 items-center">
+                      <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Home value:
+                        <span id="rent_mortgage-percentage"></span>
+                      </label>
+
+                      <svg id="homeValueTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+
+                    <div id="homeValueTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm  !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                      This includes a detached home, semi-detached home, townhome, apartment or condominium that you own.
+                      Enter what it’s worth now, not what you originally paid or think it will be worth in the future.
+                    </div>
+                    <!-- Tooltip -->
+
+                    <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+
+                  <div class="input-group relative">
+                    <div class="flex gap-2 items-center">
+                      <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Other properties:
+                        <span id="rent_mortgage-percentage"></span>
+                      </label>
+
+                      <!-- Tooltip toggle icon -->
+                      <svg id="otherPropertiesTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+
+                    <!-- Tooltip -->
+                    <div id="otherPropertiesTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                      This includes a cottage, rental property, or other real estate that you own. Enter what it’s worth now,
+                      not what you originally paid or think it will be worth in the future.
+                    </div>
+
+                    <input type="number" id="other-properties" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+
+                  <div class="input-group relative">
+                    <div class="flex gap-2 items-center">
+                      <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Other Valuables:
+                        <span id="rent_mortgage-percentage"></span>
+                      </label>
+
+                      <!-- Tooltip toggle icon -->
+                      <svg id="otherValueableTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+
+                      <div id="otherValuableTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                        This includes the current value of items such as jewellery, electronics, furniture and appliances, art and other items that have a high resale value.
+                      </div>
+                    </div>
+
+                    <input type="number" id="water" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 2: Liabilities -->
+            <div class="networth-category glass-effect mt-6 rounded-2xl border border-white/10">
+              <button class="category-toggle w-full flex items-center justify-between p-4 text-white border border-transparent bg-gradient-to-r from-red-200 to-pink-200 transition-all duration-300 rounded-2xl" onclick="toggleNetworthCategory('liabilities')">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-gradient-to-r from-red-400 to-red-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                    </svg>
+                  </div>
+                  <span class="font-medium">Your household liabilities</span>
+                  <span id="liabilities-total" class="text-red-400">$0.00</span>
+                </div>
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <!-- // from here  -->
+              <div class="category-content overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+                <div class="p-4 pt-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="input-group relative">
+                      <div class="flex gap-2 items-center">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                          Home mortgage:
+                          <span id="rent_mortgage-percentage"></span>
+                        </label>
+
+                        <!-- Tooltip toggle icon -->
+                        <svg id="homeMortgageTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+
+                        <!-- Tooltip -->
+                        <div id="homeMortgageTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                          This is the current amount owing on your mortgage.
+                        </div>
+                      </div>
+
+                      <input type="number" id="credit-cards" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    </div>
+                    <div class="input-group relative">
+                      <div class="flex gap-2 items-center">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                          Other mortgages:
+                          <span id="rent_mortgage-percentage"></span>
+                        </label>
+
+                        <!-- Tooltip toggle icon -->
+                        <svg id="otherMortgagesTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+
+                        <!-- Tooltip -->
+                        <div id="otherMortgagesTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                          This is the current amount owing on any other real estate mortgages you may have. This includes mortgages on cottages, rental properties and any other real estate.
+                        </div>
+                      </div>
+
+                      <input type="number" id="credit-cards" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    </div>
+                    <div class="input-group relative">
+                      <div class="flex gap-2 items-center">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                          Credit cards:
+                          <span id="rent_mortgage-percentage"></span>
+                        </label>
+
+                        <!-- Tooltip toggle icon -->
+                        <svg id="creditCardsTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+
+                        <!-- Tooltip -->
+                        <div id="creditCardsTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                          This refers to the total outstanding balance on all your credit cards. Include amounts from multiple cards if applicable.
+                        </div>
+                      </div>
+
+                      <input type="number" id="credit-cards" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    </div>
+                    <div class="input-group relative">
+                      <div class="flex gap-2 items-center">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                          Lines of credit:
+                          <span id="rent_mortgage-percentage"></span>
+                        </label>
+
+                        <!-- Tooltip toggle icon -->
+                        <svg id="linesOfCreditTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+
+                        <!-- Tooltip -->
+                        <div id="linesOfCreditTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                          This refers to the total amount currently owed on any personal or home equity lines of credit you may have.
+                        </div>
+                      </div>
+
+                      <input type="number" id="lines-of-credit" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    </div>
+                    <div class="input-group relative">
+                      <div class="flex gap-2 items-center">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                          Loans:
+                          <span id="rent_mortgage-percentage"></span>
+                        </label>
+
+                        <!-- Tooltip toggle icon -->
+                        <svg id="loansTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+
+                        <!-- Tooltip -->
+                        <div id="loansTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
+                          This is the total amount you currently owe on any personal, student, or other loans you may have.
+                        </div>
+                      </div>
+
+                      <input type="number" id="loans" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </section>
+    </section>
+
+    <!-- Annual Income Input -->
+    <section id="annual-income-section" class="mb-10">
+      <div class="rounded-3xl px-8 pt-8 pb-5 border bg-white border-white/10 hover:border-primary/30 transition-all duration-300">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl flex items-center justify-center relative group" title="Investment Calculator - Calculate your investment growth over time">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <!-- Tooltip -->
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+              Investment Calculator
+              <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            </div>
+          </div>
+          <h2 class="text-2xl font-bold text-white max-sm:text-center">
+            Investment Calculator
+          </h2>
+        </div>
+        <div class="flex items-center space-x-3 mb-6">
+          <h3 class="text-lg font-medium text-gray-300 max-sm:text-center">
+            Modify the values and click the calculate button to use
+          </h3>
+        </div>
+
+        <div class="relative">
+          <div class="h-[80px] bg-white flex p-2 gap-5 justify-between items-center">
+            <div id="end-amount" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer">
+              End Amount
+            </div>
+            <div id="additional-contribution-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
+              Additional Contribution
+            </div>
+            <div id="return-rate-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
+              Return rate
+            </div>
+            <div id="starting-amount-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
+              Starting Amount
+            </div>
+            <div id="investment-length-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
+              Investment Length
+            </div>
+          </div>
+
+          <div id="default-input-section" class="input-group">
             <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-              <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
+              <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3 pr-4">
                 <div class="relative w-[100%] max-sm:w-full">
-                  <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
-                  <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
+                  <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
+                  <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
                 </div>
 
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
                   <div class="relative">
-                    <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">years </p>
-
+                    <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      years
+                    </p>
                   </div>
                 </div>
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
                   <div class="relative">
-                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
-
+                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      %
+                    </p>
                   </div>
                 </div>
 
@@ -737,12 +883,11 @@
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
                   <div class="relative">
-                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
+                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
                 </div>
                 <div class="w-full max-sm:w-full">
-                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
+                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Calculate at:</label>
                   <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
                     <label class="inline-flex items-center cursor-pointer">
                       <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
@@ -753,6 +898,10 @@
                       <span class="ml-2">End of Each Month</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="year-beginning" class="form-radio text-green-600" />
+                      <span class="ml-2">Beginning of Each Year</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
                       <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
                       <span class="ml-2">End of Year</span>
                     </label>
@@ -761,42 +910,68 @@
               </div>
               <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
                 <h3 class="text-2xl font-bold mb-4">Results</h3>
-                <p class="text-[.8rem] mb-[2rem]">This is where the result will go</p>
+                <p class="text-[.8rem] mb-[2rem]">
+                  This is where the result will go
+                </p>
                 <div class="space-y-2 text-[1rem] font-medium">
-                  <p><span class="font-semibold">End Balance:</span> <span id="result-balance" class="float-right font-bold text-green-700">$198,290.40</span></p>
-                  <p><span class="font-semibold">Starting Amount:</span> <span id="result-start" class="float-right">$20,000.00</span></p>
-                  <p><span class="font-semibold">Total Contributions:</span> <span id="result-contrib" class="float-right">$120,000.00</span></p>
-                  <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
+                  <p>
+                    <span class="font-semibold">End Balance:</span>
+                    <span id="result-balance-end" class="float-right font-bold text-green-700">$198,290.40</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Starting Amount:</span>
+                    <span id="result-start-end" class="float-right">$20,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Total Contributions:</span>
+                    <span id="result-contrib-end" class="float-right">$120,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Total Interest:</span>
+                    <span id="result-interest-end" class="float-right">$58,290.40</span>
+                  </p>
                 </div>
                 <div class="mt-6">
-                  <canvas id="investmentPieChart-start" width="200" height="200" class="mx-auto"></canvas>
+                  <canvas id="investmentPieChart-end" width="200" height="200" class="mx-auto"></canvas>
                 </div>
               </div>
             </div>
           </div>
 
-          <div id="investment-length-section" class="input-group hidden">
+          <div id="contribution-input-section" class="input-group hidden">
             <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-              <div class=" flex-1  flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
+              <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3 pr-4">
                 <div class="relative w-[100%] max-sm:w-full">
-                  <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
-                  <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
+                  <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
+                  <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000,000" min="0" />
                 </div>
 
                 <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
+                  <label for="target-starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
                   <div class="relative">
-                    <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">years </p>
-
+                    <input type="number" id="target-starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$20,000" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      years
+                    </p>
                   </div>
                 </div>
                 <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
+                  <label for="target-after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
                   <div class="relative">
-                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter a number" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
+                    <input type="number" id="target-after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="10 years" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      %
+                    </p>
+                  </div>
+                </div>
 
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="target-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
+                  <div class="relative">
+                    <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="6" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      %
+                    </p>
                   </div>
                 </div>
 
@@ -816,12 +991,102 @@
                     </select>
                   </div>
                 </div>
+                <div class="w-full max-sm:w-full">
+                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Calculate at:</label>
+                  <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
+                      <span class="ml-2">Beginning of Each Month</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
+                      <span class="ml-2">End of Each Month</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="year-beginning" class="form-radio text-green-600" />
+                      <span class="ml-2">Beginning of Each Year</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
+                      <span class="ml-2">End of Year</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
+                <h3 class="text-2xl font-bold mb-4">Results</h3>
+                <p class="text-[.8rem] mb-[2rem]">
+                  This is where the result will go
+                </p>
+                <div class="space-y-2 text-[1rem] font-medium">
+                  <p>
+                    <span class="font-semibold">Target Amount:</span>
+                    <span id="result-balance-contribution" class="float-right font-bold text-green-700">$198,290.40</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Starting Amount:</span>
+                    <span id="result-start-contribution" class="float-right">$20,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Required Contribution:</span>
+                    <span id="result-contrib-contribution" class="float-right">$120,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Total Interest:</span>
+                    <span id="result-interest-contribution" class="float-right">$58,290.40</span>
+                  </p>
+                </div>
+                <div class="mt-6">
+                  <canvas id="investmentPieChart-contribution" width="200" height="200" class="mx-auto"></canvas>
+                  <div class="mt-4 flex justify-center gap-4 text-sm">
+                    <div class="flex items-center gap-1">
+                      <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+                      Starting Amount
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                      Total Contributions
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                      Interest
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="return-rate-section" class="input-group hidden">
+            <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
+                <div class="relative w-[100%] max-sm:w-full">
+                  <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
+                  <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000,000" min="0" />
+                </div>
 
                 <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
+                  <label for="target-starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
                   <div class="relative">
-                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000" min="0" />
-                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">%</p>
+                    <input type="number" id="target-starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$20,000" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      years
+                    </p>
+                  </div>
+                </div>
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="target-after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
+                  <div class="relative">
+                    <input type="number" id="target-after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="10 years" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      %
+                    </p>
+                  </div>
+                </div>
+
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="target-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
+                  <div class="relative">
+                    <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
                 </div>
                 <div class="w-full max-sm:w-full">
@@ -842,74 +1107,255 @@
                   </div>
                 </div>
               </div>
-              <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
+              <div class="w-full md:w-[50%] p-6 rounded-3xl bg-[#e9f5ec] text-[#0f172a] shadow-md">
                 <h3 class="text-2xl font-bold mb-4">Results</h3>
-                <p class="text-[.8rem] mb-[2rem]">This is where the result will go</p>
+                <p class="text-[.8rem] mb-[2rem]">
+                  This is where the result will go
+                </p>
                 <div class="space-y-2 text-[1rem] font-medium">
-                  <p><span class="font-semibold">End Balance:</span> <span id="result-balance" class="float-right font-bold text-green-700">$198,290.40</span></p>
-                  <p><span class="font-semibold">Starting Amount:</span> <span id="result-start" class="float-right">$20,000.00</span></p>
-                  <p><span class="font-semibold">Total Contributions:</span> <span id="result-contrib" class="float-right">$120,000.00</span></p>
-                  <p><span class="font-semibold">Total Interest:</span> <span id="result-interest" class="float-right">$58,290.40</span></p>
+                  <p>
+                    <span class="font-semibold">Target Amount:</span>
+                    <span id="result-balance-return" class="float-right font-bold text-green-700">$198,290.40</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Starting Amount:</span>
+                    <span id="result-start-return" class="float-right">$20,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Total Contributions:</span>
+                    <span id="result-contrib-return" class="float-right">$120,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Required Return Rate:</span>
+                    <span id="result-interest-return" class="float-right">8.5%</span>
+                  </p>
                 </div>
                 <div class="mt-6">
-                  <canvas id="investmentPieChart-investment" width="200" height="200" class="mx-auto"></canvas>
+                  <canvas id="investmentPieChart-return" width="200" height="200" class="mx-auto"></canvas>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="flex justify-center mt-2">
-            <a href="index.html#contact-us" style="color:white" class="nav_cta hide-tablet w-full max-w-full bg-dark text-white text-center py-4 rounded-xl shadow-lg">Calculate</a>
           </div>
         </div>
-      </section>
-    </div>
 
-    <script src="data/province.js"></script>
-    <!-- <script src="./js/budget-calculator-script.js"></script> -->
-    <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=67a4eacef574c9cd5e38c1de" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-    <script src="js/webflow.js" type="text/javascript"></script>
-    <script>
-      //Stop body from scrolling when menu button is clicked
-      $(".nav_button").on("click", function() {
-        $("body").toggleClass("no-scroll");
-      });
-    </script>
-    <!-- <script>
-      // Ensure the navbar closes and icon reverts when a menu link is clicked
-      $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on("click", function() {
-        // Simulate a click on the nav_button to trigger Webflow's built-in close animation
-        $(".nav_button").click();
-      });
-    </script> -->
-    <!-- <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const calculatorToggle = document.getElementById('calculatorToggle');
-        const calculatorDropdown = document.getElementById('calculatorDropdown');
-        const navMenu = document.querySelector('.nav_menu'); // Assuming this is your main navigation menu
+        <div id="starting-amount-section" class="input-group hidden">
+          <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+            <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
+              <div class="relative w-[100%] max-sm:w-full">
+                <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
+                <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+              </div>
 
-        if (calculatorToggle && calculatorDropdown && navMenu) {
-          calculatorToggle.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation(); // Prevent this click from immediately closing the dropdown via the window listener
-            calculatorDropdown.classList.toggle('show');
-          });
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
+                <div class="relative">
+                  <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                    years
+                  </p>
+                </div>
+              </div>
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
+                <div class="relative">
+                  <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                    %
+                  </p>
+                </div>
+              </div>
 
-          // Close the dropdown if the user clicks outside of it, but not if clicking inside the nav menu itself
-          window.addEventListener('click', function(event) {
-            if (!calculatorToggle.contains(event.target) && !calculatorDropdown.contains(event.target) && !navMenu.contains(event.target)) {
-              calculatorDropdown.classList.remove('show');
-            }
-          });
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
+                <div class="relative">
+                  <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
+                    <option value="annually">Annually</option>
+                    <option value="semiannually">Semiannually</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="semimonthly">Semimonthly</option>
+                    <option value="biweekly">Biweekly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="daily">Daily</option>
+                    <option value="continuously">Continuously</option>
+                  </select>
+                </div>
+              </div>
 
-          // Prevent clicks inside the dropdown from closing it
-          calculatorDropdown.addEventListener('click', function(event) {
-            event.stopPropagation();
-          });
-        }
-      });
-    </script> -->
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
+                <div class="relative">
+                  <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                    %
+                  </p>
+                </div>
+              </div>
+              <div class="w-full max-sm:w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
+                <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
+                  <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
+                    <span class="ml-2">Beginning of Each Month</span>
+                  </label>
+                  <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
+                    <span class="ml-2">End of Each Month</span>
+                  </label>
+                  <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
+                    <span class="ml-2">End of Year</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
+              <h3 class="text-2xl font-bold mb-4">Results</h3>
+              <p class="text-[.8rem] mb-[2rem]">
+                This is where the result will go
+              </p>
+              <div class="space-y-2 text-[1rem] font-medium">
+                <p>
+                  <span class="font-semibold">Target Amount:</span>
+                  <span id="result-balance-start" class="float-right font-bold text-green-700">$198,290.40</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Required Starting Amount:</span>
+                  <span id="result-start-start" class="float-right">$20,000.00</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Total Contributions:</span>
+                  <span id="result-contrib-start" class="float-right">$120,000.00</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Total Interest:</span>
+                  <span id="result-interest-start" class="float-right">$58,290.40</span>
+                </p>
+              </div>
+              <div class="mt-6">
+                <canvas id="investmentPieChart-start" width="200" height="200" class="mx-auto"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <script src="./js/savings-and-investment-calculator.js"></script>
-  </body>
+        <div id="investment-length-section" class="input-group hidden">
+          <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+            <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
+              <div class="relative w-[100%] max-sm:w-full">
+                <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
+                <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+              </div>
 
-  </html>
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
+                <div class="relative">
+                  <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                    years
+                  </p>
+                </div>
+              </div>
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
+                <div class="relative">
+                  <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                    %
+                  </p>
+                </div>
+              </div>
+
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
+                <div class="relative">
+                  <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
+                    <option value="annually">Annually</option>
+                    <option value="semiannually">Semiannually</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="semimonthly">Semimonthly</option>
+                    <option value="biweekly">Biweekly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="daily">Daily</option>
+                    <option value="continuously">Continuously</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="w-[100%] max-sm:w-[100%]">
+                <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
+                <div class="relative">
+                  <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000" min="0" />
+                  <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                    %
+                  </p>
+                </div>
+              </div>
+              <div class="w-full max-sm:w-full">
+                <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
+                <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
+                  <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
+                    <span class="ml-2">Beginning of Each Month</span>
+                  </label>
+                  <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
+                    <span class="ml-2">End of Each Month</span>
+                  </label>
+                  <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
+                    <span class="ml-2">End of Year</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
+              <h3 class="text-2xl font-bold mb-4">Results</h3>
+              <p class="text-[.8rem] mb-[2rem]">
+                This is where the result will go
+              </p>
+              <div class="space-y-2 text-[1rem] font-medium">
+                <p>
+                  <span class="font-semibold">Target Amount:</span>
+                  <span id="result-balance-investment" class="float-right font-bold text-green-700">$198,290.40</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Starting Amount:</span>
+                  <span id="result-start-investment" class="float-right">$20,000.00</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Total Contributions:</span>
+                  <span id="result-contrib-investment" class="float-right">$120,000.00</span>
+                </p>
+                <p>
+                  <span class="font-semibold">Required Time:</span>
+                  <span id="result-interest-investment" class="float-right">15 years</span>
+                </p>
+              </div>
+              <div class="mt-6">
+                <canvas id="investmentPieChart-investment" width="200" height="200" class="mx-auto"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center mt-2">
+          <a href="index.html#contact-us" style="color: white" class="nav_cta hide-tablet w-full max-w-full bg-dark text-white text-center py-4 rounded-xl shadow-lg">Calculate</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="./js/networth-calculator.js"></script>
+  <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=67a4eacef574c9cd5e38c1de" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="js/webflow.js" type="text/javascript"></script>
+  <script>
+    //Stop body from scrolling when menu button is clicked
+    $(".nav_button").on("click", function() {
+      $("body").toggleClass("no-scroll");
+    });
+  </script>
+  <script src="./js/savings-and-investment-calculator.js"></script>
+</body>
+
+</html>

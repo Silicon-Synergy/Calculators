@@ -1340,6 +1340,38 @@ function setupEventListeners() {
     toggleAllExpensesButton.addEventListener("click", toggleAllExpenses);
   }
 
+  //this is the age drop down list 
+  const ageDropdownBtn = document.getElementById("ageDropdownBtn");
+  const ageDropdownList = document.getElementById("customAgeOptions");
+
+  // Toggle age dropdown visibility
+  function toggleAgeDropdown() {
+    const isOpen =
+      ageDropdownList.style.maxHeight &&
+      ageDropdownList.style.maxHeight !== "0px";
+    if (isOpen) {
+      ageDropdownList.style.maxHeight = "0";
+      ageDropdownList.style.opacity = "0";
+    } else {
+      ageDropdownList.style.maxHeight = ageDropdownList.scrollHeight + "px";
+      ageDropdownList.style.opacity = "1";
+    }
+  }
+
+  // Handle dropdown toggle
+  ageDropdownBtn.addEventListener("click", () => {
+    toggleAgeDropdown();
+  });
+
+  // Handle selecting an age option
+  const ageOptions = ageDropdownList.querySelectorAll("li");
+  ageOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      document.getElementById("ageDropdownSelected").textContent =
+        option.textContent;
+      toggleAgeDropdown();
+    });
+  });
   // Popup logic
   const infoButton = document.getElementById("infoButton");
   const infoPopup = document.getElementById("infoPopup");
