@@ -43,19 +43,12 @@ document.addEventListener("DOMContentLoaded", function () {
     additionalContribution,
     returnRate,
     years,
+    compoundFrequency,
     contributionTiming
   ) {
-    console.log('=== calculateEndAmount called ===');
-    console.log('Parameters:', {
-      startingAmount,
-      additionalContribution,
-      returnRate,
-      years,
-      contributionTiming
-    });
     const PV = parseFloat(startingAmount) || 0;
     const PMT = parseFloat(additionalContribution) || 0;
-    const r = parseFloat(returnRate) / 100; // Annual interest rate
+    const annualRate = parseFloat(returnRate) / 100;
     const n = parseFloat(years) || 0;
 
     if (PV === 0 && PMT === 0)
@@ -64,67 +57,54 @@ document.addEventListener("DOMContentLoaded", function () {
     let FV = 0;
     let totalContributions = 0;
 
-    // Future value of present value (starting amount)
-    const futureValueOfPV = PV * Math.pow(1 + r, n);
-
-    // Calculate based on contribution timing
-    if (contributionTiming === "end" || contributionTiming === "year-end") {
-      // End of Each Month (Ordinary Annuity) or End of Each Year
-      if (contributionTiming === "end") {
-        // Monthly contributions, annual compounding
-        const monthlyRate = r / 12;
-        const monthlyPeriods = n * 12;
-        totalContributions = PMT * monthlyPeriods;
-
-        if (r > 0) {
-          // Convert to effective annual rate for monthly contributions
-          const effectiveRate = Math.pow(1 + monthlyRate, 12) - 1;
-          FV =
-            futureValueOfPV +
-            PMT * 12 * ((Math.pow(1 + effectiveRate, n) - 1) / effectiveRate);
-        } else {
-          FV = futureValueOfPV + totalContributions;
-        }
-      } else {
-        // Annual contributions at year end
-        totalContributions = PMT * n;
-        if (r > 0) {
-          FV = futureValueOfPV + PMT * ((Math.pow(1 + r, n) - 1) / r);
-        } else {
-          FV = futureValueOfPV + totalContributions;
-        }
+    if (compoundFrequency === "continuous") {
+      // Continuous compounding
+      FV = PV * Math.exp(annualRate * n);
+      if (PMT > 0) {
+        FV += (PMT * (Math.exp(annualRate * n) - 1)) / annualRate;
       }
-    } else if (
-      contributionTiming === "beginning" ||
-      contributionTiming === "year-beginning"
-    ) {
-      // Beginning of Each Month (Annuity Due) or Beginning of Each Year
-      if (contributionTiming === "beginning") {
-        // Monthly contributions, annual compounding
-        const monthlyRate = r / 12;
-        const monthlyPeriods = n * 12;
-        totalContributions = PMT * monthlyPeriods;
+      totalContributions = PMT * n;
+    } else {
+      // Discrete compounding
+      let r, periods, periodicPMT;
 
-        if (r > 0) {
-          // Convert to effective annual rate for monthly contributions
-          const effectiveRate = Math.pow(1 + monthlyRate, 12) - 1;
-          FV =
-            futureValueOfPV +
-            PMT *
-              12 *
-              ((Math.pow(1 + effectiveRate, n) - 1) / effectiveRate) *
-              (1 + effectiveRate);
-        } else {
-          FV = futureValueOfPV + totalContributions;
-        }
-      } else {
-        // Annual contributions at year beginning
+      if (
+        contributionTiming === "year-beginning" ||
+        contributionTiming === "year-end"
+      ) {
+        // Annual contributions
+        r = annualRate;
+        periods = n;
+        periodicPMT = PMT;
         totalContributions = PMT * n;
-        if (r > 0) {
-          FV = futureValueOfPV + PMT * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+      } else {
+        // Monthly contributions
+        r = annualRate / compoundFrequency;
+        periods = n * compoundFrequency;
+        periodicPMT = PMT;
+        totalContributions = PMT * periods;
+      }
+
+      // Future value of present value
+      FV = PV * Math.pow(1 + r, periods);
+
+      // Future value of annuity
+      if (periodicPMT > 0 && r > 0) {
+        const annuityFV = periodicPMT * ((Math.pow(1 + r, periods) - 1) / r);
+
+        if (
+          contributionTiming === "beginning" ||
+          contributionTiming === "year-beginning"
+        ) {
+          // Annuity due (beginning of period)
+          FV += annuityFV * (1 + r);
         } else {
-          FV = futureValueOfPV + totalContributions;
+          // Ordinary annuity (end of period)
+          FV += annuityFV;
         }
+      } else if (periodicPMT > 0 && r === 0) {
+        // No interest case
+        FV += periodicPMT * periods;
       }
     }
 
@@ -139,141 +119,66 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Update the result element references to be section-specific
-  function updateResults(results, section = "end") {
-    console.log('=== updateResults called ===');
-    console.log('Section:', section);
-    console.log('Results received:', results);
-    
+  function updateResults(results, section = 'end') {
     const resultBalance = document.querySelector(`#result-balance-${section}`);
     const resultStart = document.querySelector(`#result-start-${section}`);
     const resultContrib = document.querySelector(`#result-contrib-${section}`);
-    const resultInterest = document.querySelector(
-      `#result-interest-${section}`
-    );
-
-    console.log('Result elements found:', {
-      resultBalance: !!resultBalance,
-      resultStart: !!resultStart,
-      resultContrib: !!resultContrib,
-      resultInterest: !!resultInterest
-    });
-
+    const resultInterest = document.querySelector(`#result-interest-${section}`);
+  
     // Ensure all elements exist before updating
     if (!resultBalance || !resultStart || !resultContrib || !resultInterest) {
       console.error(`Result elements not found for section: ${section}`);
-      console.error('Missing elements:', {
-        resultBalance: !resultBalance,
-        resultStart: !resultStart,
-        resultContrib: !resultContrib,
-        resultInterest: !resultInterest
-      });
       return;
     }
-
+  
     // Create safe results object with fallbacks
     const safeResults = {
       endBalance: Number(results?.endBalance) || 0,
       startingAmount: Number(results?.startingAmount) || 0,
       totalContributions: Number(results?.totalContributions) || 0,
-      totalInterest: Number(results?.totalInterest) || 0,
+      totalInterest: Number(results?.totalInterest) || 0
     };
-
+  
     // Update the display based on section type
-    switch (section) {
-      case "end":
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
+    switch(section) {
+      case 'end':
+        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         break;
-      case "contribution":
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
+      case 'contribution':
+        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         break;
-      case "return":
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
+      case 'return':
+        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         resultInterest.textContent = `${safeResults.totalInterest.toFixed(2)}%`;
         break;
-      case "start":
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
+      case 'start':
+        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         break;
-      case "investment":
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString(
-          "en-US",
-          { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-        )}`;
+      case 'investment':
+        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         resultInterest.textContent = `${safeResults.totalInterest} years`;
         break;
     }
-
+  
     // Update chart for the specific section
-    updateChart(safeResults, section);
+    // updateChart(safeResults, section);
   }
-
+  
   // Update the calculateAndUpdateEndAmount function to specify section
   function calculateAndUpdateEndAmount() {
-    console.log('=== calculateAndUpdateEndAmount called ===');
-    
     // Get form values from End Amount section with better error handling
     const startingAmountInput = document.querySelector(
       '#default-input-section input[placeholder="$20,000"]'
@@ -294,15 +199,6 @@ document.addEventListener("DOMContentLoaded", function () {
       '#default-input-section input[name="return-timing"]:checked'
     );
 
-    console.log('Input elements found:', {
-      startingAmountInput: !!startingAmountInput,
-      yearsInput: !!yearsInput,
-      returnRateInput: !!returnRateInput,
-      additionalContributionInput: !!additionalContributionInput,
-      compoundSelect: !!compoundSelect,
-      contributionTimingInput: !!contributionTimingInput
-    });
-
     const startingAmount = startingAmountInput
       ? parseFloat(startingAmountInput.value) || 0
       : 0;
@@ -320,27 +216,15 @@ document.addEventListener("DOMContentLoaded", function () {
       ? contributionTimingInput.value || "end"
       : "end";
 
-    console.log('Parsed input values:', {
-      startingAmount,
-      years,
-      returnRate,
-      additionalContribution,
-      compoundValue,
-      contributionTiming
-    });
-
     const compoundFrequency = getCompoundFrequency(compoundValue);
-    console.log('Compound frequency:', compoundFrequency);
-    
     const results = calculateEndAmount(
       startingAmount,
       additionalContribution,
       returnRate,
       years,
+      compoundFrequency,
       contributionTiming
     );
-
-    console.log('Raw calculation results:', results);
 
     // Ensure results object has all required properties
     const safeResults = {
@@ -350,12 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
       totalInterest: Number(results.totalInterest) || 0,
     };
 
-    console.log('Safe results object:', safeResults);
-    console.log('Calling updateResults with section: "end"');
-    
     updateResults(safeResults, "end");
-    
-    console.log('=== calculateAndUpdateEndAmount completed ===');
   }
 
   // Array of all tabs for easy management
@@ -400,20 +279,20 @@ document.addEventListener("DOMContentLoaded", function () {
   endAmountTab.addEventListener("click", function () {
     setActiveTab(endAmountTab);
 
-    defaultSection.classList.remove("hidden");
-    defaultSection.classList.add("block");
+    // defaultSection.classList.remove("hidden");
+    // defaultSection.classList.add("block");
 
-    contributionSection.classList.add("hidden");
-    contributionSection.classList.remove("block");
+    // contributionSection.classList.add("hidden");
+    // contributionSection.classList.remove("block");
 
-    returnRateSection.classList.add("hidden");
-    returnRateSection.classList.remove("block");
+    // returnRateSection.classList.add("hidden");
+    // returnRateSection.classList.remove("block");
 
-    startingAmountSection.classList.remove("block");
-    startingAmountSection.classList.add("hidden");
+    // startingAmountSection.classList.remove("block");
+    // startingAmountSection.classList.add("hidden");
 
-    investmentSection.classList.add("hidden");
-    investmentSection.classList.remove("block");
+    // investmentSection.classList.add("hidden");
+    // investmentSection.classList.remove("block");
 
     setTimeout(() => {
       if (charts["end"]) {
@@ -680,26 +559,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }, 50);
   });
-
-  // Move this function inside the DOMContentLoaded event listener
-  function updateChart(results, section) {
-    const chartId = `investmentPieChart-${section}`;
-    const canvas = document.getElementById(chartId);
-
-    if (!canvas || !charts[section]) {
-      return; // Chart doesn't exist for this section
-    }
-
-    // Update chart data
-    const chartData = [
-      results.startingAmount || 0,
-      results.totalContributions || 0,
-      results.totalInterest || 0,
-    ];
-
-    charts[section].data.datasets[0].data = chartData;
-    charts[section].update();
-  }
 
   // Initialize with End Amount tab active and add listeners
   setTimeout(() => {
