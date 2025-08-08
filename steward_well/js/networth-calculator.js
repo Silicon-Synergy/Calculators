@@ -9,35 +9,22 @@ document.addEventListener("DOMContentLoaded", function () {
     networth: 0,
   };
 
-  // Asset and liability categories mapping
+  // Asset and liability categories mapping - Updated to match actual HTML IDs
   const networthCategories = {
     assets: [
-      "cash-savings",
-      "checking-account",
-      "investment-accounts",
-      "retirement-accounts",
-      "real-estate",
-      "vehicles",
-      "jewelry-collectibles",
-      "business-assets",
-      "life-insurance",
-      "stocks-bonds",
-      "cryptocurrency",
-      "other-assets",
+      "registered-retirement",
+      "tfsa-accounts",
+      "non-registered-investments",
+      "home-value",
+      "other-properties",
+      "other-valuables",
     ],
     liabilities: [
-      "mortgage",
+      "home-mortgage",
+      "other-mortgages",
       "credit-cards",
-      "student-loans",
-      "auto-loans",
-      "personal-loans",
-      "home-equity-loan",
-      "business-debt",
-      "medical-debt",
-      "tax-debt",
-      "family-loans",
-      "payday-loans",
-      "other-debt",
+      "lines-of-credit",
+      "loans",
     ],
   };
 
@@ -107,6 +94,28 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update display
     updateNetworthDisplay();
     updateCategoryTotals();
+
+    // Update investment calculator starting amounts
+    updateInvestmentStartingAmounts();
+  }
+
+  // New function to update investment calculator starting amounts
+  function updateInvestmentStartingAmounts() {
+    // Find all starting amount input fields in the investment calculator
+    const startingAmountInputs = document.querySelectorAll(
+      "#starting-amount, #target-starting-amount"
+    );
+
+    startingAmountInputs.forEach((input) => {
+      if (input && networthState.totalAssets > 0) {
+        // Set the value to total assets
+        input.value = networthState.totalAssets;
+
+        // Trigger input event to update any dependent calculations
+        const event = new Event("input", { bubbles: true });
+        input.dispatchEvent(event);
+      }
+    });
   }
 
   // Update networth display
@@ -131,8 +140,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // Add color coding based on positive/negative networth
       networthElement.className =
         networthState.networth >= 0
-          ? "text-green-600 font-bold"
-          : "text-red-600 font-bold";
+          ? "text-2xl font-bold text-green-600"
+          : "text-2xl font-bold text-red-600";
     }
   }
 
@@ -170,20 +179,22 @@ document.addEventListener("DOMContentLoaded", function () {
         categoryContent.style.maxHeight &&
         categoryContent.style.maxHeight !== "0px";
 
-      // Close all other categories first
-      const allCategories = document.querySelectorAll(
-        "#networth-section .category-content"
-      );
-      const allArrows = document.querySelectorAll(
-        "#networth-section .category-arrow"
-      );
+      // Close all other categories first (accordion behavior)
+      const allCategories = ["assets", "liabilities"];
+      allCategories.forEach((cat) => {
+        if (cat !== categoryName) {
+          const otherButton = document.querySelector(
+            `[onclick="toggleNetworthCategory('${cat}')"]`
+          );
+          const otherContent =
+            otherButton?.parentElement?.querySelector(".category-content");
+          const otherArrow = otherButton?.querySelector(".category-arrow");
 
-      allCategories.forEach((content, index) => {
-        if (content !== categoryContent) {
-          content.style.maxHeight = "0px";
-          content.style.opacity = "0";
-          if (allArrows[index])
-            allArrows[index].style.transform = "rotate(0deg)";
+          if (otherContent && otherArrow) {
+            otherContent.style.maxHeight = "0px";
+            otherContent.style.opacity = "0";
+            otherArrow.style.transform = "rotate(0deg)";
+          }
         }
       });
 

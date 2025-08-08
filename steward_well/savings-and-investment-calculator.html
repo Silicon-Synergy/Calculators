@@ -531,6 +531,7 @@
             <div class="category-content overflow-border transition-all duration-500 ease-in-out max-h-0">
               <div class="p-4 pt-4">
                 <div class="mb-[20px] font-bold text-[1.2rem]">Your savings and investments:</div>
+                <!-- Assets Section - Fix duplicate IDs and add proper classes -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div class="input-group relative">
                     <div class="flex gap-2 items-center">
@@ -538,19 +539,15 @@
                         Registered retirement savings
                         <span id="rent_mortgage-percentage"></span>
                       </label>
-
                       <svg id="tooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-
-                    <!-- Tooltip -->
                     <div id="tooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200">
                       This includes all of your registered accounts such as registered retirement savings plans (RRSP), group RSPs,
                       defined contribution pension plans (DCPP), defined benefit pension plans (DBPP), locked-in RSPs/LIRAs, etc.
                     </div>
-
-                    <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="registered-retirement" class="asset-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
 
                   <div class="input-group relative">
@@ -559,19 +556,15 @@
                         Tax free savings accounts (TFSA)
                         <span id="rent_mortgage-percentage"></span>
                       </label>
-
                       <svg id="tfsaTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-
-                    <!-- Tooltip -->
                     <div id="tfsaTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-[2000px]">
                       A TFSA lets you save for any purpose, without paying taxes on the investment growth.
-                      In this calculator, we’re assuming you’re not putting in more than the annual TFSA limit.
+                      In this calculator, we're assuming you're not putting in more than the annual TFSA limit.
                     </div>
-
-                    <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="tfsa-accounts" class="asset-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
 
                   <div class="input-group relative">
@@ -580,19 +573,15 @@
                         Non-registered savings and investments
                         <span id="rent_mortgage-percentage"></span>
                       </label>
-
                       <svg id="nonRegisteredTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-
-                    <!-- Tooltip -->
                     <div id="nonRegisteredTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
                       This includes other taxable non-registered savings and investment accounts such as cash, chequing and savings
                       accounts, guaranteed investment certificates (GIC), mutual funds, annuities, stocks, bonds, etc.
                     </div>
-
-                    <input type="number" id="water" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="non-registered-investments" class="asset-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
                 </div>
 
@@ -604,19 +593,15 @@
                         Home value:
                         <span id="rent_mortgage-percentage"></span>
                       </label>
-
                       <svg id="homeValueTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-
                     <div id="homeValueTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm  !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
                       This includes a detached home, semi-detached home, townhome, apartment or condominium that you own.
-                      Enter what it’s worth now, not what you originally paid or think it will be worth in the future.
+                      Enter what it's worth now, not what you originally paid or think it will be worth in the future.
                     </div>
-                    <!-- Tooltip -->
-
-                    <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="home-value" class="asset-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
 
                   <div class="input-group relative">
@@ -625,20 +610,15 @@
                         Other properties:
                         <span id="rent_mortgage-percentage"></span>
                       </label>
-
-                      <!-- Tooltip toggle icon -->
                       <svg id="otherPropertiesTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-
-                    <!-- Tooltip -->
                     <div id="otherPropertiesTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
-                      This includes a cottage, rental property, or other real estate that you own. Enter what it’s worth now,
+                      This includes a cottage, rental property, or other real estate that you own. Enter what it's worth now,
                       not what you originally paid or think it will be worth in the future.
                     </div>
-
-                    <input type="number" id="other-properties" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="other-properties" class="asset-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
 
                   <div class="input-group relative">
@@ -647,20 +627,15 @@
                         Other Valuables:
                         <span id="rent_mortgage-percentage"></span>
                       </label>
-
-                      <!-- Tooltip toggle icon -->
                       <svg id="otherValueableTooltipToggle" class="w-5 h-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
-
                       <div id="otherValuableTooltip" class="absolute top-full left-0 mt-1 p-2 w-80 text-sm !text-white bg-gray-800 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-10">
                         This includes the current value of items such as jewellery, electronics, furniture and appliances, art and other items that have a high resale value.
                       </div>
                     </div>
-
-                    <input type="number" id="water" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="other-valuables" class="asset-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                   </div>
-
                 </div>
               </div>
             </div>
@@ -703,7 +678,7 @@
                         </div>
                       </div>
 
-                      <input type="number" id="credit-cards" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                                            <input type="number" id="home-mortgage" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group relative">
                       <div class="flex gap-2 items-center">
@@ -723,7 +698,7 @@
                         </div>
                       </div>
 
-                      <input type="number" id="credit-cards" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="other-mortgages" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group relative">
                       <div class="flex gap-2 items-center">
@@ -813,7 +788,7 @@
         </div>
         <div class="flex items-center space-x-3 mb-6">
           <h3 class="text-lg font-medium text-gray-300 max-sm:text-center">
-            Modify the values and click the calculate button to use
+            Modify the values to see calculations update automatically
           </h3>
         </div>
 
@@ -867,15 +842,15 @@
                   <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
                   <div class="relative">
                     <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
-                      <option value="annually">Annually</option>
-                      <option value="semiannually">Semiannually</option>
+                      <option value="annually" selected>Annually</option>
+                      <!-- <option value="semiannually">Semiannually</option>
                       <option value="quarterly">Quarterly</option>
                       <option value="monthly">Monthly</option>
                       <option value="semimonthly">Semimonthly</option>
                       <option value="biweekly">Biweekly</option>
                       <option value="weekly">Weekly</option>
                       <option value="daily">Daily</option>
-                      <option value="continuously">Continuously</option>
+                      <option value="continuously">Continuously</option> -->
                     </select>
                   </div>
                 </div>
@@ -979,7 +954,7 @@
                   <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
                   <div class="relative">
                     <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
-                      <option value="annually">Annually</option>
+                      <option value="annually" selected>Annually</option>
                       <option value="semiannually">Semiannually</option>
                       <option value="quarterly">Quarterly</option>
                       <option value="monthly">Monthly</option>
@@ -1338,9 +1313,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="flex justify-center mt-2">
-          <a href="index.html#contact-us" style="color: white" class="nav_cta hide-tablet w-full max-w-full bg-dark text-white text-center py-4 rounded-xl shadow-lg">Calculate</a>
         </div>
       </div>
     </section>
