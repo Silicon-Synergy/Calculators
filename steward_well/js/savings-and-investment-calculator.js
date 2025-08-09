@@ -1,256 +1,269 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // --- Global variables and constants ---
   const charts = {};
-  const defaultSection = document.getElementById("default-input-section");
-  const contributionSection = document.getElementById(
-    "contribution-input-section"
-  );
-  const returnRateSection = document.getElementById("return-rate-section");
+
+  // --- DOM element references ---
   const endAmountTab = document.getElementById("end-amount");
-  const contributionTab = document.getElementById(
-    "additional-contribution-tab"
+  const startingAmountInput = document.getElementById("starting-amount");
+  const afterInput = document.getElementById("after");
+  const returnRateInput = document.getElementById("return-rate");
+  const compoundSelect = document.getElementById("compound"); // Kept for future use, though currently fixed to annual
+  const additionalContributionInput = document.getElementById(
+    "additional-contribution"
   );
-  const returnRateTab = document.getElementById("return-rate-tab");
-  const startingAmountTab = document.getElementById("starting-amount-tab");
-  const endAmountSection = document.getElementById("default-input-section");
-  const startingAmountSection = document.getElementById(
-    "starting-amount-section"
-  );
-  const investmentLengthTab = document.getElementById("investment-length-tab");
-  const investmentSection = document.getElementById(
-    "investment-length-section"
+  const contributionTimingInputs = document.querySelectorAll(
+    'input[name="return-timing"]'
   );
 
-  const body = document.body;
-
-  // Calculation Functions
-  function getCompoundFrequency(compoundValue) {
-    const frequencies = {
-      annually: 1,
-      semiannually: 2,
-      quarterly: 4,
-      monthly: 12,
-      semimonthly: 24,
-      biweekly: 26,
-      weekly: 52,
-      daily: 365,
-      continuously: "continuous",
-    };
-    return frequencies[compoundValue] || 12;
-  }
+  // --- Result display elements ---
+  const resultBalanceEnd = document.getElementById("result-balance-end");
+  const resultStartEnd = document.getElementById("result-start-end");
+  const resultContribEnd = document.getElementById("result-contrib-end");
+  const resultInterestEnd = document.getElementById("result-interest-end");
 
   function calculateEndAmount(
     startingAmount,
     additionalContribution,
     returnRate,
     years,
-    compoundFrequency,
     contributionTiming
   ) {
     const PV = parseFloat(startingAmount) || 0;
-    const PMT = parseFloat(additionalContribution) || 0;
+    // The main contribution input is treated as an ANNUAL amount.
+    const annualPMT = parseFloat(additionalContribution) || 0;
     const annualRate = parseFloat(returnRate) / 100;
-    const n = parseFloat(years) || 0;
+    const investmentYears = parseFloat(years) || 0;
 
-    if (PV === 0 && PMT === 0)
-      return { endBalance: 0, totalContributions: 0, totalInterest: 0 };
+    // If there's no money invested or contributed, return zeroed-out results.
+    if (PV === 0 && annualPMT === 0) {
+      return {
+        endBalance: 0,
+        startingAmount: 0,
+        totalContributions: 0,
+        totalInterest: 0,
+      };
+    }
 
+    let r, n, pmt, totalContributions;
     let FV = 0;
-    let totalContributions = 0;
 
-    if (compoundFrequency === "continuous") {
-      // Continuous compounding
-      FV = PV * Math.exp(annualRate * n);
-      if (PMT > 0) {
-        FV += (PMT * (Math.exp(annualRate * n) - 1)) / annualRate;
-      }
-      totalContributions = PMT * n;
+    // Determine calculation parameters based on contribution timing
+    const isMonthly = contributionTiming.includes("month");
+
+    if (isMonthly) {
+      // Monthly contributions
+      r = annualRate / 12; // Monthly interest rate
+      n = investmentYears * 12; // Total number of months
+      pmt = annualPMT / 12; // Monthly contribution amount
     } else {
-      // Discrete compounding
-      let r, periods, periodicPMT;
+      // Annual contributions
+      r = annualRate; // Annual interest rate
+      n = investmentYears; // Total number of years
+      pmt = annualPMT; // Annual contribution amount
+    }
 
-      if (
-        contributionTiming === "year-beginning" ||
-        contributionTiming === "year-end"
-      ) {
-        // Annual contributions
-        r = annualRate;
-        periods = n;
-        periodicPMT = PMT;
-        totalContributions = PMT * n;
-      } else {
-        // Monthly contributions
-        r = annualRate / compoundFrequency;
-        periods = n * compoundFrequency;
-        periodicPMT = PMT;
-        totalContributions = PMT * periods;
-      }
+    // Total contributions over the investment period
+    totalContributions = pmt * n;
 
-      // Future value of present value
-      FV = PV * Math.pow(1 + r, periods);
+    // --- Core Future Value (FV) Calculation ---
 
-      // Future value of annuity
-      if (periodicPMT > 0 && r > 0) {
-        const annuityFV = periodicPMT * ((Math.pow(1 + r, periods) - 1) / r);
+    // 1. Calculate the future value of the initial starting amount (PV)
+    let fvOfPV = PV * Math.pow(1 + r, n);
 
+    // 2. Calculate the future value of the series of contributions (annuity)
+    let fvOfAnnuity = 0;
+    if (pmt > 0) {
+      if (r > 0) {
+        // Standard future value of annuity formula
+        fvOfAnnuity = pmt * ((Math.pow(1 + r, n) - 1) / r);
+
+        // If contributions are at the beginning of the period (Annuity Due),
+        // it gets one extra period of interest.
         if (
-          contributionTiming === "beginning" ||
+          contributionTiming === "month-beginning" ||
           contributionTiming === "year-beginning"
         ) {
-          // Annuity due (beginning of period)
-          FV += annuityFV * (1 + r);
-        } else {
-          // Ordinary annuity (end of period)
-          FV += annuityFV;
+          fvOfAnnuity *= 1 + r;
         }
-      } else if (periodicPMT > 0 && r === 0) {
-        // No interest case
-        FV += periodicPMT * periods;
+      } else {
+        // If there's no interest, the future value is just the sum of all contributions.
+        fvOfAnnuity = pmt * n;
       }
     }
 
+    // 3. The final End Balance is the sum of both parts.
+    FV = fvOfPV + fvOfAnnuity;
+
+    // 4. Calculate total interest earned.
     const totalInterest = FV - PV - totalContributions;
 
     return {
       endBalance: FV,
       startingAmount: PV,
       totalContributions: totalContributions,
-      totalInterest: Math.max(0, totalInterest),
+      totalInterest: Math.max(0, totalInterest), // Interest can't be negative
     };
   }
 
-  // Update the result element references to be section-specific
-  function updateResults(results, section = 'end') {
-    const resultBalance = document.querySelector(`#result-balance-${section}`);
-    const resultStart = document.querySelector(`#result-start-${section}`);
-    const resultContrib = document.querySelector(`#result-contrib-${section}`);
-    const resultInterest = document.querySelector(`#result-interest-${section}`);
-  
-    // Ensure all elements exist before updating
-    if (!resultBalance || !resultStart || !resultContrib || !resultInterest) {
-      console.error(`Result elements not found for section: ${section}`);
-      return;
-    }
-  
-    // Create safe results object with fallbacks
-    const safeResults = {
-      endBalance: Number(results?.endBalance) || 0,
-      startingAmount: Number(results?.startingAmount) || 0,
-      totalContributions: Number(results?.totalContributions) || 0,
-      totalInterest: Number(results?.totalInterest) || 0
-    };
-  
-    // Update the display based on section type
-    switch(section) {
-      case 'end':
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        break;
-      case 'contribution':
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        break;
-      case 'return':
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultInterest.textContent = `${safeResults.totalInterest.toFixed(2)}%`;
-        break;
-      case 'start':
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultInterest.textContent = `$${safeResults.totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        break;
-      case 'investment':
-        resultBalance.textContent = `$${safeResults.endBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultStart.textContent = `$${safeResults.startingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultContrib.textContent = `$${safeResults.totalContributions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        resultInterest.textContent = `${safeResults.totalInterest} years`;
-        break;
-    }
-  
-    // Update chart for the specific section
-    // updateChart(safeResults, section);
-  }
-  
-  // Update the calculateAndUpdateEndAmount function to specify section
-  function calculateAndUpdateEndAmount() {
-    // Get form values from End Amount section with better error handling
-    const startingAmountInput = document.querySelector(
-      '#default-input-section input[placeholder="$20,000"]'
-    );
-    const yearsInput = document.querySelector(
-      '#default-input-section input[placeholder="10"]'
-    );
-    const returnRateInput = document.querySelector(
-      '#default-input-section input[placeholder="6"]'
-    );
-    const additionalContributionInput = document.querySelector(
-      '#default-input-section input[placeholder="Enter amount"]'
-    );
-    const compoundSelect = document.querySelector(
-      "#default-input-section select"
-    );
-    const contributionTimingInput = document.querySelector(
-      '#default-input-section input[name="return-timing"]:checked'
-    );
+  // --- Real-time calculation and update function ---
+  function updateCalculations() {
+    const startingAmount = startingAmountInput?.value || 0;
+    const years = afterInput?.value || 0;
+    const returnRate = returnRateInput?.value || 0;
+    const additionalContribution = additionalContributionInput?.value || 0;
 
-    const startingAmount = startingAmountInput
-      ? parseFloat(startingAmountInput.value) || 0
-      : 0;
-    const years = yearsInput ? parseFloat(yearsInput.value) || 0 : 0;
-    const returnRate = returnRateInput
-      ? parseFloat(returnRateInput.value) || 0
-      : 0;
-    const additionalContribution = additionalContributionInput
-      ? parseFloat(additionalContributionInput.value) || 0
-      : 0;
-    const compoundValue = compoundSelect
-      ? compoundSelect.value || "monthly"
-      : "monthly";
-    const contributionTiming = contributionTimingInput
-      ? contributionTimingInput.value || "end"
-      : "end";
+    // Get selected contribution timing
+    let contributionTiming = "year-end"; // Default value
+    contributionTimingInputs.forEach((input) => {
+      if (input.checked) {
+        contributionTiming = input.value;
+      }
+    });
 
-    const compoundFrequency = getCompoundFrequency(compoundValue);
+    // Calculate results using the updated function
     const results = calculateEndAmount(
       startingAmount,
       additionalContribution,
       returnRate,
       years,
-      compoundFrequency,
       contributionTiming
     );
 
-    // Ensure results object has all required properties
-    const safeResults = {
-      endBalance: Number(results.endBalance) || 0,
-      startingAmount: Number(results.startingAmount) || 0,
-      totalContributions: Number(results.totalContributions) || 0,
-      totalInterest: Number(results.totalInterest) || 0,
-    };
+    // Update dynamic description
+    updateResultDescription(
+      startingAmount,
+      returnRate,
+      years,
+      additionalContribution,
+      results.endBalance
+    );
 
-    updateResults(safeResults, "end");
+    // Update result displays with proper formatting
+    if (resultBalanceEnd) {
+      resultBalanceEnd.textContent = `$${results.endBalance.toLocaleString(
+        "en-US",
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      )}`;
+    }
+    if (resultStartEnd) {
+      resultStartEnd.textContent = `$${results.startingAmount.toLocaleString(
+        "en-US",
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      )}`;
+    }
+    if (resultContribEnd) {
+      resultContribEnd.textContent = `$${results.totalContributions.toLocaleString(
+        "en-US",
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      )}`;
+    }
+    if (resultInterestEnd) {
+      resultInterestEnd.textContent = `$${results.totalInterest.toLocaleString(
+        "en-US",
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+      )}`;
+    }
+
+    // Update the pie chart
+    updateChart(results);
   }
 
-  // Array of all tabs for easy management
-  const allTabs = [
-    endAmountTab,
-    contributionTab,
-    returnRateTab,
-    startingAmountTab,
-    investmentLengthTab,
-  ];
+  // --- Chart Management Functions ---
+  function updateChart(results) {
+    const chartData = [
+      results.startingAmount,
+      results.totalContributions,
+      results.totalInterest,
+    ];
+    // Ensure data is not negative for charting
+    const sanitizedData = chartData.map((val) => Math.max(0, val));
 
-  // Function to set active tab styling
+    createInvestmentChart("investmentPieChart-end", "end", sanitizedData);
+  }
+
+  function createInvestmentChart(canvasId, chartKey, data) {
+    if (charts[chartKey]) {
+      charts[chartKey].destroy();
+    }
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    // Calculate total for percentage calculation
+    const total = data.reduce((sum, value) => sum + value, 0);
+
+    charts[chartKey] = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: ["Starting Amount", "Total Contributions", "Interest"],
+        datasets: [
+          {
+            label: "Investment Breakdown",
+            data: data || [0, 0, 0],
+            backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
+            borderColor: "#ffffff",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false, // This hides the legend
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (total === 0) return context.label + ': 0.0%';
+                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                return context.label + ': ' + percentage + '%';
+              }
+            }
+          }
+        },
+        // Custom plugin to draw percentage labels on slices
+        animation: {
+          onComplete: function(animation) {
+            const chart = animation.chart;
+            const ctx = chart.ctx;
+            
+            ctx.save();
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            chart.data.datasets.forEach((dataset, datasetIndex) => {
+              const meta = chart.getDatasetMeta(datasetIndex);
+              
+              meta.data.forEach((element, index) => {
+                if (total === 0) return;
+                
+                const percentage = ((dataset.data[index] / total) * 100).toFixed(1);
+                const position = element.tooltipPosition();
+                
+                // Only draw if percentage is significant enough to be visible
+                if (parseFloat(percentage) > 5) {
+                  ctx.fillText(percentage + '%', position.x, position.y);
+                }
+              });
+            });
+            
+            ctx.restore();
+          }
+        }
+      },
+    });
+  }
+
+  // --- UI Management Functions ---
   function setActiveTab(activeTab) {
+    const allTabs = [endAmountTab];
+
     allTabs.forEach((tab) => {
       if (tab === activeTab) {
-        // Active tab styling
         tab.style.opacity = "1";
         tab.style.backgroundColor = "#57f2a9";
         tab.style.color = "#fff";
@@ -259,7 +272,6 @@ document.addEventListener("DOMContentLoaded", function () {
         tab.style.fontWeight = "600";
         tab.style.boxShadow = "0 4px 12px rgba(87, 242, 169, 0.3)";
       } else {
-        // Inactive tab styling - faded colors
         tab.style.opacity = "0.5";
         tab.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
         tab.style.color = "#fff";
@@ -268,301 +280,111 @@ document.addEventListener("DOMContentLoaded", function () {
         tab.style.fontWeight = "400";
         tab.style.boxShadow = "none";
       }
-      // Add transition for smooth effect
       tab.style.transition = "all 0.3s ease";
     });
   }
 
-  // Set End Amount as active by default
-  setActiveTab(endAmountTab);
+  // --- Event Listeners for Real-time Calculations ---
+  function initializeEventListeners() {
+    const inputFields = [
+      startingAmountInput,
+      afterInput,
+      returnRateInput,
+      additionalContributionInput,
+    ];
 
-  endAmountTab.addEventListener("click", function () {
-    setActiveTab(endAmountTab);
-
-    // defaultSection.classList.remove("hidden");
-    // defaultSection.classList.add("block");
-
-    // contributionSection.classList.add("hidden");
-    // contributionSection.classList.remove("block");
-
-    // returnRateSection.classList.add("hidden");
-    // returnRateSection.classList.remove("block");
-
-    // startingAmountSection.classList.remove("block");
-    // startingAmountSection.classList.add("hidden");
-
-    // investmentSection.classList.add("hidden");
-    // investmentSection.classList.remove("block");
-
-    setTimeout(() => {
-      if (charts["end"]) {
-        charts["end"].destroy();
+    inputFields.forEach((input) => {
+      if (input) {
+        input.addEventListener("input", updateCalculations);
       }
-
-      const canvas = document.getElementById("investmentPieChart-end");
-      if (!canvas) return;
-
-      const ctx = canvas.getContext("2d");
-
-      charts["end"] = new Chart(ctx, {
-        type: "pie",
-        data: {
-          labels: ["Starting Amount", "Total Contributions", "Interest"],
-          datasets: [
-            {
-              label: "Investment Breakdown",
-              data: [20000, 120000, 58290.4],
-              backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-              borderColor: "#ffffff",
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "bottom",
-              labels: {
-                color: "#0f172a",
-                font: {
-                  weight: "500",
-                },
-              },
-            },
-          },
-        },
-      });
-
-      // Calculate initial values
-      calculateAndUpdateEndAmount();
-    }, 50);
-  });
-
-  // Add event listeners for real-time calculation
-  function addCalculationListeners() {
-    const endAmountInputs = defaultSection.querySelectorAll("input, select");
-    endAmountInputs.forEach((input) => {
-      input.addEventListener("input", calculateAndUpdateEndAmount);
-      input.addEventListener("change", calculateAndUpdateEndAmount);
     });
+
+    if (compoundSelect) {
+      compoundSelect.addEventListener("change", updateCalculations);
+    }
+
+    contributionTimingInputs.forEach((input) => {
+      input.addEventListener("change", updateCalculations);
+    });
+
+    if (endAmountTab) {
+      endAmountTab.addEventListener("click", function () {
+        setActiveTab(endAmountTab);
+        updateCalculations();
+      });
+    }
   }
 
-  contributionTab.addEventListener("click", function () {
-    setActiveTab(contributionTab);
+  // --- Initialization ---
+  function initialize() {
+    initializeEventListeners();
 
-    const ctx = document
-      .getElementById("investmentPieChart-contribution")
-      .getContext("2d");
-
-    if (charts["contribution"]) {
-      charts["contribution"].destroy();
+    if (endAmountTab) {
+      setActiveTab(endAmountTab);
     }
 
-    defaultSection.classList.add("hidden");
-    defaultSection.classList.remove("block");
-
-    // Show contribution section
-    contributionSection.classList.remove("hidden");
-    contributionSection.classList.add("block");
-
-    charts["contribution"] = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["Starting Amount", "Total Contributions", "Interest"],
-        datasets: [
-          {
-            label: "Investment Breakdown",
-            data: [20000, 120000, 58290.4],
-            backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: "#0f172a",
-              font: {
-                weight: "500",
-              },
-            },
-          },
-        },
-      },
-    });
-  });
-
-  returnRateTab.addEventListener("click", function () {
-    setActiveTab(returnRateTab);
-
-    const ctx = document
-      .getElementById("investmentPieChart-return")
-      .getContext("2d");
-
-    if (charts["return"]) {
-      charts["return"].destroy();
+    // Default to 'End of Each Month'
+    if (contributionTimingInputs.length > 1) {
+      contributionTimingInputs[1].checked = true;
     }
 
-    defaultSection.classList.add("hidden");
-    defaultSection.classList.remove("block");
+    updateCalculations();
+  }
 
-    contributionSection.classList.add("hidden");
-    contributionSection.classList.remove("block");
-
-    returnRateSection.classList.remove("hidden");
-    returnRateSection.classList.add("block");
-
-    charts["return"] = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["Starting Amount", "Total Contributions", "Interest"],
-        datasets: [
-          {
-            label: "Investment Breakdown",
-            data: [20000, 120000, 58290.4],
-            backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: "#0f172a",
-              font: {
-                weight: "500",
-              },
-            },
-          },
-        },
-      },
-    });
-  });
-
-  investmentLengthTab.addEventListener("click", function () {
-    setActiveTab(investmentLengthTab);
-
-    // Step 1: Show the section
-    investmentSection.classList.add("block");
-    investmentSection.classList.remove("hidden");
-
-    // Hide all other sections
-    defaultSection.classList.add("hidden");
-    contributionSection.classList.add("hidden");
-    returnRateSection.classList.add("hidden");
-    startingAmountSection.classList.add("hidden");
-    endAmountSection.classList.add("hidden");
-
-    // Step 2: Delay the chart creation to allow the DOM to update
-
-    const canvas = document.getElementById("investmentPieChart-investment");
-
-    const ctx = canvas.getContext("2d");
-
-    if (charts["investment"]) {
-      charts["investment"].destroy();
-    }
-
-    charts["investment"] = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["Starting Amount", "Total Contributions", "Interest"],
-        datasets: [
-          {
-            label: "Investment Breakdown",
-            data: [20000, 120000, 58290.4],
-            backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: {
-              color: "#0f172a",
-              font: {
-                weight: "500",
-              },
-            },
-          },
-        },
-      },
-    });
-  });
-
-  startingAmountTab.addEventListener("click", function () {
-    setActiveTab(startingAmountTab);
-
-    startingAmountSection.classList.add("block");
-    startingAmountSection.classList.remove("hidden");
-
-    defaultSection.classList.add("hidden");
-    contributionSection.classList.add("hidden");
-    returnRateSection.classList.add("hidden");
-    investmentSection.classList.add("hidden");
-    endAmountSection.classList.add("hidden");
-
-    setTimeout(() => {
-      const canvas = document.getElementById("investmentPieChart-start");
-      if (!canvas) {
-        console.error("Canvas not found: #investmentPieChart-start");
-        return;
-      }
-
-      const ctx = canvas.getContext("2d");
-
-      if (charts["start"]) {
-        charts["start"].destroy();
-      }
-
-      charts["start"] = new Chart(ctx, {
-        type: "pie",
-        data: {
-          labels: ["Starting Amount", "Total Contributions", "Interest"],
-          datasets: [
-            {
-              label: "Investment Breakdown",
-              data: [20000, 120000, 58290.4],
-              backgroundColor: ["#3b82f6", "#22c55e", "#ef4444"],
-              borderColor: "#ffffff",
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "bottom",
-              labels: {
-                color: "#0f172a",
-                font: {
-                  weight: "500",
-                },
-              },
-            },
-          },
-        },
-      });
-    }, 50);
-  });
-
-  // Initialize with End Amount tab active and add listeners
-  setTimeout(() => {
-    endAmountTab.click();
-    addCalculationListeners();
-  }, 100);
+  // Start the application
+  initialize();
 });
+
+// --- Dynamic description update function ---
+function updateResultDescription(
+  startingAmount,
+  returnRate,
+  years,
+  additionalContribution,
+  endBalance
+) {
+  const descriptionElement = document.getElementById(
+    "dynamic-result-description"
+  );
+  if (!descriptionElement) return;
+
+  const startAmount = parseFloat(startingAmount) || 0;
+  const rate = parseFloat(returnRate) || 0;
+  const timeYears = parseFloat(years) || 0;
+  const contribution = parseFloat(additionalContribution) || 0;
+
+  let description = "";
+
+  if (startAmount === 0 && contribution === 0) {
+    description = "Enter your investment details to see your projected results";
+  } else if (timeYears === 0) {
+    description =
+      "Please enter the number of years for your investment timeline";
+  } else {
+    const formattedEndBalance = endBalance.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    let baseText = "";
+    if (startAmount > 0 && contribution > 0) {
+      baseText = `Starting with <strong>$${startAmount.toLocaleString(
+        "en-US"
+      )}</strong> and contributing <strong>$${contribution.toLocaleString("en-US")}</strong> annually`;
+    } else if (startAmount > 0) {
+      baseText = `Starting with <strong>$${startAmount.toLocaleString("en-US")}</strong>`;
+    } else {
+      baseText = `Contributing <strong>$${contribution.toLocaleString(
+        "en-US"
+      )}</strong> annually`;
+    }
+
+    description = `${baseText}, your end balance with an interest rate of <strong>${rate}%</strong> over the next <strong>${timeYears} year${
+      timeYears !== 1 ? "s" : ""
+    }</strong> is <strong>${formattedEndBalance}</strong>.`;
+  }
+
+  descriptionElement.innerHTML = description;
+}

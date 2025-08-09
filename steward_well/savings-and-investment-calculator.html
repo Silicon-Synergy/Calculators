@@ -797,37 +797,32 @@
             <div id="end-amount" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer">
               End Amount
             </div>
-            <div id="additional-contribution-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
-              Additional Contribution
-            </div>
-            <div id="return-rate-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
-              Return rate
-            </div>
-            <div id="starting-amount-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
-              Starting Amount
-            </div>
-            <div id="investment-length-tab" style="color: white" class="border-2 nav_cta p-2 rounded-md cursor-pointer">
-              Investment Length
-            </div>
           </div>
 
           <div id="default-input-section" class="input-group">
-            <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
-              <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3 pr-4">
+            <div class="input-group mt-10 p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="flex-1 flex flex-col gap-5 pb-3 pr-4">
                 <div class="relative w-[100%] max-sm:w-full">
                   <label for="starting-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
-                  <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  <div class="relative">
+                    <input type="number" id="starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <p class="absolute left-4 top-1/2 -translate-y-1/2 opacity-60 text-white">
+                      $
+                    </p>
+                  </div>
                 </div>
 
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="after" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
                   <div class="relative">
-                    <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter number of years" min="0" />
                     <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
                       years
                     </p>
                   </div>
                 </div>
+                
+
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
                   <div class="relative">
@@ -841,24 +836,21 @@
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="compound" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
                   <div class="relative">
-                    <select id="compound" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
-                      <option value="annually" selected>Annually</option>
-                      <!-- <option value="semiannually">Semiannually</option>
-                      <option value="quarterly">Quarterly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="semimonthly">Semimonthly</option>
-                      <option value="biweekly">Biweekly</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="daily">Daily</option>
-                      <option value="continuously">Continuously</option> -->
-                    </select>
+                    <div class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none transition-all duration-200">
+                      Annually
+                    </div>
+                    <!-- Hidden input to maintain form functionality -->
+                    <input type="hidden" id="compound" value="annually" />
                   </div>
                 </div>
 
                 <div class="w-[100%] max-sm:w-[100%]">
-                  <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
+                  <label for="additional-contribution" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
                   <div class="relative">
-                    <input type="number" id="return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <input type="number" id="additional-contribution" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <p class="absolute left-4 top-1/2 -translate-y-1/2 opacity-60 text-white">
+                      $
+                    </p>
                   </div>
                 </div>
                 <div class="w-full max-sm:w-full">
@@ -885,8 +877,8 @@
               </div>
               <div class="w-full md:w-[50%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
                 <h3 class="text-2xl font-bold mb-4">Results</h3>
-                <p class="text-[.8rem] mb-[2rem]">
-                  This is where the result will go
+                <p id="dynamic-result-description" class="text-[1rem] mb-[2rem]">
+                  Enter your investment details to see your projected results
                 </p>
                 <div class="space-y-2 text-[1rem] font-medium">
                   <p>
