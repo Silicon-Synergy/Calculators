@@ -551,6 +551,24 @@ document.addEventListener("DOMContentLoaded", function () {
       contributionTimingInputs[1].checked = true;
     }
 
+    // Auto-populate Additional Contribution from budget calculator if available
+    const storedAnnualInvestment = localStorage.getItem('budgetAnnualInvestment');
+    if (storedAnnualInvestment && additionalContributionInput) {
+      const annualAmount = parseFloat(storedAnnualInvestment);
+      if (annualAmount > 0) {
+        additionalContributionInput.value = Math.round(annualAmount).toString();
+        
+        // Add visual indicator that value was auto-populated
+        const label = additionalContributionInput.parentElement.querySelector('label');
+        if (label && !label.querySelector('.auto-populated-indicator')) {
+          const indicator = document.createElement('span');
+          indicator.className = 'auto-populated-indicator text-green-600 text-xs ml-2';
+          indicator.textContent = '(from budget calculator)';
+          label.appendChild(indicator);
+        }
+      }
+    }
+
     updateCalculations();
   }
 

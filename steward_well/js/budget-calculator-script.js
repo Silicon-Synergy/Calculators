@@ -885,6 +885,16 @@ function updateAllUI(budget) {
     "recommended-cashflow-percentage"
   ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
 
+  // Store monthly investment amount in localStorage for use in investment calculator
+  const monthlyInvestmentAmount = budget.custom_allocations 
+    ? budget.custom_allocations.monthly_investments 
+    : budget.recommended_allocations.monthly_investments;
+  
+  // Convert monthly to annual amount (investment calculator expects annual contributions)
+  const annualInvestmentAmount = monthlyInvestmentAmount * 12;
+  localStorage.setItem('budgetMonthlyInvestment', monthlyInvestmentAmount.toString());
+  localStorage.setItem('budgetAnnualInvestment', annualInvestmentAmount.toString());
+
   // Update Custom Allocations Display (Amounts and Percentages)
   const userEnteredSavingsPct = parseFloat(savingsPercentageInput.value);
   const userEnteredInvestmentsPct = parseFloat(
