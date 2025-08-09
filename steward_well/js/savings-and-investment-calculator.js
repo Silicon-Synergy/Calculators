@@ -3,7 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const charts = {};
 
   // --- DOM element references ---
+  // end amount tab references starts here
   const endAmountTab = document.getElementById("end-amount");
+  const endAmountSection = document.getElementById("default-input-section");
   const startingAmountInput = document.getElementById("starting-amount");
   const afterInput = document.getElementById("after");
   const returnRateInput = document.getElementById("return-rate");
@@ -14,6 +16,33 @@ document.addEventListener("DOMContentLoaded", function () {
   const contributionTimingInputs = document.querySelectorAll(
     'input[name="return-timing"]'
   );
+  // end amount tab references ends here
+
+  // SO SEIG THE REMAINING TAB AND INPUT REFERENCES SHOULD BE PUT HERE, TAKE A LOOK AT THE ENDAMOUNT TAB REFERENCES IF YOU ARE LOST
+
+  // additional-contribution amount references starts here
+  const additionalContributionTab = document.getElementById(
+    "additional-contribution"
+  );
+  const additionalContributionSection = document.getElementById(
+    "additional-contribution-input-section"
+  );
+  // additional-contribution amount references ends here
+
+  // return-rate references starts here
+  const returnRateTab = document.getElementById("return-rate");
+  const returnRateSection = document.getElementById("return-rate-section");
+  // return-rate references ends here
+
+  // starting amount references starts here
+  const startAmountTab = document.getElementById("starting-amount");
+  const startAmountSection = document.getElementById("starting-amount-section");
+  // starting amount references ends here
+
+  // investment length amount starts here
+  const investmentLengthTab = document.getElementById("investment-length");
+  const investmentLengthSection = document.getElementById("investment-length-section");
+  // investment length ends here
 
   // --- Result display elements ---
   const resultBalanceEnd = document.getElementById("result-balance-end");
@@ -111,7 +140,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let FV = 0;
 
     // Determine calculation parameters based on contribution timing
-    const isMonthly = contributionTiming === "beginning" || contributionTiming === "end";
+    const isMonthly =
+      contributionTiming === "beginning" || contributionTiming === "end";
 
     if (isMonthly) {
       // Monthly contributions
@@ -483,7 +513,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- UI Management Functions ---
   function setActiveTab(activeTab) {
-    const allTabs = [endAmountTab];
+    const allTabs = [endAmountTab, additionalContributionTab, returnRateTab, startAmountTab, investmentLengthTab];
+    const allSections = [endAmountSection, additionalContributionSection, returnRateSection, startAmountSection, investmentLengthSection];
 
     allTabs.forEach((tab) => {
       if (tab === activeTab) {
@@ -504,6 +535,22 @@ document.addEventListener("DOMContentLoaded", function () {
         tab.style.boxShadow = "none";
       }
       tab.style.transition = "all 0.3s ease";
+    });
+  
+    // Show/hide sections based on active tab
+    allSections.forEach((section) => {
+      if (section) {
+        if (
+          (activeTab === endAmountTab && section === endAmountSection) ||
+          (activeTab === additionalContributionTab && section === additionalContributionSection) ||
+          (activeTab === returnRateTab && section === returnRateSection) ||
+          (activeTab === startAmountTab && section === startAmountSection) ||
+          (activeTab === investmentLengthTab && section === investmentLengthSection)) {
+          section.classList.remove("hidden");
+        } else {
+          section.classList.add("hidden");
+        }
+      }
     });
   }
 
@@ -536,6 +583,38 @@ document.addEventListener("DOMContentLoaded", function () {
         updateCalculations();
       });
     }
+
+    // Add event listener for additional contribution tab
+    if (additionalContributionTab) {
+      additionalContributionTab.addEventListener("click", function () {
+        setActiveTab(additionalContributionTab);
+        updateCalculations();
+      });
+    }
+
+    // Add event listener for return rate tab
+    if (returnRateTab) {
+      returnRateTab.addEventListener("click", function () {
+        setActiveTab(returnRateTab);
+        updateCalculations();
+      });
+    }
+
+    // Add event listener for starting amount tab
+    if (startAmountTab) {
+      startAmountTab.addEventListener("click", function () {
+        setActiveTab(startAmountTab);
+        updateCalculations();
+      });
+    }
+
+    // Add event listener for investment length tab
+    if (investmentLengthTab) {
+      investmentLengthTab.addEventListener("click", function () {
+        setActiveTab(investmentLengthTab);
+        updateCalculations();
+      });
+    }
   }
 
   // --- Initialization ---
@@ -552,18 +631,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Auto-populate Additional Contribution from budget calculator if available
-    const storedAnnualInvestment = localStorage.getItem('budgetAnnualInvestment');
+    const storedAnnualInvestment = localStorage.getItem(
+      "budgetAnnualInvestment"
+    );
     if (storedAnnualInvestment && additionalContributionInput) {
       const annualAmount = parseFloat(storedAnnualInvestment);
       if (annualAmount > 0) {
         additionalContributionInput.value = Math.round(annualAmount).toString();
-        
+
         // Add visual indicator that value was auto-populated
-        const label = additionalContributionInput.parentElement.querySelector('label');
-        if (label && !label.querySelector('.auto-populated-indicator')) {
-          const indicator = document.createElement('span');
-          indicator.className = 'auto-populated-indicator text-green-600 text-xs ml-2';
-          indicator.textContent = '(from budget calculator)';
+        const label =
+          additionalContributionInput.parentElement.querySelector("label");
+        if (label && !label.querySelector(".auto-populated-indicator")) {
+          const indicator = document.createElement("span");
+          indicator.className =
+            "auto-populated-indicator text-green-600 text-xs ml-2";
+          indicator.textContent = "(from budget calculator)";
           label.appendChild(indicator);
         }
       }
