@@ -11,6 +11,8 @@
   <link href="css/webflow.css" rel="stylesheet" type="text/css" />
   <link href="css/stewardwellcapital.webflow.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./js/end-amount-calculator.js"></script>
+  <script src="./js/additional-contribution-calculator.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -797,9 +799,13 @@
             <div id="end-amount" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer">
               End Amount
             </div>
+            <div id="additional-contribution-tab" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer opacity-50">
+              Additional Contribution
+            </div>
           </div>
 
-          <div id="default-input-section" class="input-group">
+          <!-- End Amount Tab Content -->
+          <div id="end-amount-content" class="input-group">
             <div class="input-group mt-10 p-1 flex flex-row pb-3 gap-10 w-full justify-between">
               <div class="flex-1 flex flex-col gap-5 pb-3 pr-4">
                 <div class="relative w-[100%] max-sm:w-full">
@@ -822,7 +828,6 @@
                   </div>
                 </div>
                 
-
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
                   <div class="relative">
@@ -839,7 +844,6 @@
                     <div class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none transition-all duration-200">
                       Annually
                     </div>
-                    <!-- Hidden input to maintain form functionality -->
                     <input type="hidden" id="compound" value="annually" />
                   </div>
                 </div>
@@ -938,8 +942,146 @@
               </div>
             </div>
           </div>
-          <!-- removed code from here  -->
-        </div>
+
+          <!-- Additional Contribution Tab Content -->
+          <div id="additional-contribution-content" class="input-group hidden">
+            <div class="input-group mt-10 p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="flex-1 flex flex-col gap-5 pb-3 pr-4">
+                <div class="relative w-[100%] max-sm:w-full">
+                  <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
+                  <div class="relative">
+                    <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter target amount" min="0" />
+                    <p class="absolute left-4 top-1/2 -translate-y-1/2 opacity-60 text-white">
+                      $
+                    </p>
+                  </div>
+                </div>
+
+                <div class="relative w-[100%] max-sm:w-full">
+                  <label for="starting-amount-contrib" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
+                  <div class="relative">
+                    <input type="number" id="starting-amount-contrib" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <p class="absolute left-4 top-1/2 -translate-y-1/2 opacity-60 text-white">
+                      $
+                    </p>
+                  </div>
+                </div>
+
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="after-contrib" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
+                  <div class="relative">
+                    <input type="number" id="after-contrib" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter number of years" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      years
+                    </p>
+                  </div>
+                </div>
+                
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="return-rate-contrib" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
+                  <div class="relative">
+                    <input type="number" id="return-rate-contrib" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      %
+                    </p>
+                  </div>
+                </div>
+
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="compound-contrib" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Compound</label>
+                  <div class="relative">
+                    <div class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white focus:outline-none transition-all duration-200">
+                      Annually
+                    </div>
+                    <input type="hidden" id="compound-contrib" value="annually" />
+                  </div>
+                </div>
+
+                <div class="w-full max-sm:w-full">
+                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Calculate at:</label>
+                  <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing-contrib" value="beginning" class="form-radio text-green-600" />
+                      <span class="ml-2">Beginning of Each Month</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing-contrib" value="end" class="form-radio text-green-600" />
+                      <span class="ml-2">End of Each Month</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing-contrib" value="year-beginning" class="form-radio text-green-600" />
+                      <span class="ml-2">Beginning of Each Year</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing-contrib" value="year-end" class="form-radio text-green-600" />
+                      <span class="ml-2">End of Year</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-[55%] p-6 rounded-3xl border bg-[#e9f5ec] text-[#0f172a] shadow-md">
+                <!-- Tab Headers -->
+                <div class="flex justify-between items-center mb-4">
+                  <div class="flex space-x-4">
+                    <h3 id="results-tab-contrib" class="text-2xl font-bold cursor-pointer text-green-700 border-b-2 border-green-700 pb-1">Results</h3>
+                    <h3 id="yearly-projection-tab-contrib" class="text-2xl font-bold cursor-pointer text-gray-500 hover:text-green-700 pb-1">Yearly Projection</h3>
+                  </div>
+                </div>
+                
+                <!-- Results Tab Content -->
+                <div id="results-content-contrib">
+                  <p id="dynamic-result-description-contrib" class="text-[1rem] mb-[2rem]">
+                    Enter your target and investment details to see required contributions
+                  </p>
+                  <div class="space-y-2 text-[1rem] font-medium">
+                    <p>
+                      <span class="font-semibold">Target Amount:</span>
+                      <span id="result-target-contrib" class="float-right font-bold text-green-700">$0.00</span>
+                    </p>
+                    <p>
+                      <span class="font-semibold">Starting Amount:</span>
+                      <span id="result-start-contrib" class="float-right">$0.00</span>
+                    </p>
+                    <p>
+                      <span class="font-semibold">Required Contribution:</span>
+                      <span id="result-required-contrib" class="float-right">$0.00</span>
+                    </p>
+                    <p>
+                      <span class="font-semibold">Total Interest:</span>
+                      <span id="result-interest-contrib" class="float-right">$0.00</span>
+                    </p>
+                  </div>
+                  <div class="mt-6">
+                    <canvas id="investmentPieChart-contrib" width="200" height="200" class="mx-auto"></canvas>
+                  </div>
+                </div>
+                
+                <!-- Yearly Projection Tab Content -->
+                <div id="yearly-projection-content-contrib" class="hidden">
+                  <p class="text-[1rem] mb-[2rem]">
+                    Year-by-year breakdown of your contribution requirements over 10 years
+                  </p>
+                  <div class="mt-6">
+                    <canvas id="yearlyProjectionChart-contrib" width="400" height="300" class="mx-auto"></canvas>
+                  </div>
+                  <div class="mt-4 flex justify-center space-x-6 text-sm">
+                    <div class="flex items-center">
+                      <div class="w-4 h-4 bg-blue-500 mr-2"></div>
+                      <span>Starting Amount</span>
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-4 h-4 bg-green-500 mr-2"></div>
+                      <span>Total Contributions</span>
+                    </div>
+                    <div class="flex items-center">
+                      <div class="w-4 h-4 bg-red-500 mr-2"></div>
+                      <span>Interest Earned</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         <!-- removed code from here -->
       </div>
     </section>
