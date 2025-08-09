@@ -21,6 +21,69 @@ document.addEventListener("DOMContentLoaded", function () {
   const resultContribEnd = document.getElementById("result-contrib-end");
   const resultInterestEnd = document.getElementById("result-interest-end");
 
+  // --- Tab elements ---
+  const resultsTab = document.getElementById("results-tab");
+  const yearlyProjectionTab = document.getElementById("yearly-projection-tab");
+  const resultsContent = document.getElementById("results-content");
+  const yearlyProjectionContent = document.getElementById(
+    "yearly-projection-content"
+  );
+
+  // --- Tab functionality ---
+  function switchToResultsTab() {
+    // Update tab styles
+    resultsTab.classList.remove("text-gray-500");
+    resultsTab.classList.add(
+      "text-green-700",
+      "border-b-2",
+      "border-green-700"
+    );
+    yearlyProjectionTab.classList.remove(
+      "text-green-700",
+      "border-b-2",
+      "border-green-700"
+    );
+    yearlyProjectionTab.classList.add("text-gray-500");
+
+    // Show/hide content
+    resultsContent.classList.remove("hidden");
+    yearlyProjectionContent.classList.add("hidden");
+
+    // Update the pie chart when switching back to results tab
+    updateCalculations();
+  }
+
+  function switchToYearlyProjectionTab() {
+    // Update tab styles
+    yearlyProjectionTab.classList.remove("text-gray-500");
+    yearlyProjectionTab.classList.add(
+      "text-green-700",
+      "border-b-2",
+      "border-green-700"
+    );
+    resultsTab.classList.remove(
+      "text-green-700",
+      "border-b-2",
+      "border-green-700"
+    );
+    resultsTab.classList.add("text-gray-500");
+
+    // Show/hide content
+    yearlyProjectionContent.classList.remove("hidden");
+    resultsContent.classList.add("hidden");
+
+    // Update the yearly projection chart when tab is switched
+    updateYearlyProjectionChart();
+  }
+
+  // Add event listeners for tabs
+  if (resultsTab) {
+    resultsTab.addEventListener("click", switchToResultsTab);
+  }
+  if (yearlyProjectionTab) {
+    yearlyProjectionTab.addEventListener("click", switchToYearlyProjectionTab);
+  }
+
   function calculateEndAmount(
     startingAmount,
     additionalContribution,
@@ -48,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let FV = 0;
 
     // Determine calculation parameters based on contribution timing
-    const isMonthly = contributionTiming.includes("month");
+    const isMonthly = contributionTiming === "beginning" || contributionTiming === "end";
 
     if (isMonthly) {
       // Monthly contributions
@@ -80,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // If contributions are at the beginning of the period (Annuity Due),
         // it gets one extra period of interest.
         if (
-          contributionTiming === "month-beginning" ||
+          contributionTiming === "beginning" ||
           contributionTiming === "year-beginning"
         ) {
           fvOfAnnuity *= 1 + r;
@@ -103,6 +166,155 @@ document.addEventListener("DOMContentLoaded", function () {
       totalContributions: totalContributions,
       totalInterest: Math.max(0, totalInterest), // Interest can't be negative
     };
+  }
+
+  // --- Yearly Projection Chart Functions ---
+  function calculateYearlyProjection() {
+    const startingAmount = parseFloat(startingAmountInput?.value) || 0;
+    const inputYears = parseFloat(afterInput?.value) || 1;
+    const displayYears = Math.min(inputYears, 10); // Cap at 10 years maximum
+    const returnRate = parseFloat(returnRateInput?.value) || 0;
+    const additionalContribution =
+      parseFloat(additionalContributionInput?.value) || 0;
+
+    // Get selected contribution timing
+    let contributionTiming = "year-end";
+    contributionTimingInputs.forEach((input) => {
+      if (input.checked) {
+        contributionTiming = input.value;
+      }
+    });
+
+    const yearlyData = [];
+
+    for (let year = 1; year <= displayYears; year++) {
+      const results = calculateEndAmount(
+        startingAmount,
+        additionalContribution,
+        returnRate,
+        year,
+        contributionTiming
+      );
+
+      yearlyData.push({
+        year: year,
+        startingAmount: results.startingAmount,
+        totalContributions: results.totalContributions,
+        totalInterest: results.totalInterest,
+        endBalance: results.endBalance,
+      });
+    }
+
+    return yearlyData;
+  }
+
+  function createYearlyProjectionChart(yearlyData) {
+    if (charts["yearly"]) {
+      charts["yearly"].destroy();
+    }
+
+    const canvas = document.getElementById("yearlyProjectionChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const labels = yearlyData.map((data) => `Year ${data.year}`);
+    const startingAmounts = yearlyData.map((data) => data.startingAmount);
+    const contributions = yearlyData.map((data) => data.totalContributions);
+    const interests = yearlyData.map((data) => data.totalInterest);
+
+    charts["yearly"] = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Starting Amount",
+            data: startingAmounts,
+            backgroundColor: "#3b82f6",
+            borderColor: "#2563eb",
+            borderWidth: 1,
+          },
+          {
+            label: "Total Contributions",
+            data: contributions,
+            backgroundColor: "#22c55e",
+            borderColor: "#16a34a",
+            borderWidth: 1,
+          },
+          {
+            label: "Interest Earned",
+            data: interests,
+            backgroundColor: "#ef4444",
+            borderColor: "#dc2626",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true,
+            title: {
+              display: true,
+              text: "Investment Timeline",
+            },
+          },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Amount ($)",
+            },
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toLocaleString();
+              },
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            display: false, // We have custom legend below the chart
+          },
+          tooltip: {
+            callbacks: {
+              title: function (context) {
+                return context[0].label;
+              },
+              label: function (context) {
+                const value = context.parsed.y;
+                return (
+                  context.dataset.label +
+                  ": $" +
+                  value.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                );
+              },
+              footer: function (context) {
+                const dataIndex = context[0].dataIndex;
+                const data = yearlyData[dataIndex];
+                return (
+                  "Total: $" +
+                  data.endBalance.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                );
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function updateYearlyProjectionChart() {
+    const yearlyData = calculateYearlyProjection();
+    createYearlyProjectionChart(yearlyData);
   }
 
   // --- Real-time calculation and update function ---
@@ -166,6 +378,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Update the pie chart
     updateChart(results);
+
+    // Update yearly projection chart if it's currently visible
+    if (
+      yearlyProjectionContent &&
+      !yearlyProjectionContent.classList.contains("hidden")
+    ) {
+      updateYearlyProjectionChart();
+    }
   }
 
   // --- Chart Management Functions ---
@@ -215,45 +435,48 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           tooltip: {
             callbacks: {
-              label: function(context) {
-                if (total === 0) return context.label + ': 0.0%';
+              label: function (context) {
+                if (total === 0) return context.label + ": 0.0%";
                 const percentage = ((context.parsed / total) * 100).toFixed(1);
-                return context.label + ': ' + percentage + '%';
-              }
-            }
-          }
+                return context.label + ": " + percentage + "%";
+              },
+            },
+          },
         },
         // Custom plugin to draw percentage labels on slices
         animation: {
-          onComplete: function(animation) {
+          onComplete: function (animation) {
             const chart = animation.chart;
             const ctx = chart.ctx;
-            
+
             ctx.save();
-            ctx.font = 'bold 14px Arial';
-            ctx.fillStyle = 'white';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
+            ctx.font = "bold 14px Arial";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
             chart.data.datasets.forEach((dataset, datasetIndex) => {
               const meta = chart.getDatasetMeta(datasetIndex);
-              
+
               meta.data.forEach((element, index) => {
                 if (total === 0) return;
-                
-                const percentage = ((dataset.data[index] / total) * 100).toFixed(1);
+
+                const percentage = (
+                  (dataset.data[index] / total) *
+                  100
+                ).toFixed(1);
                 const position = element.tooltipPosition();
-                
+
                 // Only draw if percentage is significant enough to be visible
                 if (parseFloat(percentage) > 5) {
-                  ctx.fillText(percentage + '%', position.x, position.y);
+                  ctx.fillText(percentage + "%", position.x, position.y);
                 }
               });
             });
-            
+
             ctx.restore();
-          }
-        }
+          },
+        },
       },
     });
   }
@@ -372,9 +595,13 @@ function updateResultDescription(
     if (startAmount > 0 && contribution > 0) {
       baseText = `Starting with <strong>$${startAmount.toLocaleString(
         "en-US"
-      )}</strong> and contributing <strong>$${contribution.toLocaleString("en-US")}</strong> annually`;
+      )}</strong> and contributing <strong>$${contribution.toLocaleString(
+        "en-US"
+      )}</strong> annually`;
     } else if (startAmount > 0) {
-      baseText = `Starting with <strong>$${startAmount.toLocaleString("en-US")}</strong>`;
+      baseText = `Starting with <strong>$${startAmount.toLocaleString(
+        "en-US"
+      )}</strong>`;
     } else {
       baseText = `Contributing <strong>$${contribution.toLocaleString(
         "en-US"
