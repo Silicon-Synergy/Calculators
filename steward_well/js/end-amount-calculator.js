@@ -13,7 +13,13 @@ class EndAmountCalculator {
    * @param {string} contributionTiming - When contributions are made ('beginning', 'end', 'year-beginning', 'year-end')
    * @returns {Object} Calculation results
    */
-  static calculateEndAmount(startingAmount, additionalContribution, returnRate, years, contributionTiming) {
+  static calculateEndAmount(
+    startingAmount,
+    additionalContribution,
+    returnRate,
+    years,
+    contributionTiming
+  ) {
     const PV = parseFloat(startingAmount) || 0;
     const annualPMT = parseFloat(additionalContribution) || 0;
     const annualRate = parseFloat(returnRate) / 100;
@@ -31,7 +37,8 @@ class EndAmountCalculator {
     let r, n, pmt, totalContributions;
     let FV = 0;
 
-    const isMonthly = contributionTiming === "beginning" || contributionTiming === "end";
+    const isMonthly =
+      contributionTiming === "beginning" || contributionTiming === "end";
 
     if (isMonthly) {
       r = annualRate / 12;
@@ -47,11 +54,14 @@ class EndAmountCalculator {
 
     let fvOfPV = PV * Math.pow(1 + r, n);
     let fvOfAnnuity = 0;
-    
+
     if (pmt > 0) {
       if (r > 0) {
         fvOfAnnuity = pmt * ((Math.pow(1 + r, n) - 1) / r);
-        if (contributionTiming === "beginning" || contributionTiming === "year-beginning") {
+        if (
+          contributionTiming === "beginning" ||
+          contributionTiming === "year-beginning"
+        ) {
           fvOfAnnuity *= 1 + r;
         }
       } else {
@@ -79,7 +89,13 @@ class EndAmountCalculator {
    * @param {string} contributionTiming - When contributions are made
    * @returns {Array} Array of yearly data
    */
-  static calculateYearlyProjection(startingAmount, additionalContribution, returnRate, inputYears, contributionTiming) {
+  static calculateYearlyProjection(
+    startingAmount,
+    additionalContribution,
+    returnRate,
+    inputYears,
+    contributionTiming
+  ) {
     const displayYears = Math.min(inputYears, 10);
     const yearlyData = [];
 
@@ -113,7 +129,13 @@ class EndAmountCalculator {
    * @param {number} endBalance - The calculated end balance
    * @returns {string} Formatted description
    */
-  static generateResultDescription(startingAmount, returnRate, years, additionalContribution, endBalance) {
+  static generateResultDescription(
+    startingAmount,
+    returnRate,
+    years,
+    additionalContribution,
+    endBalance
+  ) {
     const starting = parseFloat(startingAmount) || 0;
     const rate = parseFloat(returnRate) || 0;
     const period = parseFloat(years) || 0;
@@ -129,18 +151,23 @@ class EndAmountCalculator {
     }
 
     let description = `Starting with $${starting.toLocaleString()}`;
-    
+
     if (contribution > 0) {
       description += ` and contributing $${contribution.toLocaleString()} annually`;
     }
-    
-    description += ` at ${rate}% annual return for ${period} year${period !== 1 ? 's' : ''}, your investment will grow to $${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`;
+
+    description += ` at ${rate}% annual return for ${period} year${
+      period !== 1 ? "s" : ""
+    }, your investment will grow to $${balance.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}.`;
 
     return description;
   }
 }
 
 // Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = EndAmountCalculator;
 }

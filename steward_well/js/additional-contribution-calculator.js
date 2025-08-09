@@ -13,7 +13,13 @@ class AdditionalContributionCalculator {
    * @param {string} contributionTiming - When contributions are made ('beginning', 'end', 'year-beginning', 'year-end')
    * @returns {Object} Calculation results
    */
-  static calculateRequiredContribution(targetAmount, startingAmount, returnRate, years, contributionTiming) {
+  static calculateRequiredContribution(
+    targetAmount,
+    startingAmount,
+    returnRate,
+    years,
+    contributionTiming
+  ) {
     const FV = parseFloat(targetAmount) || 0;
     const PV = parseFloat(startingAmount) || 0;
     const annualRate = parseFloat(returnRate) / 100;
@@ -29,11 +35,13 @@ class AdditionalContributionCalculator {
       };
     }
 
-    let r, n, requiredPMT = 0;
+    let r,
+      n,
+      requiredPMT = 0;
 
     // Calculate future value of starting amount
     let fvOfPV;
-    
+
     if (contributionTiming === "beginning" || contributionTiming === "end") {
       // Monthly contributions
       r = annualRate / 12;
@@ -45,29 +53,35 @@ class AdditionalContributionCalculator {
       n = investmentYears;
       fvOfPV = PV * Math.pow(1 + r, n);
     }
-    
+
     // Amount needed from contributions
     const amountNeededFromContributions = FV - fvOfPV;
-    
+
     if (amountNeededFromContributions > 0) {
       if (r > 0) {
         // Calculate required payment using the provided formulas
         if (contributionTiming === "end") {
           // End of Month Contributions (Ordinary Annuity)
           // PMT = (FV - PV×(1+r)^n) / (((1+r)^n - 1) / r)
-          requiredPMT = amountNeededFromContributions / ((Math.pow(1 + r, n) - 1) / r);
+          requiredPMT =
+            amountNeededFromContributions / ((Math.pow(1 + r, n) - 1) / r);
         } else if (contributionTiming === "beginning") {
           // Beginning of Month Contributions (Annuity Due)
           // PMT = (FV - PV×(1+r)^n) / ((((1+r)^n - 1) / r) × (1+r))
-          requiredPMT = amountNeededFromContributions / (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
+          requiredPMT =
+            amountNeededFromContributions /
+            (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
         } else if (contributionTiming === "year-end") {
           // End of Year Contributions (Ordinary Annuity)
           // PMT = (FV - PV×(1+r)^n) / (((1+r)^n - 1) / r)
-          requiredPMT = amountNeededFromContributions / ((Math.pow(1 + r, n) - 1) / r);
+          requiredPMT =
+            amountNeededFromContributions / ((Math.pow(1 + r, n) - 1) / r);
         } else if (contributionTiming === "year-beginning") {
           // Beginning of Year Contributions (Annuity Due)
           // PMT = (FV - PV×(1+r)^n) / ((((1+r)^n - 1) / r) × (1+r))
-          requiredPMT = amountNeededFromContributions / (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
+          requiredPMT =
+            amountNeededFromContributions /
+            (((Math.pow(1 + r, n) - 1) / r) * (1 + r));
         }
       } else {
         // No interest case - simple division
@@ -96,7 +110,13 @@ class AdditionalContributionCalculator {
    * @param {string} contributionTiming - When contributions are made
    * @returns {Array} Array of yearly data
    */
-  static calculateYearlyProjectionContrib(targetAmount, startingAmount, returnRate, inputYears, contributionTiming) {
+  static calculateYearlyProjectionContrib(
+    targetAmount,
+    startingAmount,
+    returnRate,
+    inputYears,
+    contributionTiming
+  ) {
     const displayYears = Math.min(inputYears, 10);
     const yearlyData = [];
 
@@ -131,7 +151,14 @@ class AdditionalContributionCalculator {
    * @param {number} requiredContribution - The calculated required contribution
    * @returns {string} Formatted description
    */
-  static generateResultDescription(targetAmount, startingAmount, returnRate, years, contributionTiming, requiredContribution) {
+  static generateResultDescription(
+    targetAmount,
+    startingAmount,
+    returnRate,
+    years,
+    contributionTiming,
+    requiredContribution
+  ) {
     const target = parseFloat(targetAmount) || 0;
     const starting = parseFloat(startingAmount) || 0;
     const rate = parseFloat(returnRate) || 0;
@@ -142,24 +169,33 @@ class AdditionalContributionCalculator {
       return "Please enter a target amount and investment period to see your required contribution.";
     }
 
-    const timingText = {
-      "beginning": "beginning of each month",
-      "end": "end of each month",
-      "year-beginning": "beginning of each year",
-      "year-end": "end of each year"
-    }[contributionTiming] || "end of each year";
+    const timingText =
+      {
+        beginning: "beginning of each month",
+        end: "end of each month",
+        "year-beginning": "beginning of each year",
+        "year-end": "end of each year",
+      }[contributionTiming] || "end of each year";
 
-    const periodText = (contributionTiming === "beginning" || contributionTiming === "end") ? "monthly" : "annual";
+    const periodText =
+      contributionTiming === "beginning" || contributionTiming === "end"
+        ? "monthly"
+        : "annual";
 
     if (starting >= target) {
       return `Your starting amount of $${starting.toLocaleString()} already meets or exceeds your target of $${target.toLocaleString()}. No additional contributions are needed.`;
     }
 
-    return `To reach your target of $${target.toLocaleString()} in ${period} year${period !== 1 ? 's' : ''} with a ${rate}% annual return, you need to contribute $${contribution.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${periodText} at the ${timingText}.`;
+    return `To reach your target of $${target.toLocaleString()} in ${period} year${
+      period !== 1 ? "s" : ""
+    } with a ${rate}% annual return, you need to contribute $${contribution.toLocaleString(
+      "en-US",
+      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+    )} ${periodText} at the ${timingText}.`;
   }
 }
 
 // Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = AdditionalContributionCalculator;
 }
