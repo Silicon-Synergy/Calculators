@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const additionalContributionTab = document.getElementById(
     "additional-contribution-tab"
   );
+  const returnRateTab = document.getElementById("return-rate-tab");
 
   // End Amount tab elements
   const startingAmountInput = document.getElementById("starting-amount");
@@ -33,11 +34,21 @@ document.addEventListener("DOMContentLoaded", function () {
     'input[name="return-timing-contrib"]'
   );
 
+  // return Rate tab elements
+  const startingAmountReturnRateInput = document.getElementById(
+    "starting-amount-return-rate"
+  );
+  const afterReturnRateInput = document.getElementById("after-return-rate");
+  const additionalContributionReturnRate = document.getElementById(
+    "additional-contribution-return-rate"
+  );
+
   // Content containers
   const endAmountContent = document.getElementById("end-amount-content");
   const additionalContributionContent = document.getElementById(
     "additional-contribution-content"
   );
+  const returnRateContent = document.getElementById("return-rate-content");
 
   // --- Result display elements ---
   // End Amount results
@@ -127,7 +138,39 @@ document.addEventListener("DOMContentLoaded", function () {
     updateContributionCalculations();
   }
 
-  // --- Sub-tab functionality for End Amount ---
+  // Add this function after the switchToAdditionalContributionTab function (around line 130)
+  function switchToReturnRateTab() {
+    currentTab = "return-rate";
+  
+    // Update main tab styles
+    returnRateTab.style.opacity = "1";
+    returnRateTab.style.backgroundColor = "#57f2a9";
+    returnRateTab.style.transform = "scale(1.05)";
+    returnRateTab.style.fontWeight = "600";
+    returnRateTab.style.boxShadow = "0 4px 12px rgba(87, 242, 169, 0.3)";
+  
+    // Reset other tabs
+    endAmountTab.style.opacity = "0.5";
+    endAmountTab.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+    endAmountTab.style.transform = "scale(1)";
+    endAmountTab.style.fontWeight = "400";
+    endAmountTab.style.boxShadow = "none";
+  
+    additionalContributionTab.style.opacity = "0.5";
+    additionalContributionTab.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+    additionalContributionTab.style.transform = "scale(1)";
+    additionalContributionTab.style.fontWeight = "400";
+    additionalContributionTab.style.boxShadow = "none";
+  
+    // Show/hide content
+    returnRateContent.classList.remove("hidden");
+    endAmountContent.classList.add("hidden");
+    additionalContributionContent.classList.add("hidden");
+  
+    // Add any calculations or updates specific to return rate tab here
+    // updateReturnRateCalculations(); // if you have this function
+  }
+
   function switchToResultsTab() {
     resultsTab.classList.remove("text-gray-500");
     resultsTab.classList.add(
@@ -218,6 +261,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "click",
       switchToAdditionalContributionTab
     );
+  }
+  if (returnRateTab) {
+    returnRateTab.addEventListener("click", switchToReturnRateTab);
   }
 
   // Add event listeners for sub-tabs

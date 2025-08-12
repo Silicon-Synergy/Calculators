@@ -680,7 +680,7 @@
                         </div>
                       </div>
 
-                                            <input type="number" id="home-mortgage" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="home-mortgage" class="liability-input input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group relative">
                       <div class="flex gap-2 items-center">
@@ -799,9 +799,14 @@
             <div id="end-amount" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer">
               End Amount
             </div>
+            <div id="return-rate-tab" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer opacity-50">
+              Return Rate
+            </div>
+
             <div id="additional-contribution-tab" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer opacity-50">
               Additional Contribution
             </div>
+
           </div>
 
           <!-- End Amount Tab Content -->
@@ -827,7 +832,7 @@
                     </p>
                   </div>
                 </div>
-                
+
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
                   <div class="relative">
@@ -887,7 +892,7 @@
                     <h3 id="yearly-projection-tab" class="text-2xl font-bold cursor-pointer text-gray-500 hover:text-green-700 pb-1">Yearly Projection</h3>
                   </div>
                 </div>
-                
+
                 <!-- Results Tab Content -->
                 <div id="results-content">
                   <p id="dynamic-result-description" class="text-[1rem] mb-[2rem]">
@@ -915,7 +920,7 @@
                     <canvas id="investmentPieChart-end" width="200" height="200" class="mx-auto"></canvas>
                   </div>
                 </div>
-                
+
                 <!-- Yearly Projection Tab Content -->
                 <div id="yearly-projection-content" class="hidden">
                   <p class="text-[1rem] mb-[2rem]">
@@ -976,7 +981,7 @@
                     </p>
                   </div>
                 </div>
-                
+
                 <div class="w-[100%] max-sm:w-[100%]">
                   <label for="return-rate-contrib" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Return Rate</label>
                   <div class="relative">
@@ -1027,7 +1032,7 @@
                     <h3 id="yearly-projection-tab-contrib" class="text-2xl font-bold cursor-pointer text-gray-500 hover:text-green-700 pb-1">Yearly Projection</h3>
                   </div>
                 </div>
-                
+
                 <!-- Results Tab Content -->
                 <div id="results-content-contrib">
                   <p id="dynamic-result-description-contrib" class="text-[1rem] mb-[2rem]">
@@ -1055,7 +1060,7 @@
                     <canvas id="investmentPieChart-contrib" width="200" height="200" class="mx-auto"></canvas>
                   </div>
                 </div>
-                
+
                 <!-- Yearly Projection Tab Content -->
                 <div id="yearly-projection-content-contrib" class="hidden">
                   <p class="text-[1rem] mb-[2rem]">
@@ -1082,8 +1087,91 @@
               </div>
             </div>
           </div>
-        <!-- removed code from here -->
-      </div>
+          <!-- return rate starts-->
+
+          <div id="return-rate-content" class="input-group hidden">
+            <div class="input-group h-[600px] mt-10 overflow-hidden p-1 flex flex-row pb-3 gap-10 w-full justify-between">
+              <div class="flex-1 flex flex-col gap-5 overflow-hidden overflow-y-scroll pb-3">
+                <div class="relative w-[100%] max-sm:w-full">
+                  <label for="target-amount" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Your Target</label>
+                  <input type="number" id="target-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$1,000,000" min="0" />
+                </div>
+
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="starting-amount-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Starting Amount</label>
+                  <div class="relative">
+                    <input type="number" id="target-starting-amount" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="$20,000" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      years
+                    </p>
+                  </div>
+                </div>
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="after-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">After</label>
+                  <div class="relative">
+                    <input type="number" id="target-after" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="10 years" min="0" />
+                    <p class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20">
+                      %
+                    </p>
+                  </div>
+                </div>
+
+                <div class="w-[100%] max-sm:w-[100%]">
+                  <label for="additional-contribution-return-rate" class="block text-sm font-medium text-gray-300 mb-2 ml-2">Additional Contribution</label>
+                  <div class="relative">
+                    <input type="number" id="target-return-rate" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter amount" min="0" />
+                  </div>
+                </div>
+                <div class="w-full max-sm:w-full">
+                  <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Contribute at</label>
+                  <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
+                      <span class="ml-2">Beginning of Each Month</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
+                      <span class="ml-2">End of Each Month</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
+                      <span class="ml-2">End of Year</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-[50%] p-6 rounded-3xl bg-[#e9f5ec] text-[#0f172a] shadow-md">
+                <h3 class="text-2xl font-bold mb-4">Results</h3>
+                <p class="text-[.8rem] mb-[2rem]">
+                  This is where the result will go
+                </p>
+                <div class="space-y-2 text-[1rem] font-medium">
+                  <p>
+                    <span class="font-semibold">Target Amount:</span>
+                    <span id="result-balance-return" class="float-right font-bold text-green-700">$198,290.40</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Starting Amount:</span>
+                    <span id="result-start-return" class="float-right">$20,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Total Contributions:</span>
+                    <span id="result-contrib-return" class="float-right">$120,000.00</span>
+                  </p>
+                  <p>
+                    <span class="font-semibold">Required Return Rate:</span>
+                    <span id="result-interest-return" class="float-right">8.5%</span>
+                  </p>
+                </div>
+                <div class="mt-6">
+                  <canvas id="investmentPieChart-return" width="200" height="200" class="mx-auto"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- return rate end -->
+          <!-- removed code from here -->
+        </div>
     </section>
   </div>
 
