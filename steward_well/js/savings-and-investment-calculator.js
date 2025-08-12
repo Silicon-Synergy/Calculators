@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show/hide content
     endAmountContent.classList.remove("hidden");
     additionalContributionContent.classList.add("hidden");
+     returnRateContent.classList.add("hidden");
 
     // Update calculations
     updateCalculations();
@@ -133,6 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show/hide content
     additionalContributionContent.classList.remove("hidden");
     endAmountContent.classList.add("hidden");
+    returnRateContent.classList.add("hidden");
 
     // Update calculations
     updateContributionCalculations();
@@ -141,32 +143,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add this function after the switchToAdditionalContributionTab function (around line 130)
   function switchToReturnRateTab() {
     currentTab = "return-rate";
-  
+
     // Update main tab styles
     returnRateTab.style.opacity = "1";
     returnRateTab.style.backgroundColor = "#57f2a9";
     returnRateTab.style.transform = "scale(1.05)";
     returnRateTab.style.fontWeight = "600";
     returnRateTab.style.boxShadow = "0 4px 12px rgba(87, 242, 169, 0.3)";
-  
+
     // Reset other tabs
     endAmountTab.style.opacity = "0.5";
     endAmountTab.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
     endAmountTab.style.transform = "scale(1)";
     endAmountTab.style.fontWeight = "400";
     endAmountTab.style.boxShadow = "none";
-  
+
     additionalContributionTab.style.opacity = "0.5";
-    additionalContributionTab.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+    additionalContributionTab.style.backgroundColor =
+      "rgba(255, 255, 255, 0.1)";
     additionalContributionTab.style.transform = "scale(1)";
     additionalContributionTab.style.fontWeight = "400";
     additionalContributionTab.style.boxShadow = "none";
-  
+
     // Show/hide content
     returnRateContent.classList.remove("hidden");
     endAmountContent.classList.add("hidden");
     additionalContributionContent.classList.add("hidden");
-  
+
     // Add any calculations or updates specific to return rate tab here
     // updateReturnRateCalculations(); // if you have this function
   }
