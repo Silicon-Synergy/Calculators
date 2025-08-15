@@ -154,7 +154,7 @@ function calculateTaxes(grossIncome, province, retirementPercentage = 0) {
   deductions.ei = {
     amount: eiContribution,
     percentage: (eiContribution / grossIncome) * 100,
-    name: "Employment Insurance",
+    name: "EI",
   };
 
   // Retirement Contribution
