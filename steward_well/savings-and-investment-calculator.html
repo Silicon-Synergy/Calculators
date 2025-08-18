@@ -142,7 +142,7 @@
       top: 100%;
       left: 0;
       background: white;
-      min-width: 300px;
+      min-width: 400px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       border-radius: 12px;
       padding: 8px 0;
@@ -152,6 +152,39 @@
       transform: translateY(-10px);
       transition: all 0.3s ease;
       border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Dropdown styles for calculator type and calculation frequency */
+    #calculatorTypeOptions,
+    #calculationFrequencyOptions {
+      position: absolute;
+      top: 100%; /* Position below the button instead of above */
+      left: 0;
+      width: 100%;
+      max-width: 100%; /* Match width of parent */
+      z-index: 50;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+      border-radius: 1rem;
+    }
+    
+    /* Ensure the dropdown expands downward */
+    #calculatorTypeBtn,
+    #calculationFrequencyBtn {
+      width: 100%;
+      max-width: 100%;
+    }
+    
+    /* Adjust width of calculator type dropdown to match starting amount field */
+    #calculatorTypeBtn {
+      width: 100%;
+    }
+    
+    /* Adjust width of calculator type dropdown to match starting amount field */
+    #calculatorTypeBtn {
+      width: 100%;
     }
 
     .dropdown-content.show {
@@ -796,17 +829,72 @@
 
         <div class="relative">
           <div class="h-[80px] bg-white flex p-2 gap-5 justify-between items-center">
+            <div class="relative" style="max-width: 400px;"> <!-- Changed from max-width: 300px to 400px for longer dropdown -->
+              <button
+                id="calculatorTypeBtn"
+                type="button"
+                class="w-full pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200"
+              >
+                <span id="calculatorTypeSelected">End Amount</span>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              
+              <ul
+                id="calculatorTypeOptions"
+                class="glass-effect p-2 w-full text-white rounded-2xl mt-2 z-50 overflow-y-auto"
+                style="
+                  max-height: 0;
+                  overflow: hidden;
+                  opacity: 0;
+                  transition: max-height 0.5s ease-in-out,
+                    opacity 0.5s ease-in-out;
+                "
+              >
+                <li
+                  class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                  data-tab="end-amount"
+                >
+                  End Amount
+                </li>
+                <li
+                  class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                  data-tab="return-rate-tab"
+                >
+                  Return Rate
+                </li>
+                <li
+                  class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                  data-tab="additional-contribution-tab"
+                >
+                  Additional Contribution
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Keep the original tab elements but hide them -->
+          <div style="display: none;">
             <div id="end-amount" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer">
               End Amount
             </div>
             <div id="return-rate-tab" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer opacity-50">
               Return Rate
             </div>
-
             <div id="additional-contribution-tab" style="color: white" class="border-[1px] nav_cta p-2 rounded-md cursor-pointer opacity-50">
               Additional Contribution
             </div>
-
           </div>
 
           <!-- End Amount Tab Content -->
@@ -864,23 +952,72 @@
                 </div>
                 <div class="w-full max-sm:w-full">
                   <label class="block text-sm font-medium text-gray-300 mb-2 ml-2">Calculate at:</label>
-                  <div class="flex flex-col gap-2 bg-[#dfece6] p-4 rounded-2xl text-white cursor-pointer">
-                    <label class="inline-flex items-center cursor-pointer">
+                  <div class="relative">
+                    <button
+                      id="calculationFrequencyBtn"
+                      type="button"
+                      class="w-full pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200"
+                    >
+                      <span id="calculationFrequencySelected">End of Each Month</span>
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                    
+                    <ul
+                      id="calculationFrequencyOptions"
+                      class="glass-effect p-2 w-full text-white rounded-2xl mt-2 z-50 overflow-y-auto"
+                      style="
+                        max-height: 0;
+                        overflow: hidden;
+                        opacity: 0;
+                        transition: max-height 0.5s ease-in-out,
+                          opacity 0.5s ease-in-out;
+                      "
+                    >
+                      <li
+                        class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                        data-value="beginning"
+                      >
+                        Beginning of Each Month
+                      </li>
+                      <li
+                        class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                        data-value="end"
+                      >
+                        End of Each Month
+                      </li>
+                      <li
+                        class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                        data-value="year-beginning"
+                      >
+                        Beginning of Each Year
+                      </li>
+                      <li
+                        class="cursor-pointer px-4 py-2 hover:bg-slate-100 text-black rounded"
+                        data-value="year-end"
+                      >
+                        End of Year
+                      </li>
+                    </ul>
+                    
+                    <!-- Hidden radio buttons to maintain compatibility with existing JS -->
+                    <div style="display: none;">
                       <input type="radio" name="return-timing" value="beginning" class="form-radio text-green-600" />
-                      <span class="ml-2">Beginning of Each Month</span>
-                    </label>
-                    <label class="inline-flex items-center cursor-pointer">
-                      <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" />
-                      <span class="ml-2">End of Each Month</span>
-                    </label>
-                    <label class="inline-flex items-center cursor-pointer">
+                      <input type="radio" name="return-timing" value="end" class="form-radio text-green-600" checked />
                       <input type="radio" name="return-timing" value="year-beginning" class="form-radio text-green-600" />
-                      <span class="ml-2">Beginning of Each Year</span>
-                    </label>
-                    <label class="inline-flex items-center cursor-pointer">
                       <input type="radio" name="return-timing" value="year-end" class="form-radio text-green-600" />
-                      <span class="ml-2">End of Year</span>
-                    </label>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -1,3 +1,33 @@
+// Dropdown functionality for calculation frequency
+function toggleCalculationFrequencyDropdown() {
+  const dropdownList = document.getElementById("calculationFrequencyOptions");
+  const isExpanded =
+    dropdownList.style.maxHeight && dropdownList.style.maxHeight !== "0px";
+
+  if (isExpanded) {
+    dropdownList.style.maxHeight = "0";
+    dropdownList.style.opacity = "0";
+  } else {
+    dropdownList.style.maxHeight = dropdownList.scrollHeight + "px";
+    dropdownList.style.opacity = "1";
+  }
+}
+
+// Dropdown functionality for calculator type
+function toggleCalculatorTypeDropdown() {
+  const dropdownList = document.getElementById("calculatorTypeOptions");
+  const isExpanded =
+    dropdownList.style.maxHeight && dropdownList.style.maxHeight !== "0px";
+
+  if (isExpanded) {
+    dropdownList.style.maxHeight = "0";
+    dropdownList.style.opacity = "0";
+  } else {
+    dropdownList.style.maxHeight = dropdownList.scrollHeight + "px";
+    dropdownList.style.opacity = "1";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // --- Global variables and constants ---
   const charts = {};
@@ -108,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show/hide content
     endAmountContent.classList.remove("hidden");
     additionalContributionContent.classList.add("hidden");
-     returnRateContent.classList.add("hidden");
+    returnRateContent.classList.add("hidden");
 
     // Update calculations
     updateCalculations();
@@ -908,6 +938,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // --- Initialization ---
   function initialize() {
     initializeEventListeners();
+    initializeDropdowns();
 
     // Set default active tab
     switchToEndAmountTab();
@@ -942,6 +973,91 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     updateCalculations();
+  }
+
+  // Initialize the dropdowns
+  function initializeDropdowns() {
+    // Calculation frequency dropdown
+    const calculationFrequencyBtn = document.getElementById(
+      "calculationFrequencyBtn"
+    );
+    const calculationFrequencyOptions = document.getElementById(
+      "calculationFrequencyOptions"
+    );
+    const calculationFrequencySelected = document.getElementById(
+      "calculationFrequencySelected"
+    );
+    const radioButtons = document.querySelectorAll(
+      'input[name="return-timing"]'
+    );
+
+    if (calculationFrequencyBtn) {
+      calculationFrequencyBtn.addEventListener(
+        "click",
+        toggleCalculationFrequencyDropdown
+      );
+    }
+
+    // Set default to "End of Each Month"
+    radioButtons.forEach((radio) => {
+      if (radio.value === "end") {
+        radio.checked = true;
+      }
+    });
+
+    // Handle selecting a calculation frequency option
+    if (calculationFrequencyOptions) {
+      const options = calculationFrequencyOptions.querySelectorAll("li");
+      options.forEach((option) => {
+        option.addEventListener("click", () => {
+          calculationFrequencySelected.textContent = option.textContent;
+          const value = option.getAttribute("data-value");
+
+          // Update the hidden radio buttons
+          radioButtons.forEach((radio) => {
+            radio.checked = radio.value === value;
+          });
+
+          toggleCalculationFrequencyDropdown();
+          updateCalculations(); // Trigger recalculation
+        });
+      });
+    }
+
+    // Calculator type dropdown
+    const calculatorTypeBtn = document.getElementById("calculatorTypeBtn");
+    const calculatorTypeOptions = document.getElementById(
+      "calculatorTypeOptions"
+    );
+    const calculatorTypeSelected = document.getElementById(
+      "calculatorTypeSelected"
+    );
+
+    if (calculatorTypeBtn) {
+      calculatorTypeBtn.addEventListener("click", toggleCalculatorTypeDropdown);
+    }
+
+    // Handle selecting a calculator type option
+    if (calculatorTypeOptions) {
+      const options = calculatorTypeOptions.querySelectorAll("li");
+      options.forEach((option) => {
+        option.addEventListener("click", () => {
+          calculatorTypeSelected.textContent = option.textContent;
+          const tabId = option.getAttribute("data-tab");
+
+          // Trigger the appropriate tab function
+          if (tabId === "end-amount") {
+            switchToEndAmountTab();
+          } else if (tabId === "return-rate-tab") {
+            switchToReturnRateTab();
+          } else if (tabId === "additional-contribution-tab") {
+            switchToAdditionalContributionTab();
+          }
+
+          toggleCalculatorTypeDropdown();
+        });
+      });
+    }
   }
 
   // Start the application

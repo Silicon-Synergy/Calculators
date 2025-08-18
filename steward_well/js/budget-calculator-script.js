@@ -5,6 +5,7 @@ Chart.register(ChartDataLabels);
 const calculatorState = {
   annualIncome: 0,
   province: "",
+  ageGroup: "", // Added age group tracking
   retirementPercentage: 0,
   monthlyDisposableIncome: 0,
   livingExpenses: {},
@@ -478,6 +479,8 @@ const annualIncomeInput = document.getElementById("annualIncome");
 const provinceSelect = document.getElementById("provinceSelect");
 const annualIncomeError = document.getElementById("annualIncomeError");
 const provinceError = document.getElementById("provinceError");
+const ageRangeError = document.getElementById("ageRangeError");
+const ageDropdownSelected = document.getElementById("ageDropdownSelected");
 const includeRetirementCheckbox = document.getElementById("includeRetirement");
 const deductonToggle = document.getElementById("deduction-toggle");
 const excludeRetirementCheckbox = document.getElementById("excludeRetirement");
@@ -656,6 +659,16 @@ function validateAnnualIncome() {
   return true;
 }
 
+function validateAgeGroup() {
+  const selectedAge = ageDropdownSelected.textContent;
+  if (!selectedAge || selectedAge === "Choose your age range") {
+    showError(ageRangeError, "Please select your age group.");
+    return false;
+  }
+  clearError(ageRangeError);
+  return true;
+}
+
 function validateProvince() {
   if (!provinceSelect.value) {
     showError(provinceError, "Please select your province.");
@@ -726,6 +739,7 @@ function formatPercentage(percentage) {
  */
 function handlePrimaryInputChange() {
   if (
+    !validateAgeGroup() ||
     !validateAnnualIncome() ||
     !validateProvince() ||
     !validateRetirementPercentage()
@@ -736,6 +750,7 @@ function handlePrimaryInputChange() {
   // Read inputs from DOM and update state
   calculatorState.annualIncome = parseFloat(annualIncomeInput.value);
   calculatorState.province = provinceSelect.value;
+  calculatorState.ageGroup = ageDropdownSelected.textContent;
   calculatorState.retirementPercentage = includeRetirementCheckbox.checked
     ? parseFloat(retirementPercentageInput.value) || 0
     : 0;
@@ -830,6 +845,296 @@ function handleExpenseOrAllocationChange() {
 /**
  * Updates all UI components based on the comprehensive budget object.
  */
+function updateChartButtonStates(budget) {
+  // Get button elements for recommended allocations
+  const savingsChartBtn = document.getElementById("savingsChartBtn");
+  const investmentsChartBtn = document.getElementById("investmentsChartBtn");
+  const bothChartBtn = document.getElementById("bothChartBtn");
+
+  // Get button elements for custom allocations
+  const customSavingsChartBtn = document.getElementById(
+    "customSavingsChartBtn"
+  );
+  const customInvestmentsChartBtn = document.getElementById(
+    "customInvestmentsChartBtn"
+  );
+  const customBothChartBtn = document.getElementById("customBothChartBtn");
+
+  // Helper function to disable/enable a button
+  const setButtonState = (button, isEnabled) => {
+    if (!button) return;
+
+    if (isEnabled) {
+      button.disabled = false;
+      button.style.opacity = "1";
+      button.style.cursor = "pointer";
+      button.style.pointerEvents = "auto";
+    } else {
+      button.disabled = true;
+      button.style.opacity = "0.5";
+      button.style.cursor = "not-allowed";
+      button.style.pointerEvents = "none";
+    }
+  };
+
+  // Check recommended allocations percentages
+  const recommendedSavingsAmount =
+    budget.recommended_allocations.monthly_savings;
+  const recommendedInvestmentsAmount =
+    budget.recommended_allocations.monthly_investments;
+  const hasSavings = recommendedSavingsAmount > 0;
+  const hasInvestments = recommendedInvestmentsAmount > 0;
+
+  // Update recommended allocation buttons
+  setButtonState(savingsChartBtn, hasSavings);
+  setButtonState(investmentsChartBtn, hasInvestments);
+  setButtonState(bothChartBtn, hasSavings && hasInvestments);
+
+  // If all buttons are disabled, we need to handle the chart display
+  if (!hasSavings && !hasInvestments) {
+    // Disable all buttons
+    setButtonState(savingsChartBtn, false);
+    setButtonState(investmentsChartBtn, false);
+    setButtonState(bothChartBtn, false);
+  }
+
+  // Check custom allocations percentages
+  let customSavingsAmount = 0;
+  let customInvestmentsAmount = 0;
+
+  if (budget.custom_allocations) {
+    customSavingsAmount = budget.custom_allocations.monthly_savings;
+    customInvestmentsAmount = budget.custom_allocations.monthly_investments;
+  }
+
+  const hasCustomSavings = customSavingsAmount > 0;
+  const hasCustomInvestments = customInvestmentsAmount > 0;
+
+  // Update custom allocation buttons
+  setButtonState(customSavingsChartBtn, hasCustomSavings);
+  setButtonState(customInvestmentsChartBtn, hasCustomInvestments);
+  setButtonState(customBothChartBtn, hasCustomSavings && hasCustomInvestments);
+
+  // If all custom buttons are disabled
+  if (!hasCustomSavings && !hasCustomInvestments) {
+    setButtonState(customSavingsChartBtn, false);
+    setButtonState(customInvestmentsChartBtn, false);
+    setButtonState(customBothChartBtn, false);
+  }
+
+  // Switch to an enabled button if current selection is disabled
+  const currentChartType = calculatorState.compoundInterest.currentChartType;
+  const customCurrentChartType =
+    calculatorState.customCompoundInterest.currentChartType;
+
+  // Handle recommended allocations chart type switching
+  if (currentChartType === "investments" && !hasInvestments && hasSavings) {
+    calculatorState.compoundInterest.currentChartType = "savings";
+    if (savingsChartBtn) {
+      const updateActiveButton = (activeBtn) => {
+        [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach((btn) => {
+          if (btn) {
+            btn.classList.remove("chart-btn-active");
+            btn.classList.add("chart-btn-inactive");
+            btn.classList.remove("shadow-lg", "transform", "scale-110");
+            btn.classList.add("shadow-md");
+            btn.className = btn.className.replace(
+              /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+              "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+            );
+          }
+        });
+        if (activeBtn) {
+          activeBtn.classList.remove("chart-btn-inactive");
+          activeBtn.classList.add("chart-btn-active");
+          activeBtn.classList.remove("shadow-md");
+          activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+          activeBtn.className = activeBtn.className.replace(
+            /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+            "bg-gradient-to-r from-emerald-600 to-emerald-700"
+          );
+        }
+      };
+      updateActiveButton(savingsChartBtn);
+    }
+  } else if (currentChartType === "both" && (!hasSavings || !hasInvestments)) {
+    if (hasSavings) {
+      calculatorState.compoundInterest.currentChartType = "savings";
+      if (savingsChartBtn) {
+        const updateActiveButton = (activeBtn) => {
+          [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach(
+            (btn) => {
+              if (btn) {
+                btn.classList.remove("chart-btn-active");
+                btn.classList.add("chart-btn-inactive");
+                btn.classList.remove("shadow-lg", "transform", "scale-110");
+                btn.classList.add("shadow-md");
+                btn.className = btn.className.replace(
+                  /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+                  "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+                );
+              }
+            }
+          );
+          if (activeBtn) {
+            activeBtn.classList.remove("chart-btn-inactive");
+            activeBtn.classList.add("chart-btn-active");
+            activeBtn.classList.remove("shadow-md");
+            activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+            activeBtn.className = activeBtn.className.replace(
+              /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+              "bg-gradient-to-r from-emerald-600 to-emerald-700"
+            );
+          }
+        };
+        updateActiveButton(savingsChartBtn);
+      }
+    } else if (hasInvestments) {
+      calculatorState.compoundInterest.currentChartType = "investments";
+      if (investmentsChartBtn) {
+        const updateActiveButton = (activeBtn) => {
+          [savingsChartBtn, investmentsChartBtn, bothChartBtn].forEach(
+            (btn) => {
+              if (btn) {
+                btn.classList.remove("chart-btn-active");
+                btn.classList.add("chart-btn-inactive");
+                btn.classList.remove("shadow-lg", "transform", "scale-110");
+                btn.classList.add("shadow-md");
+                btn.className = btn.className.replace(
+                  /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+                  "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+                );
+              }
+            }
+          );
+          if (activeBtn) {
+            activeBtn.classList.remove("chart-btn-inactive");
+            activeBtn.classList.add("chart-btn-active");
+            activeBtn.classList.remove("shadow-md");
+            activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+            activeBtn.className = activeBtn.className.replace(
+              /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+              "bg-gradient-to-r from-emerald-600 to-emerald-700"
+            );
+          }
+        };
+        updateActiveButton(investmentsChartBtn);
+      }
+    }
+  }
+
+  // Handle custom allocations chart type switching
+  if (
+    customCurrentChartType === "investments" &&
+    !hasCustomInvestments &&
+    hasCustomSavings
+  ) {
+    calculatorState.customCompoundInterest.currentChartType = "savings";
+    if (customSavingsChartBtn) {
+      const updateCustomActiveButton = (activeBtn) => {
+        [
+          customSavingsChartBtn,
+          customInvestmentsChartBtn,
+          customBothChartBtn,
+        ].forEach((btn) => {
+          if (btn) {
+            btn.classList.remove("chart-btn-active");
+            btn.classList.add("chart-btn-inactive");
+            btn.classList.remove("shadow-lg", "transform", "scale-110");
+            btn.classList.add("shadow-md");
+            btn.className = btn.className.replace(
+              /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+              "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+            );
+          }
+        });
+        if (activeBtn) {
+          activeBtn.classList.remove("chart-btn-inactive");
+          activeBtn.classList.add("chart-btn-active");
+          activeBtn.classList.remove("shadow-md");
+          activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+          activeBtn.className = activeBtn.className.replace(
+            /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+            "bg-gradient-to-r from-emerald-600 to-emerald-700"
+          );
+        }
+      };
+      updateCustomActiveButton(customSavingsChartBtn);
+    }
+  } else if (
+    customCurrentChartType === "both" &&
+    (!hasCustomSavings || !hasCustomInvestments)
+  ) {
+    if (hasCustomSavings) {
+      calculatorState.customCompoundInterest.currentChartType = "savings";
+      if (customSavingsChartBtn) {
+        const updateCustomActiveButton = (activeBtn) => {
+          [
+            customSavingsChartBtn,
+            customInvestmentsChartBtn,
+            customBothChartBtn,
+          ].forEach((btn) => {
+            if (btn) {
+              btn.classList.remove("chart-btn-active");
+              btn.classList.add("chart-btn-inactive");
+              btn.classList.remove("shadow-lg", "transform", "scale-110");
+              btn.classList.add("shadow-md");
+              btn.className = btn.className.replace(
+                /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+                "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+              );
+            }
+          });
+          if (activeBtn) {
+            activeBtn.classList.remove("chart-btn-inactive");
+            activeBtn.classList.add("chart-btn-active");
+            activeBtn.classList.remove("shadow-md");
+            activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+            activeBtn.className = activeBtn.className.replace(
+              /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+              "bg-gradient-to-r from-emerald-600 to-emerald-700"
+            );
+          }
+        };
+        updateCustomActiveButton(customSavingsChartBtn);
+      }
+    } else if (hasCustomInvestments) {
+      calculatorState.customCompoundInterest.currentChartType = "investments";
+      if (customInvestmentsChartBtn) {
+        const updateCustomActiveButton = (activeBtn) => {
+          [
+            customSavingsChartBtn,
+            customInvestmentsChartBtn,
+            customBothChartBtn,
+          ].forEach((btn) => {
+            if (btn) {
+              btn.classList.remove("chart-btn-active");
+              btn.classList.add("chart-btn-inactive");
+              btn.classList.remove("shadow-lg", "transform", "scale-110");
+              btn.classList.add("shadow-md");
+              btn.className = btn.className.replace(
+                /bg-gradient-to-r from-emerald-600 to-emerald-700/g,
+                "bg-gradient-to-r from-emerald-400/60 to-emerald-500/60"
+              );
+            }
+          });
+          if (activeBtn) {
+            activeBtn.classList.remove("chart-btn-inactive");
+            activeBtn.classList.add("chart-btn-active");
+            activeBtn.classList.remove("shadow-md");
+            activeBtn.classList.add("shadow-lg", "transform", "scale-110");
+            activeBtn.className = activeBtn.className.replace(
+              /bg-gradient-to-r from-emerald-400\/60 to-emerald-500\/60/g,
+              "bg-gradient-to-r from-emerald-600 to-emerald-700"
+            );
+          }
+        };
+        updateCustomActiveButton(customInvestmentsChartBtn);
+      }
+    }
+  }
+}
+
 function updateAllUI(budget) {
   // Update Expense Summary Section
   currentTotalExpensesSpan.textContent = formatCurrency(
@@ -886,14 +1191,20 @@ function updateAllUI(budget) {
   ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
 
   // Store monthly investment amount in localStorage for use in investment calculator
-  const monthlyInvestmentAmount = budget.custom_allocations 
-    ? budget.custom_allocations.monthly_investments 
+  const monthlyInvestmentAmount = budget.custom_allocations
+    ? budget.custom_allocations.monthly_investments
     : budget.recommended_allocations.monthly_investments;
-  
+
   // Convert monthly to annual amount (investment calculator expects annual contributions)
   const annualInvestmentAmount = monthlyInvestmentAmount * 12;
-  localStorage.setItem('budgetMonthlyInvestment', monthlyInvestmentAmount.toString());
-  localStorage.setItem('budgetAnnualInvestment', annualInvestmentAmount.toString());
+  localStorage.setItem(
+    "budgetMonthlyInvestment",
+    monthlyInvestmentAmount.toString()
+  );
+  localStorage.setItem(
+    "budgetAnnualInvestment",
+    annualInvestmentAmount.toString()
+  );
 
   // Update Custom Allocations Display (Amounts and Percentages)
   const userEnteredSavingsPct = parseFloat(savingsPercentageInput.value);
@@ -905,25 +1216,33 @@ function updateAllUI(budget) {
     (!isNaN(userEnteredInvestmentsPct) &&
       String(userEnteredInvestmentsPct) !== "");
 
-  // Custom Savings Amount
+  // Custom Savings Amount - preserve user input if directly editing amount
   if (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== "") {
-    customSavingsAmountInput.value = formatCurrency(
-      budget.custom_allocations ? budget.custom_allocations.monthly_savings : 0
-    );
+    // Only update the amount field if the user hasn't directly edited it
+    if (!customSavingsAmountInput.matches(":focus")) {
+      customSavingsAmountInput.value = formatCurrency(
+        budget.custom_allocations
+          ? budget.custom_allocations.monthly_savings
+          : 0
+      );
+    }
   } else {
     customSavingsAmountInput.value = ""; // Clear if no valid custom percentage
   }
 
-  // Custom Investments Amount
+  // Custom Investments Amount - preserve user input if directly editing amount
   if (
     !isNaN(userEnteredInvestmentsPct) &&
     investmentsPercentageInput.value !== ""
   ) {
-    customInvestmentsAmountInput.value = formatCurrency(
-      budget.custom_allocations
-        ? budget.custom_allocations.monthly_investments
-        : 0
-    );
+    // Only update the amount field if the user hasn't directly edited it
+    if (!customInvestmentsAmountInput.matches(":focus")) {
+      customInvestmentsAmountInput.value = formatCurrency(
+        budget.custom_allocations
+          ? budget.custom_allocations.monthly_investments
+          : 0
+      );
+    }
   } else {
     customInvestmentsAmountInput.value = ""; // Clear if no valid custom percentage
   }
@@ -1003,6 +1322,9 @@ function updateAllUI(budget) {
 
   // Update the custom projection chart with the new budget data
   updateCustomProjectionChart();
+
+  // Update chart button states based on budget data
+  updateChartButtonStates(budget);
 }
 
 /**
@@ -1192,6 +1514,13 @@ function setupEventListeners() {
     handleExpenseOrAllocationChange();
   });
 
+  // Custom amount inputs
+  customSavingsAmountInput.addEventListener("input", handleCustomAmountChange);
+  customInvestmentsAmountInput.addEventListener(
+    "input",
+    handleCustomAmountChange
+  );
+
   // Chart projection buttons
   const savingsChartBtn = document.getElementById("savingsChartBtn");
   const investmentsChartBtn = document.getElementById("investmentsChartBtn");
@@ -1350,7 +1679,7 @@ function setupEventListeners() {
     toggleAllExpensesButton.addEventListener("click", toggleAllExpenses);
   }
 
-  //this is the age drop down list 
+  //this is the age drop down list
   const ageDropdownBtn = document.getElementById("ageDropdownBtn");
   const ageDropdownList = document.getElementById("customAgeOptions");
 
@@ -1380,6 +1709,7 @@ function setupEventListeners() {
       document.getElementById("ageDropdownSelected").textContent =
         option.textContent;
       toggleAgeDropdown();
+      handlePrimaryInputChange(); // Trigger validation and recalculation
     });
   });
   // Popup logic
@@ -2077,6 +2407,34 @@ function toggleCustomChartSegment(segmentIndex) {
 function initializeApp() {
   initializeProvinceDropdown();
   setupEventListeners();
+}
+
+/**
+ * Handles changes from custom amount inputs. Updates percentages and triggers budget recalculation.
+ */
+function handleCustomAmountChange(event) {
+  if (calculatorState.monthlyDisposableIncome <= 0) return;
+
+  // Get the current input field and its value
+  const input = event.target;
+  let value = input.value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters except decimal
+  value = parseFloat(value) || 0;
+
+  // Calculate the percentage based on the amount
+  const percentage = (value / calculatorState.monthlyDisposableIncome) * 100;
+
+  // Update the corresponding percentage input
+  if (input.id === "customSavingsAmount") {
+    savingsPercentageInput.value = percentage.toFixed(1);
+  } else if (input.id === "customInvestmentsAmount") {
+    investmentsPercentageInput.value = percentage.toFixed(1);
+  }
+
+  // Format the amount with currency symbol
+  input.value = formatCurrency(value);
+
+  // Trigger budget recalculation
+  handleExpenseOrAllocationChange();
 }
 
 // Start the application once the DOM is fully loaded.
