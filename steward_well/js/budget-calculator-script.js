@@ -2417,6 +2417,11 @@ function handleCustomAmountChange(event) {
 
   // Get the current input field and its value
   const input = event.target;
+  
+  // Store cursor position before formatting
+  const cursorPosition = input.selectionStart;
+  const oldValue = input.value;
+  
   let value = input.value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters except decimal
   value = parseFloat(value) || 0;
 
@@ -2431,7 +2436,13 @@ function handleCustomAmountChange(event) {
   }
 
   // Format the amount with currency symbol
-  input.value = formatCurrency(value);
+  const newValue = formatCurrency(value);
+  input.value = newValue;
+  
+  // Restore cursor position, accounting for added characters
+  const lengthDifference = newValue.length - oldValue.length;
+  const newCursorPosition = Math.max(1, cursorPosition + lengthDifference); // Ensure cursor is after '$'
+  input.setSelectionRange(newCursorPosition, newCursorPosition);
 
   // Trigger budget recalculation
   handleExpenseOrAllocationChange();

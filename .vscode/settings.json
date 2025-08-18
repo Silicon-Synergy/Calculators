@@ -1,5 +1,6 @@
 {
     "editor.formatOnSave": true,
     "editor.fontSize": 15,
-    "editor.fontFamily": "Inter, Jetbrains Mono"
+    "editor.fontFamily": "Inter, Jetbrains Mono",
+    "liveServer.settings.port": 5501
 }
