@@ -588,13 +588,15 @@ function createDeductionInputs(deductions) {
 
     let tooltipMessage = "";
     if (key === "federal_tax") {
-      tooltipMessage = "Based on marginal tax brackets.";
+      // "Based on marginal tax brackets.";
+      tooltipMessage = "";
     } else if (key === "provincial_tax") {
-      tooltipMessage = "Based on provincial marginal tax brackets.";
+      // Based on provincial marginal tax brackets.
+      tooltipMessage = "";
     } else if (key === "cpp") {
-      tooltipMessage = "Canada Pension Plan contribution.";
+      tooltipMessage = "Canada Pension Plan Contribution.";
     } else if (key === "ei") {
-      tooltipMessage = "Employment Insurance premium.";
+      tooltipMessage = "Employment Insurance Premium.";
     } else if (key === "retirement") {
       tooltipMessage = "Pre-tax retirement savings.";
     }
@@ -1409,7 +1411,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
         const totalPercentage = (categoryTotal / monthlyDisposableIncome) * 100;
         categoryTotalSpan.textContent = `${formatCurrency(
           categoryTotal
-        )} (${formatPercentage(totalPercentage)} of your MDI)`;
+        )} (${formatPercentage(totalPercentage)} of your Take-Home Pay)`;
       } else {
         categoryTotalSpan.textContent = "";
       }

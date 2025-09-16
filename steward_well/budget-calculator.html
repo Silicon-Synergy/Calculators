@@ -621,7 +621,7 @@
                   type="button"
                   class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200"
                 >
-                  <span id="dropdownSelected">Choose province</span>
+                  <span id="dropdownSelected">Choose Province</span>
                   <svg
                     class="w-5 h-5"
                     fill="none"
@@ -659,7 +659,7 @@
                 <label
                   for="ageRange"
                   class="block text-sm font-medium text-gray-300 mb-2"
-                  >Select your age group</label
+                  >Age</label
                 >
 
                 <button
@@ -667,7 +667,7 @@
                   type="button"
                   class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200"
                 >
-                  <span id="ageDropdownSelected">Choose your age range</span>
+                  <span id="ageDropdownSelected">Choose Age Range</span>
                   <svg
                     class="w-5 h-5"
                     fill="none"
@@ -822,7 +822,7 @@
         id="deductions-disposable-section"
         class="rounded-3xl p-8 border border-white/10 hover:border-primary/30 transition-all duration-300 result-box hidden animate-slide-up"
       >
-        <h2 class="text-2xl font-bold text-white">Taxes & Take-Home</h2>
+        <h2 class="text-2xl font-bold text-white">Taxes & Take-Home Pay</h2>
         <span class="text-[.8rem] opacity-50"
           >Tax percentages shown are estimates based on current rates from the
           CRA website.
@@ -936,27 +936,6 @@
                   <h2 class="text-2xl font-bold text-white">
                     Monthly Living Expenses
                   </h2>
-                  <div class="group relative ml-2">
-                    <svg
-                      class="w-5 h-5 text-gray-400 cursor-pointer"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      ></path>
-                    </svg>
-                    <div
-                      class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    >
-                      MDI: Monthly Disposable Income
-                    </div>
-                  </div>
                 </div>
                 <span class="text-[.8rem] opacity-50">
                   All monthly spending—bills, everyday costs, transportation,
@@ -999,7 +978,7 @@
                     ></path>
                   </svg>
                 </div>
-                <span class="font-medium">Housing and Utilities</span>
+                <span class="font-medium">Everyday Spending</span>
                 <span id="housing-total"></span>
               </div>
               <svg
@@ -1410,7 +1389,7 @@
                 >
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Student Loans <span id="student_loans-percentage"></span
+                      >Student Loan <span id="student_loans-percentage"></span
                     ></label>
                     <input
                       type="number"
@@ -1422,7 +1401,7 @@
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Credit Cards <span id="credit_cards-percentage"></span
+                      >Credit Card <span id="credit_cards-percentage"></span
                     ></label>
                     <input
                       type="number"
@@ -1434,7 +1413,7 @@
                   </div>
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >Personal Loans
+                      >Personal Loan
                       <span id="personal_loans-percentage"></span
                     ></label>
                     <input
@@ -1540,7 +1519,7 @@
                 >
                   <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2"
-                      >School Tuition
+                      >Tuition
                       <span id="school_tuition-percentage"></span
                     ></label>
                     <input
@@ -1847,27 +1826,23 @@
                   </svg>
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-2">
-                  SWC Platform Recommendation
+                 Allocation Plan & Projections
                 </h3>
                 <p class="text-gray-700 leading-relaxed mb-6">
-                  Our budget calculator suggests
-                  <strong>5-15% for savings</strong> and
-                  <strong>10-20% for investments</strong> to ensure sustainable
-                  financial growth while maintaining healthy cashflow. We care
-                  about your long-term financial wellness!
+             
+Our budget calculator recommends allocating your surplus as follows: 
+                  <strong>10% to a cashflow buffer, 5–15% to savings, and 10–20% to investing</strong> and
+                 —a simple path to sustainable growth and long-term financial wellness.
                 </p>
                 <div class="bg-blue-50 p-4 rounded-lg mb-6">
                   <p class="text-sm text-blue-800">
-                    <strong>Pro Tip:</strong> Allocation strategy varies by
-                    budget zone: <br />
-                    • Green Zone (expenses ≤70%): 10% cashflow, 5-15% savings,
-                    10-20% investments<br />
-                    • Moderate Zone (70-80%): 10% cashflow, up to 10% savings,
-                    no investments<br />
-                    • Red Zone (80-85%): At least 10% cashflow, 5-10% savings if
-                    possible, no investments<br />
-                    • Extreme Red Zone (>85%): All remaining goes to cashflow,
-                    no savings, no investments
+                    <strong>Pro Tip: Allocation Strategy Varies by Zone</strong>
+                    <br /><br />
+                    <strong>Green (below 70% of take-home)</strong> — Expenses are low enough that the surplus typically funds all three steps.
+                    <br /><br />
+                    <strong>Amber (70–85%)</strong> — Surplus first covers the cashflow buffer, then savings; then investing only if surplus remains.
+                    <br /><br />
+                    <strong>Red (above 85%)</strong> — Limited or No Surplus. Allocations begin once a surplus exists, flowing to the cashflow buffer first, and then savings. No investing capacity.
                   </p>
                 </div>
               </div>
@@ -1895,9 +1870,9 @@
             <div class="flex items-center gap-2 mb-6">
               <span>📊</span>
               <h3 class="text-xl font-semibold text-white">
-                Recommended Allocations
+                Recommended Allocation
               </h3>
-              <div class="relative group ml-2 inline-block cursor-pointer">
+              <div class="relative ml-2 inline-block cursor-pointer group">
                 <svg
                   class="w-4 h-4 text-gray-400"
                   fill="none"
@@ -1915,8 +1890,7 @@
                 <div
                   class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-green-900 text-sm font-normal rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
                 >
-                  These are the suggested percentages based on prioritizing 10%
-                  cashflow, then 5-15% savings, then 10-20% investments.
+ Your surplus (what’s left after expenses) is used in this order: <strong>10% to a cashflow buffer, 5–15% to savings, 10–20% to investing.</strong>  Funds fill each step in order— small surplus may stop at the buffer; larger surplus continues through savings to investing. No surplus means no allocation.
                 </div>
               </div>
             </div>
@@ -2000,12 +1974,35 @@
 
           <!-- Right Column: Recommended Allocations Projection Section -->
           <div class="space-y-6">
-            <h3 class="text-xl font-semibold text-white mb-6">
-              Recommended Allocations Projection
+            <div class="flex items-center gap-4 mb-">
+            <h3 class="text-xl font-semibold text-white ">
+              Recommended Projection
             </h3>
-
+<div class="relative group  ml-2 inline-block cursor-pointer">
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                <div
+                  class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs p-2 bg-green-100 text-green-900 text-sm font-normal rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50"
+                >
+ Your surplus (what’s left after expenses) is used in this order: <strong>10% to a cashflow buffer, 5–15% to savings, 10–20% to investing.</strong>  Funds fill each step in order— small surplus may stop at the buffer; larger surplus continues through savings to investing. No surplus means no allocation.
+                </div>
+              </div>
+       
+</div>
             <!-- Chart Type Buttons with Enhanced Styling -->
-            <div class="flex justify-between gap-4 mb-6">
+            <div class="flex justify-between gap-4 mb-6 ">
               <button
                 id="savingsChartBtn"
                 class="chart-btn chart-btn-active flex-1 px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-lg transform scale-110 bg-gradient-to-r from-emerald-600 to-emerald-700"
