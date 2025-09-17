@@ -1,6 +1,8 @@
 // Register Chart.js datalabels plugin
 Chart.register(ChartDataLabels);
 
+
+
 // A central object to hold the results of calculations to be used across different functions.
 const calculatorState = {
   annualIncome: 0,
@@ -446,14 +448,14 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
   if (expensesPercentage <= 70) {
     return [
       "GREEN",
-      "You have excellent financial flexibility. Great job!",
+      "Your lifestyle spending sits well below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle creep—avoid amber (cutting it close) and red (overspending).",
       true,
       true,
     ];
   } else if (expensesPercentage <= 80) {
     return [
       "MODERATE",
-      "Your budget is tight. Focus on savings and consider reducing expenses.",
+      "Your lifestyle spending is close to your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you could slip into red.",
       true,
       false, // Investments not recommended in this zone
     ];
@@ -467,7 +469,7 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
   } else {
     return [
       "EXTREME RED",
-      "Your expenses are critically high. All remaining funds should go to cashflow while you focus on reducing expenses urgently.",
+      "Your lifestyle spending is over 85% of your take-home, leaving little to no cashflow or savings—investing isn’t feasible right now thus increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle priorities to move to amber, then green.",
       false, // No savings in this zone
       false, // No investments in this zone
     ];
@@ -588,13 +590,15 @@ function createDeductionInputs(deductions) {
 
     let tooltipMessage = "";
     if (key === "federal_tax") {
-      tooltipMessage = "Based on marginal tax brackets.";
+      // "Based on marginal tax brackets.";
+      tooltipMessage = "";
     } else if (key === "provincial_tax") {
-      tooltipMessage = "Based on provincial marginal tax brackets.";
+      // Based on provincial marginal tax brackets.
+      tooltipMessage = "";
     } else if (key === "cpp") {
-      tooltipMessage = "Canada Pension Plan contribution.";
+      tooltipMessage = "Canada Pension Plan Contribution.";
     } else if (key === "ei") {
-      tooltipMessage = "Employment Insurance premium.";
+      tooltipMessage = "Employment Insurance Premium.";
     } else if (key === "retirement") {
       tooltipMessage = "Pre-tax retirement savings.";
     }
@@ -1146,6 +1150,9 @@ function updateAllUI(budget) {
   currentBudgetZoneSpan.textContent = budget.budget_zone;
   currentZoneMessageP.textContent = budget.status_message;
 
+  // Update Progress Bar Indicator
+  updateProgressBar(budget.expenses_percentage);
+
   // Update Budget Zone coloring
   const zoneColors = {
     GREEN: { bg: "bg-green-500/20", border: "border-green-500/50" },
@@ -1292,11 +1299,7 @@ function updateAllUI(budget) {
 
     if (cashflowPctToCheck < MIN_CASHFLOW_PCT) {
       // Caution message
-      ctaMessage.innerHTML = `Your cashflow is <strong class="text-red-400">${formatPercentage(
-        cashflowPctToCheck
-      )} (${formatCurrency(
-        cashflowToCheck
-      )})</strong>, which is below the recommended 10%. This indicates poor financial health. We recommend talking to an expert.`;
+      ctaMessage.innerHTML = `Great Job, lets walk you through a clear next step to build sustainable wealth`;
       ctaSection.classList.remove("bg-white/5", "border-white/10");
       ctaSection.classList.add("bg-red-900/30", "border-red-500/50");
     } else {
@@ -1409,7 +1412,7 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
         const totalPercentage = (categoryTotal / monthlyDisposableIncome) * 100;
         categoryTotalSpan.textContent = `${formatCurrency(
           categoryTotal
-        )} (${formatPercentage(totalPercentage)} of your MDI)`;
+        )} (${formatPercentage(totalPercentage)} of your Take-Home Pay)`;
       } else {
         categoryTotalSpan.textContent = "";
       }
@@ -1716,13 +1719,46 @@ function setupEventListeners() {
   const infoButton = document.getElementById("infoButton");
   const infoPopup = document.getElementById("infoPopup");
   const closePopup = document.getElementById("closePopup");
-  infoButton.addEventListener("click", () =>
-    infoPopup.classList.remove("hidden")
-  );
-  closePopup.addEventListener("click", () => infoPopup.classList.add("hidden"));
-  infoPopup.addEventListener("click", (e) => {
-    if (e.target === infoPopup) infoPopup.classList.add("hidden");
-  });
+
+  // New AllocationsBtn popup logic
+  const allocationsBtn = document.getElementById("AllocationsBtn");
+  const infoPopup2 = document.getElementById("infoPopup2");
+  const closePopup2 = document.getElementById("closePopup2");
+
+  if (infoButton) {
+    infoButton.addEventListener("click", () =>{
+      console.log("i got clicked!")
+      infoPopup.classList.remove("hidden")
+    });
+  }
+  if (closePopup) {
+    closePopup.addEventListener("click", () =>
+      infoPopup.classList.add("hidden")
+    );
+  }
+  if (infoPopup) {
+    infoPopup.addEventListener("click", (e) => {
+      if (e.target === infoPopup) infoPopup.classList.add("hidden");
+    });
+  }
+  // Add event listeners for the new AllocationsBtn modal
+  if (allocationsBtn) {
+    allocationsBtn.addEventListener("click", () =>
+      infoPopup2.classList.remove("hidden")
+    );
+  }
+
+  if (closePopup2) {
+    closePopup2.addEventListener("click", () =>
+      infoPopup2.classList.add("hidden")
+    );
+  }
+
+  if (infoPopup2) {
+    infoPopup2.addEventListener("click", (e) => {
+      if (e.target === infoPopup2) infoPopup2.classList.add("hidden");
+    });
+  }
 }
 
 // Function to toggle category expansion/collapse
@@ -2417,11 +2453,11 @@ function handleCustomAmountChange(event) {
 
   // Get the current input field and its value
   const input = event.target;
-  
+
   // Store cursor position before formatting
   const cursorPosition = input.selectionStart;
   const oldValue = input.value;
-  
+
   let value = input.value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters except decimal
   value = parseFloat(value) || 0;
 
@@ -2438,7 +2474,7 @@ function handleCustomAmountChange(event) {
   // Format the amount with currency symbol
   const newValue = formatCurrency(value);
   input.value = newValue;
-  
+
   // Restore cursor position, accounting for added characters
   const lengthDifference = newValue.length - oldValue.length;
   const newCursorPosition = Math.max(1, cursorPosition + lengthDifference); // Ensure cursor is after '$'
@@ -2446,6 +2482,53 @@ function handleCustomAmountChange(event) {
 
   // Trigger budget recalculation
   handleExpenseOrAllocationChange();
+}
+
+// Add new function to update progress bar
+function updateProgressBar(expensesPercentage) {
+  const progressIndicator = document.getElementById("progressIndicator");
+  const indicatorValue = document.getElementById("indicatorValue");
+
+  if (!progressIndicator || !indicatorValue) return;
+
+  // Calculate position based on percentage
+  let position;
+
+  if (expensesPercentage <= 70) {
+    // Green zone: 0-70% maps to 0-70% of the bar
+    position = (expensesPercentage / 70) * 70;
+  } else if (expensesPercentage <= 85) {
+    // Amber zone: 70-85% maps to 70-85% of the bar
+    position = 70 + ((expensesPercentage - 70) / 15) * 15;
+  } else {
+    // Red zone: 85%+ maps to 85-100% of the bar
+    position = 85 + Math.min((expensesPercentage - 85) / 15, 1) * 15;
+  }
+
+  // Ensure position doesn't exceed 100%
+  position = Math.min(position, 100);
+
+  // Update indicator position and value
+  progressIndicator.style.left = `${position}%`;
+  indicatorValue.textContent = `${expensesPercentage.toFixed(1)}%`;
+
+  // Add dynamic color to indicator based on zone
+  const indicatorDot = progressIndicator.querySelector(".indicator-dot");
+  if (indicatorDot) {
+    if (expensesPercentage <= 70) {
+      indicatorDot.style.background =
+        "linear-gradient(135deg, #10b981, #059669)";
+      indicatorDot.style.borderColor = "#047857";
+    } else if (expensesPercentage <= 85) {
+      indicatorDot.style.background =
+        "linear-gradient(135deg, #f59e0b, #d97706)";
+      indicatorDot.style.borderColor = "#b45309";
+    } else {
+      indicatorDot.style.background =
+        "linear-gradient(135deg, #ef4444, #dc2626)";
+      indicatorDot.style.borderColor = "#b91c1c";
+    }
+  }
 }
 
 // Start the application once the DOM is fully loaded.
