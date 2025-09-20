@@ -444,15 +444,11 @@ function calculateBudget(
 // Determines the user's budget zone (Green, Moderate, Red, Extreme Red) based on expense ratio.
 function determineBudgetZoneAndOptions(expensesPercentage) {
   if (expensesPercentage <= 70) {
-    return [true];
+    return [null, "", true, true];
   } else if (expensesPercentage <= 85) {
-    return [
-      true,
-    ];
+    return [null, "", true, true];
   } else {
-    return [
-      false, // No investments in this zone
-    ];
+    return [null, "", false, false];
   }
 }
 
@@ -1140,16 +1136,22 @@ function updateAllUI(budget) {
     RED: { bg: "bg-red-500/20", border: "border-red-500/50" },
     "EXTREME RED": { bg: "bg-red-900/30", border: "border-red-700/70" },
   };
-  const zoneColor = zoneColors[budget.budget_zone];
+  const zoneColor = budget.budget_zone ? zoneColors[budget.budget_zone] : { bg: "", border: "" };
   integratedExpenseSummary.className = `mt-8 glass-effect p-4 rounded-xl text-white animate-slide-up ${zoneColor.bg} ${zoneColor.border}`;
 
   // Enable/disable and configure the Savings & Investments section
+  console.log('Debug: budget.total_monthly_expenses =', budget.total_monthly_expenses);
+  console.log('Debug: typeof budget.total_monthly_expenses =', typeof budget.total_monthly_expenses);
+  
   if (budget.total_monthly_expenses > 0) {
+    console.log('Debug: Removing opacity from savings section');
     savingsInvestmentsSection.classList.remove(
       "opacity-50",
       "pointer-events-none"
     );
     savingsInvestmentsSection.classList.add("animate-fade-in");
+  } else {
+    console.log('Debug: Not removing opacity - total_monthly_expenses is', budget.total_monthly_expenses);
   }
   // Custom allocation inputs are always enabled
   savingsPercentageInput.disabled = false;
