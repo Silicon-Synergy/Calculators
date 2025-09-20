@@ -1,8 +1,6 @@
 // Register Chart.js datalabels plugin
 Chart.register(ChartDataLabels);
 
-
-
 // A central object to hold the results of calculations to be used across different functions.
 const calculatorState = {
   annualIncome: 0,
@@ -446,31 +444,13 @@ function calculateBudget(
 // Determines the user's budget zone (Green, Moderate, Red, Extreme Red) based on expense ratio.
 function determineBudgetZoneAndOptions(expensesPercentage) {
   if (expensesPercentage <= 70) {
-    return [
-      "GREEN",
-      "Your lifestyle spending sits well below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle creep—avoid amber (cutting it close) and red (overspending).",
-      true,
-      true,
-    ];
-  } else if (expensesPercentage <= 80) {
-    return [
-      "MODERATE",
-      "Your lifestyle spending is close to your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you could slip into red.",
-      true,
-      false, // Investments not recommended in this zone
-    ];
+    return [true];
   } else if (expensesPercentage <= 85) {
     return [
-      "RED",
-      "Your expenses exceed a healthy limit. Prioritize at least 10% cashflow, 5-10% savings if possible, and focus on reducing expenses immediately.",
-      true, // Savings are now recommended in this zone (5-10%)
-      false, // Investments still not recommended in this zone
+      true,
     ];
   } else {
     return [
-      "EXTREME RED",
-      "Your lifestyle spending is over 85% of your take-home, leaving little to no cashflow or savings—investing isn’t feasible right now thus increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle priorities to move to amber, then green.",
-      false, // No savings in this zone
       false, // No investments in this zone
     ];
   }
@@ -1726,9 +1706,9 @@ function setupEventListeners() {
   const closePopup2 = document.getElementById("closePopup2");
 
   if (infoButton) {
-    infoButton.addEventListener("click", () =>{
-      console.log("i got clicked!")
-      infoPopup.classList.remove("hidden")
+    infoButton.addEventListener("click", () => {
+      console.log("i got clicked!");
+      infoPopup.classList.remove("hidden");
     });
   }
   if (closePopup) {
