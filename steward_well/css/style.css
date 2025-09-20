@@ -531,7 +531,7 @@ input::-webkit-inner-spin-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: .2rem; /* Reduced padding */
+  ; /* Reduced padding */
   border-radius: 8px; /* Smaller border radius */
   cursor: pointer;
   transition: all 0.3s ease;
