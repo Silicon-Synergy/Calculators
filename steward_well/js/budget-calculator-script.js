@@ -476,18 +476,18 @@ const retirementPercentageError = document.getElementById(
 const deductionsDisposableSection = document.getElementById(
   "deductions-disposable-section"
 );
-const totalAnnualDeductionsSpan = document.getElementById(
-  "totalAnnualDeductions"
-);
+// const totalAnnualDeductionsSpan = document.getElementById(
+//   "totalAnnualDeductions"
+// );
 const deductionInputsContainer = document.getElementById(
   "deduction-inputs-container"
 );
-const annualDisposableIncomeSpan = document.getElementById(
-  "annualDisposableIncome"
-);
-const monthlyDisposableIncomeSpan = document.getElementById(
-  "monthlyDisposableIncome"
-);
+// const annualDisposableIncomeSpan = document.getElementById(
+//   "annualDisposableIncome"
+// );
+// const monthlyDisposableIncomeSpan = document.getElementById(
+//   "monthlyDisposableIncome"
+// );
 
 const integratedExpenseSummary = document.getElementById(
   "integrated-expense-summary"
@@ -558,68 +558,172 @@ function initializeProvinceDropdown() {
  * Creates read-only input fields to display tax deduction breakdown.
  */
 function createDeductionInputs(deductions) {
+  // ... existing code ...
   deductionInputsContainer.innerHTML = "";
+
+  const colorMap = {
+    federal_tax: "bg-rose-500",
+    provincial_tax: "bg-purple-500",
+    cpp: "bg-green-500",
+    ei: "bg-blue-500",
+    retirement: "bg-yellow-500",
+  };
+
+  // Render each tax/deduction row
   Object.entries(deductions).forEach(([key, deduction]) => {
-    const inputGroup = document.createElement("div");
+    const row = document.createElement("div");
+    row.className = "flex items-center justify-between py-2";
 
-    const label = document.createElement("label");
+    const left = document.createElement("div");
+    left.className = "flex items-center gap-3";
 
-    let tooltipMessage = "";
-    if (key === "federal_tax") {
-      // "Based on marginal tax brackets.";
-      tooltipMessage = "";
-    } else if (key === "provincial_tax") {
-      // Based on provincial marginal tax brackets.
-      tooltipMessage = "";
-    } else if (key === "cpp") {
-      tooltipMessage = "Canada Pension Plan Contribution.";
-    } else if (key === "ei") {
-      tooltipMessage = "Employment Insurance Premium.";
-    } else if (key === "retirement") {
-      tooltipMessage = "Pre-tax retirement savings.";
+    const dot = document.createElement("span");
+    dot.className = `w-3 h-3 rounded-sm ${colorMap[key] || "bg-slate-400"}`;
+    left.appendChild(dot);
+
+    // Prefer generic “Provincial tax” label (matches screenshot)
+    const name = key === "provincial_tax" ? "Provincial tax" : deduction.name;
+
+    const labelText = document.createElement("span");
+    labelText.className = "text-sm font-medium";
+    labelText.innerHTML = `${name} <span class="text-zinc-400">(${deduction.percentage.toFixed(
+      2
+    )}%)</span>`;
+    left.appendChild(labelText);
+
+    // Add robust tooltip for CPP/EI (hover and click)
+    if (key === "cpp" || key === "ei") {
+      const infoWrap = document.createElement("span");
+      infoWrap.style.position = "relative";
+      infoWrap.style.display = "inline-flex";
+      infoWrap.style.alignItems = "center";
+      infoWrap.style.marginLeft = "6px";
+
+      const info = document.createElement("span");
+      info.className =
+        "text-xs inline-flex items-center justify-center w-5 h-5 border border-slate-300 rounded-full text-slate-700 cursor-help";
+      info.textContent = "i";
+
+      const tooltip = document.createElement("div");
+      tooltip.textContent =
+        key === "cpp"
+          ? "Canada Pension Plan contribution (up to annual max)."
+          : "Employment Insurance premium (up to annual max).";
+      tooltip.style.position = "absolute";
+      tooltip.style.left = "24px";
+      tooltip.style.top = "50%";
+      tooltip.style.transform = "translateY(-50%)";
+      tooltip.style.background = "#ffffff";
+      tooltip.style.color = "#0f172a";
+      tooltip.style.border = "1px solid #cbd5e1";
+      tooltip.style.borderRadius = "6px";
+      tooltip.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+      tooltip.style.padding = "6px 8px";
+      tooltip.style.whiteSpace = "nowrap";
+      tooltip.style.zIndex = "50";
+      tooltip.style.opacity = "0";
+      tooltip.style.visibility = "hidden";
+      tooltip.style.transition = "opacity 150ms ease, visibility 150ms ease";
+      tooltip.style.pointerEvents = "none";
+
+      const showTooltip = () => {
+        tooltip.style.opacity = "1";
+        tooltip.style.visibility = "visible";
+      };
+      const hideTooltip = () => {
+        tooltip.style.opacity = "0";
+        tooltip.style.visibility = "hidden";
+      };
+
+      infoWrap.addEventListener("mouseenter", showTooltip);
+      infoWrap.addEventListener("mouseleave", hideTooltip);
+      infoWrap.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const visible = tooltip.style.visibility === "visible";
+        if (visible) hideTooltip();
+        else showTooltip();
+      });
+
+      infoWrap.appendChild(info);
+      infoWrap.appendChild(tooltip);
+      left.appendChild(infoWrap);
     }
 
-    label.innerHTML = `
-      <div class="flex flex-col gap-1 rounded-md p-2 text-white">
-        <span class="text-sm font-semibold tracking-tight">
-          ${
-            deduction.name
-          } <span class="text-zinc-400">(${deduction.percentage.toFixed(
-      2
-    )}%)</span>
-        </span>
-        <span class="text-xs text-zinc-300 leading-snug">
-          ${tooltipMessage}
-        </span>
-      </div>`;
+    const dotted = document.createElement("div");
+    dotted.className = "flex-1 border-t border-dashed border-emerald-200 mx-3";
 
-    inputGroup.className = "w-full";
+    const amount = document.createElement("span");
+    amount.className = "text-green-600 font-semibold";
+    amount.textContent = formatCurrency(deduction.amount);
 
-    const inputWrapper = document.createElement("div");
-    inputWrapper.className = "relative";
+    row.appendChild(left);
+    row.appendChild(dotted);
+    row.appendChild(amount);
 
-    const dollarSign = document.createElement("span");
-    dollarSign.className =
-      "absolute left-3 top-1/2 -translate-y-1/2 text-white text-sm pointer-events-none";
-    dollarSign.textContent = "$";
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.className =
-      "input-field w-full pl-8 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200";
-    input.value = deduction.amount.toFixed(2);
-    input.readOnly = true;
-
-    inputGroup.appendChild(label); // Append label first
-
-    inputWrapper.appendChild(dollarSign);
-    inputWrapper.appendChild(input);
-    inputGroup.appendChild(inputWrapper);
-
-    deductionInputsContainer.appendChild(inputGroup);
+    deductionInputsContainer.appendChild(row);
   });
-}
 
+  // Summary rows: Total Annual Deduction, Annual & Monthly Take Home Pay
+  const totalAmount = Object.values(deductions).reduce(
+    (sum, d) => sum + d.amount,
+    0
+  );
+  const totalPct =
+    calculatorState.annualIncome > 0
+      ? (totalAmount / calculatorState.annualIncome) * 100
+      : 0;
+
+  const summaryRows = [
+    { name: "Total Annual Deduction", pct: totalPct, value: totalAmount },
+    {
+      name: "Annual Take Home Pay",
+      pct: null,
+      value: calculatorState.annualDisposable,
+    },
+    {
+      name: "Monthly Take Home Pay",
+      pct: null,
+      value: calculatorState.monthlyDisposableIncome,
+    },
+  ];
+
+  summaryRows.forEach(({ name, pct, value }) => {
+    const row = document.createElement("div");
+    row.className = "flex items-center justify-between py-2";
+
+    const left = document.createElement("div");
+    left.className = "flex items-center gap-2";
+
+    // Add orange dot for Annual Take Home Pay
+    if (name === "Annual Take Home Pay") {
+      const dot = document.createElement("span");
+      dot.className = "w-3 h-3 rounded-sm bg-orange-500";
+      left.appendChild(dot);
+    }
+
+    const labelText = document.createElement("span");
+    labelText.className = "text-sm font-medium";
+    labelText.innerHTML =
+      pct != null
+        ? `${name}<span class="text-zinc-400">(${pct.toFixed(2)}%)</span>`
+        : name;
+    left.appendChild(labelText);
+
+    const dotted = document.createElement("div");
+    dotted.className = "flex-1 border-t border-dashed border-emerald-200 mx-3";
+
+    const amount = document.createElement("span");
+    amount.className = "text-green-600 font-semibold";
+    amount.textContent = formatCurrency(value);
+
+    row.appendChild(left);
+    row.appendChild(dotted);
+    row.appendChild(amount);
+
+    deductionInputsContainer.appendChild(row);
+  });
+  // ... existing code ...
+}
 // Utility functions for validation and formatting.
 
 function validateAnnualIncome() {
@@ -717,6 +821,56 @@ function formatPercentage(percentage) {
 /**
  * Main handler for income/province/retirement changes. Recalculates taxes and disposable income.
  */
+function renderDeductionsProgressBar(deductions) {
+  const segmentsEl = document.getElementById("taxes-bar-segments");
+  if (!segmentsEl) return;
+
+  const gross = calculatorState.annualIncome || 0;
+  if (gross <= 0) {
+    segmentsEl.innerHTML = "";
+    return;
+  }
+
+  const colorMap = {
+    federal_tax: "bg-rose-500",
+    provincial_tax: "bg-purple-500",
+    cpp: "bg-green-500",
+    ei: "bg-blue-500",
+    take_home: "bg-orange-400",
+  };
+
+  // Build ordered segments
+  const orderedKeys = ["federal_tax", "provincial_tax", "cpp", "ei"];
+  const widths = [];
+  let totalDeductPct = 0;
+
+  orderedKeys.forEach((key) => {
+    const d = deductions[key];
+    if (!d) return;
+    const pct = Math.max(0, Math.min(100, (d.amount / gross) * 100));
+    totalDeductPct += pct;
+    widths.push({ key, pct });
+  });
+
+  const takeHomePct = Math.max(0, 100 - totalDeductPct);
+
+  segmentsEl.innerHTML = "";
+
+  // Render deduction segments
+  widths.forEach(({ key, pct }) => {
+    const seg = document.createElement("div");
+    seg.className = `h-full ${colorMap[key]}`;
+    seg.style.width = `${pct}%`;
+    segmentsEl.appendChild(seg);
+  });
+
+  // Render take-home segment last
+  const takeHomeSeg = document.createElement("div");
+  takeHomeSeg.className = `h-full ${colorMap.take_home}`;
+  takeHomeSeg.style.width = `${takeHomePct}%`;
+  segmentsEl.appendChild(takeHomeSeg);
+}
+
 function handlePrimaryInputChange() {
   if (
     !validateAgeGroup() ||
@@ -750,13 +904,14 @@ function handlePrimaryInputChange() {
 
   // Update UI
   createDeductionInputs(deductions);
-  totalAnnualDeductionsSpan.textContent = formatCurrency(totalDeductions);
-  annualDisposableIncomeSpan.textContent = formatCurrency(
-    calculatorState.annualDisposable
-  );
-  monthlyDisposableIncomeSpan.textContent = formatCurrency(
-    calculatorState.monthlyDisposableIncome
-  );
+  renderDeductionsProgressBar(deductions);
+  // totalAnnualDeductionsSpan.textContent = formatCurrency(totalDeductions);
+  // annualDisposableIncomeSpan.textContent = formatCurrency(
+  //   calculatorState.annualDisposable
+  // );
+  // monthlyDisposableIncomeSpan.textContent = formatCurrency(
+  //   calculatorState.monthlyDisposableIncome
+  // );
 
   // If deduction details are currently expanded, update their max-height
   const deductionInputsContainer = document.getElementById(
@@ -1129,6 +1284,12 @@ function updateAllUI(budget) {
   // Update Progress Bar Indicator
   updateProgressBar(budget.expenses_percentage);
 
+  // Update the new simple bar under the legend
+  updateExpenseHealthBar(budget);
+
+  // Update category summary under progress bar
+  updateExpenseCategorySummary(budget);
+
   // Update Budget Zone coloring
   const zoneColors = {
     GREEN: { bg: "bg-green-500/20", border: "border-green-500/50" },
@@ -1136,22 +1297,33 @@ function updateAllUI(budget) {
     RED: { bg: "bg-red-500/20", border: "border-red-500/50" },
     "EXTREME RED": { bg: "bg-red-900/30", border: "border-red-700/70" },
   };
-  const zoneColor = budget.budget_zone ? zoneColors[budget.budget_zone] : { bg: "", border: "" };
+  const zoneColor = budget.budget_zone
+    ? zoneColors[budget.budget_zone]
+    : { bg: "", border: "" };
   integratedExpenseSummary.className = `mt-8 glass-effect p-4 rounded-xl text-white animate-slide-up ${zoneColor.bg} ${zoneColor.border}`;
 
   // Enable/disable and configure the Savings & Investments section
-  console.log('Debug: budget.total_monthly_expenses =', budget.total_monthly_expenses);
-  console.log('Debug: typeof budget.total_monthly_expenses =', typeof budget.total_monthly_expenses);
-  
+  console.log(
+    "Debug: budget.total_monthly_expenses =",
+    budget.total_monthly_expenses
+  );
+  console.log(
+    "Debug: typeof budget.total_monthly_expenses =",
+    typeof budget.total_monthly_expenses
+  );
+
   if (budget.total_monthly_expenses > 0) {
-    console.log('Debug: Removing opacity from savings section');
+    console.log("Debug: Removing opacity from savings section");
     savingsInvestmentsSection.classList.remove(
       "opacity-50",
       "pointer-events-none"
     );
     savingsInvestmentsSection.classList.add("animate-fade-in");
   } else {
-    console.log('Debug: Not removing opacity - total_monthly_expenses is', budget.total_monthly_expenses);
+    console.log(
+      "Debug: Not removing opacity - total_monthly_expenses is",
+      budget.total_monthly_expenses
+    );
   }
   // Custom allocation inputs are always enabled
   savingsPercentageInput.disabled = false;
@@ -1305,11 +1477,15 @@ function updateAllUI(budget) {
   // Update the projection chart with the new budget data
   updateProjectionChart();
 
-  // Update the custom projection chart with the new budget data
-  updateCustomProjectionChart();
+  // Render all custom projection charts stacked
+  updateAllCustomProjectionCharts();
 
   // Update chart button states based on budget data
   updateChartButtonStates(budget);
+  updateProjectionChart();
+
+  // Render all custom projection charts stacked
+  updateAllCustomProjectionCharts();
 }
 
 /**
@@ -1429,17 +1605,17 @@ function setupEventListeners() {
   const toggleCustomAllocationsBtn = document.getElementById(
     "toggleCustomAllocationsBtn"
   );
+
   const customAllocationsSection = document.getElementById(
     "customAllocationsSection"
   );
 
-  // Add transition styles for smooth animation
+  // Ensure visible by default; no toggle behavior
   if (customAllocationsSection) {
-    customAllocationsSection.style.overflow = "hidden";
-    customAllocationsSection.style.transition =
-      "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out";
-    customAllocationsSection.style.maxHeight = "0";
-    customAllocationsSection.style.opacity = "0";
+    customAllocationsSection.classList.remove("hidden");
+    customAllocationsSection.style.overflow = "visible";
+    customAllocationsSection.style.maxHeight = "none";
+    customAllocationsSection.style.opacity = "1";
   }
 
   if (toggleCustomAllocationsBtn && customAllocationsSection) {
@@ -1653,9 +1829,9 @@ function setupEventListeners() {
     toggleProvinceDropdown();
   });
 
-  deductonToggle.addEventListener("click", () => {
-    toggleDeductionInputs();
-  });
+  // deductonToggle.addEventListener("click", () => {
+  //   toggleDeductionInputs();
+  // });
 
   const toggleAllExpensesButton = document.getElementById(
     "toggle-all-expenses"
@@ -1805,25 +1981,25 @@ function toggleAllExpenses() {
 }
 
 // Function to toggle deduction inputs expansion/collapse
-function toggleDeductionInputs() {
-  const deductionInputsContainer = document.getElementById(
-    "deduction-inputs-container"
-  );
-  const arrow = deductonToggle.querySelector(".dropdown-arrow");
 
-  const isExpanded =
-    deductionInputsContainer.style.maxHeight &&
-    deductionInputsContainer.style.maxHeight !== "0px";
+// function toggleDeductionInputs() {
+//   const deductionInputsContainer = document.getElementById(
+//     "deduction-inputs-container"
+//   );
+//   const arrow = deductonToggle.querySelector(".dropdown-arrow");
 
-  if (isExpanded) {
-    deductionInputsContainer.style.maxHeight = "0px";
-    arrow.style.transform = "rotate(0deg)";
-  } else {
-    deductionInputsContainer.style.maxHeight =
-      deductionInputsContainer.scrollHeight + "px";
-    arrow.style.transform = "rotate(180deg)";
-  }
-}
+//   const isExpanded =
+//     deductionInputsContainer.style.maxHeight &&
+//     deductionInputsContainer.style.maxHeight !== "0px";
+
+//   if (isExpanded) {
+//     // deductionInputsContainer.style.maxHeight = "0px";
+//     // arrow.style.transform = "rotate(0deg)";
+//   } else {
+//     deductionInputsContainer.style.maxHeight = deductionInputsContainer.scrollHeight + "px";
+//     arrow.style.transform = "rotate(180deg)";
+//   }
+// }
 
 function toggleRetirementSection(isShown) {
   const retirementSection = document.getElementById(
@@ -2128,46 +2304,30 @@ function updateProjectionChart() {
 /**
  * Updates the custom projection chart based on the selected allocation type (savings, investments, or both)
  */
-function updateCustomProjectionChart() {
-  // Use the same years as recommended allocations
+// Render one chart + summary + title (stacked view)
+function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   const { years, compoundFrequency } = calculatorState.compoundInterest;
-  const { currentChartType } = calculatorState.customCompoundInterest;
-
-  // Get the chart instance
-  const chartElement = document.getElementById("customPieChart");
-  let chart = Chart.getChart(chartElement);
-
-  // If no budget calculation has been performed yet, return early
-  if (!calculatorState.currentBudget) {
-    console.log("No budget data available yet for custom projection chart");
-    return;
-  }
-
+  if (!calculatorState.currentBudget) return;
   const currentBudget = calculatorState.currentBudget;
 
-  // Determine the monthly contribution and return rate based on the selected chart type using custom allocations
   let monthlyContribution = 0;
   let returnRate = 0;
-
   if (currentBudget.custom_allocations) {
-    if (currentChartType === "savings") {
+    if (chartType === "savings") {
       monthlyContribution = currentBudget.custom_allocations.monthly_savings;
-      returnRate = 3; // 3% for savings
-    } else if (currentChartType === "investments") {
+      returnRate = 3;
+    } else if (chartType === "investments") {
       monthlyContribution =
         currentBudget.custom_allocations.monthly_investments;
-      returnRate = 10; // 10% for investments
-    } else if (currentChartType === "both") {
-      const savingsAmount = currentBudget.custom_allocations.monthly_savings;
-      const investmentsAmount =
-        currentBudget.custom_allocations.monthly_investments;
-      monthlyContribution = savingsAmount + investmentsAmount;
-      // Use simple average of 3% and 10%
-      returnRate = (3 + 10) / 2; // 6.5%
+      returnRate = 10;
+    } else {
+      const s = currentBudget.custom_allocations.monthly_savings;
+      const i = currentBudget.custom_allocations.monthly_investments;
+      monthlyContribution = s + i;
+      returnRate = (3 + 10) / 2; // 6.5% combined
     }
   }
 
-  // Calculate the future value
   const { endingBalance, totalContributions, interestEarned } =
     calculateFutureValue(
       monthlyContribution,
@@ -2176,90 +2336,56 @@ function updateCustomProjectionChart() {
       compoundFrequency
     );
 
-  // Define custom color schemes for custom charts
-  const customColorSchemes = {
+  const colors = {
     savings: {
-      backgroundColor: [
-        "rgba(233, 30, 99, 0.8)", // Pink for contributions
-        "rgba(0, 188, 212, 0.8)", // Cyan for interest
-        "rgba(63, 81, 181, 0.8)", // Indigo for ending balance
-      ],
-      borderColor: [
-        "rgba(233, 30, 99, 1)",
-        "rgba(0, 188, 212, 1)",
-        "rgba(63, 81, 181, 1)",
-      ],
+      background: ["#b11b43", "#f6c462"],
+      border: ["#b11b43", "#f6c462"],
       borderWidth: 2,
     },
     investments: {
-      backgroundColor: [
-        "rgba(255, 87, 34, 0.8)", // Deep orange for contributions
-        "rgba(139, 195, 74, 0.8)", // Light green for interest
-        "rgba(156, 39, 176, 0.8)", // Purple for ending balance
-      ],
-      borderColor: [
-        "rgba(255, 87, 34, 1)",
-        "rgba(139, 195, 74, 1)",
-        "rgba(156, 39, 176, 1)",
-      ],
-      borderWidth: 3,
+      background: ["#16a34a", "#b11b43"],
+      border: ["#16a34a", "#b11b43"],
+      borderWidth: 2,
     },
     both: {
-      backgroundColor: [
-        "rgba(121, 85, 72, 0.8)", // Brown for contributions
-        "rgba(96, 125, 139, 0.8)", // Blue grey for interest
-        "rgba(255, 152, 0, 0.8)", // Orange for ending balance
-      ],
-      borderColor: [
-        "rgba(121, 85, 72, 1)",
-        "rgba(96, 125, 139, 1)",
-        "rgba(255, 152, 0, 1)",
-      ],
-      borderWidth: 1,
+      background: ["#315eb3", "#f59e0b"],
+      border: ["#315eb3", "#f59e0b"],
+      borderWidth: 2,
     },
-  };
+  }[chartType];
 
-  const currentCustomColors =
-    customColorSchemes[currentChartType] || customColorSchemes.savings;
+  const pctContrib = Math.round((totalContributions / endingBalance) * 100);
+  const pctInterest = Math.round((interestEarned / endingBalance) * 100);
 
-  // Update the chart data as percentages of ending balance
-  const customContributionPercentage = Math.round(
-    (totalContributions / endingBalance) * 100
-  );
-  const customInterestPercentage = Math.round(
-    (interestEarned / endingBalance) * 100
-  );
-  const customChartData = [
-    customContributionPercentage,
-    customInterestPercentage,
-  ];
-  const customChartLabels = ["Total Contributions", "Interest Earned"];
-  const customChartTotal = 100; // Total is always 100%
+  const labels =
+    chartType === "savings"
+      ? ["Total savings", "Interest earned"]
+      : chartType === "investments"
+      ? ["Total investments", "Interest earned"]
+      : ["Total investments and savings", "Interest earned"];
 
+  const chartElement = document.getElementById(canvasId);
+  if (!chartElement) return;
+  let chart = Chart.getChart(chartElement);
   if (chart) {
-    chart.data.datasets[0].data = customChartData;
-    chart.data.labels = customChartLabels;
-    chart.data.datasets[0].backgroundColor =
-      currentCustomColors.backgroundColor.slice(0, 2);
-    chart.data.datasets[0].borderColor = currentCustomColors.borderColor.slice(
-      0,
-      2
-    );
-    chart.data.datasets[0].borderWidth = currentCustomColors.borderWidth;
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = [pctContrib, pctInterest];
+    chart.data.datasets[0].backgroundColor = colors.background;
+    chart.data.datasets[0].borderColor = colors.border;
+    chart.data.datasets[0].borderWidth = colors.borderWidth;
     chart.update();
   } else {
-    // If chart doesn't exist yet, create it
     chart = new Chart(chartElement.getContext("2d"), {
       type: "pie",
       data: {
-        labels: customChartLabels,
+        labels,
         datasets: [
           {
             label: "Custom Projection",
-            data: customChartData,
-            backgroundColor: currentCustomColors.backgroundColor.slice(0, 2),
-            borderColor: currentCustomColors.borderColor.slice(0, 2),
-            borderWidth: currentCustomColors.borderWidth,
+            data: [pctContrib, pctInterest],
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderWidth: colors.borderWidth,
           },
         ],
       },
@@ -2269,100 +2395,123 @@ function updateCustomProjectionChart() {
           tooltip: {
             callbacks: {
               label: function (context) {
-                const label = context.label || "";
+                const lbl = context.label || "";
                 const percentage = context.raw || 0;
-                const dollarValue =
-                  label === "Total Contributions"
-                    ? totalContributions
-                    : interestEarned;
-                return `${label}\n${formatCurrency(
+                const dollarValue = lbl.toLowerCase().includes("interest")
+                  ? interestEarned
+                  : totalContributions;
+                return `${lbl}\n${formatCurrency(
                   dollarValue
                 )} (${percentage}%)`;
               },
             },
           },
-          legend: {
-            display: false,
-          },
-          title: {
-            display: false,
-          },
+          legend: { display: false },
+          title: { display: false },
           datalabels: {
             color: "white",
-            font: {
-              weight: "bold",
-              size: 12,
-            },
-            formatter: function (value, context) {
-              return value + "%";
+            font: { weight: "bold", size: 12 },
+            formatter: function () {
+              // No percentage labels inside chart (match screenshot)
+              return "";
             },
           },
         },
-        layout: {
-          padding: 10,
-        },
+        layout: { padding: 10 },
       },
     });
   }
 
-  // Display a summary of the projection below the chart
-  const summaryElement = document.getElementById("customProjectionSummary");
-  if (summaryElement) {
-    const contributionType =
-      currentChartType === "savings"
-        ? "Savings"
-        : currentChartType === "investments"
-        ? "Investments"
-        : "Combined";
+  // Title text above chart
+  const titleElement = document.getElementById(titleId);
+  if (titleElement) {
+    const titleText =
+      chartType === "savings"
+        ? `Savings projection for ${formatCurrency(
+            monthlyContribution
+          )}/month for ${years} years at ${returnRate}% return (savings rate)`
+        : chartType === "investments"
+        ? `Investments Projection for ${formatCurrency(
+            monthlyContribution
+          )}/month for ${years} years at ${returnRate}% return (investment rate)`
+        : `Investment and savings projection for ${formatCurrency(
+            monthlyContribution
+          )}/month for ${years} years at ${returnRate}% return`;
+    titleElement.textContent = titleText;
+  }
 
-    // Create descriptive return rate message
-    let returnRateDescription;
-    if (currentChartType === "savings") {
-      returnRateDescription = `${returnRate.toFixed(1)}% savings rate`;
-    } else if (currentChartType === "investments") {
-      returnRateDescription = `${returnRate.toFixed(1)}% investment rate`;
-    } else {
-      returnRateDescription = `${returnRate.toFixed(
-        1
-      )}% average of savings 3% and investments 10%`;
-    }
+  // Summary rows with dotted leaders and green amounts
+  const summaryElement = document.getElementById(summaryId);
+  if (!summaryElement) return;
+  const leader = `<span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>`;
+  const greenAmt = (val) =>
+    `<span class="font-semibold text-[#177F5B]">${formatCurrency(val)}</span>`;
 
-    summaryElement.innerHTML = `
-      <div class="text-white text-sm">
-        <p class="font-semibold mb-2 text-center">${contributionType} Projection</p>
-        <p class="text-xs text-white/70 mb-2 text-center">${formatCurrency(
-          monthlyContribution
-        )}/month for ${years} years at ${returnRateDescription}</p>
-        <div class="space-y-1">
-          <div class="flex items-center justify-between p-2 rounded bg-white/10 mb-3">
-            <span class="text-sm font-bold">Ending Balance</span>
-            <span class="font-bold text-lg">${formatCurrency(
-              endingBalance
-            )}</span>
-          </div>
-          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(0)">
-            <div class="flex items-center gap-1">
-              <div class="w-4 h-3 rounded" style="background-color: ${
-                currentCustomColors.backgroundColor[0]
-              }"></div>
-              <span class="text-sm" id="custom-legend-0">Total Contributions</span>
-            </div>
-            <span class="font-semibold">${formatCurrency(
-              totalContributions
-            )}</span>
-          </div>
-          <div class="flex items-center justify-between p-1 rounded cursor-pointer hover:bg-white/5 transition-colors" onclick="toggleCustomChartSegment(1)">
-            <div class="flex items-center gap-1">
-              <div class="w-4 h-3 rounded" style="background-color: ${
-                currentCustomColors.backgroundColor[1]
-              }"></div>
-              <span class="text-sm" id="custom-legend-1">Interest Earned</span>
-            </div>
-            <span class="font-semibold">${formatCurrency(interestEarned)}</span>
-          </div>
-        </div>
+  summaryElement.innerHTML = `
+    <div class="space-y-2 text-sm text-gray-700">
+      <div class="flex items-center">
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
+          colors.background[0]
+        }"></span>
+        <span class="ml-2">${labels[0]} (${pctContrib}%)</span>
+        ${leader}
+        ${greenAmt(totalContributions)}
       </div>
-    `;
+      <div class="flex items-center">
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
+          colors.background[1]
+        }"></span>
+        <span class="ml-2">${labels[1]} (${pctInterest}%)</span>
+        ${leader}
+        ${greenAmt(interestEarned)}
+      </div>
+      <div class="flex items-center">
+        <span class="ml-5">Ending balance</span>
+        ${leader}
+        ${greenAmt(endingBalance)}
+      </div>
+    </div>
+  `;
+}
+
+// Render all stacked charts/summaries and titles
+function updateAllCustomProjectionCharts() {
+  if (!calculatorState.currentBudget) return;
+  renderCustomProjection(
+    "savings",
+    "customSavingsPieChart",
+    "customSavingsProjectionSummary",
+    "customSavingsTitle"
+  );
+  renderCustomProjection(
+    "investments",
+    "customInvestmentsPieChart",
+    "customInvestmentsProjectionSummary",
+    "customInvestmentsTitle"
+  );
+  renderCustomProjection(
+    "both",
+    "customBothPieChart",
+    "customBothProjectionSummary",
+    "customBothTitle"
+  );
+}
+
+// Backward compatibility for existing calls
+function updateCustomProjectionChart() {
+  updateAllCustomProjectionCharts();
+}
+
+// Toggle a segment for a specific chart
+function toggleCustomChartSegmentFor(chartId, segmentIndex) {
+  const chartElement = document.getElementById(chartId);
+  const chart = Chart.getChart(chartElement);
+  if (chart && chart.data.datasets[0]) {
+    const meta = chart.getDatasetMeta(0);
+    if (meta.data[segmentIndex]) {
+      meta.data[segmentIndex].hidden = !meta.data[segmentIndex].hidden;
+      chart.update();
+    }
   }
 }
 
@@ -2513,5 +2662,155 @@ function updateProgressBar(expensesPercentage) {
   }
 }
 
+function updateExpenseHealthBar(budget) {
+  const overlay = document.getElementById("expenseHealthBar");
+  const usedText = document.getElementById("expenseUsedText");
+  const leftText = document.getElementById("expenseLeftText");
+  if (!overlay || !usedText || !leftText) return;
+
+  const percentUsed = Math.max(
+    0,
+    Math.min(100, budget?.expenses_percentage || 0)
+  );
+  const leftAmount = Math.max(
+    0,
+    (budget?.monthly_disposable_income || 0) -
+      (budget?.total_monthly_expenses || 0)
+  );
+
+  // Labels (match the image style)
+  usedText.textContent = `${percentUsed.toFixed(0)}% used`;
+  leftText.textContent = `${formatCurrency(leftAmount)} left`;
+
+  // Grey overlay covers the unused portion from the right
+  const remainder = 100 - percentUsed;
+  overlay.style.width = `${remainder}%`;
+}
+
+function updateExpenseCategorySummary(budget) {
+  const mdi = budget?.monthly_disposable_income || 0;
+  const exp = budget?.living_expenses || {};
+  const sum = (ids) => ids.reduce((s, id) => s + (parseFloat(exp[id]) || 0), 0);
+
+  const rows = [
+    {
+      key: "housing",
+      ids: [
+        "rent-mortgage",
+        "electricity",
+        "water",
+        "gas-heating",
+        "home-insurance",
+        "housing-others",
+      ],
+    },
+    {
+      key: "living",
+      ids: [
+        "groceries",
+        "phone-bills",
+        "subscriptions",
+        "internet",
+        "clothing",
+        "living-others",
+      ],
+    },
+    {
+      key: "transportation",
+      ids: [
+        "car-payment",
+        "gas-fuel",
+        "car-insurance",
+        "public-transit",
+        "car-maintenance",
+        "transport-others",
+      ],
+    },
+    {
+      key: "loans",
+      ids: [
+        "student-loans",
+        "credit-cards",
+        "personal-loans",
+        "life-insurance",
+        "line-of-credit",
+        "loan-others",
+      ],
+    },
+    {
+      key: "children",
+      ids: [
+        "school-tuition",
+        "childcare",
+        "school-supplies",
+        "kids-activities",
+        "education-savings",
+        "children-others",
+      ],
+    },
+    {
+      key: "miscellaneous",
+      ids: [
+        "healthcare",
+        "entertainment",
+        "dining-out",
+        "pets",
+        "gifts-donations",
+        "misc-others",
+      ],
+    },
+  ];
+
+  rows.forEach(({ key, ids }) => {
+    const total = sum(ids);
+    const pct = mdi > 0 ? (total / mdi) * 100 : 0;
+
+    const pctEl = document.getElementById(`summary-${key}-pct`);
+    const amtEl = document.getElementById(`summary-${key}-amt`);
+    if (pctEl) pctEl.textContent = `${pct.toFixed(0)}%`;
+    if (amtEl) amtEl.textContent = formatCurrency(total);
+  });
+
+  const totalExpEl = document.getElementById("summary-total-expenses");
+  if (totalExpEl)
+    totalExpEl.textContent = formatCurrency(
+      budget?.total_monthly_expenses || 0
+    );
+}
+
+function initDeductionsNav() {
+  const nav = document.getElementById("deductions-nav");
+  if (!nav) return;
+
+  const tabs = nav.querySelectorAll(".deductions-tab");
+  const contents = {
+    taxes: document.getElementById("taxes-content"),
+    expenses: document.getElementById("expenses-content"),
+    save: document.getElementById("save-invest-content"),
+  };
+
+  const setActive = (key) => {
+    tabs.forEach((btn) => {
+      const active = btn.dataset.tab === key;
+      btn.classList.toggle("bg-[#dbece6]", active);
+      btn.classList.toggle("font-semibold", active);
+    });
+    Object.entries(contents).forEach(([name, el]) => {
+      if (!el) return;
+      el.classList.toggle("hidden", name !== key);
+    });
+  };
+
+  tabs.forEach((btn) =>
+    btn.addEventListener("click", () => setActive(btn.dataset.tab))
+  );
+
+  // Default active tab
+  setActive("taxes");
+}
+
 // Start the application once the DOM is fully loaded.
-document.addEventListener("DOMContentLoaded", initializeApp);
+document.addEventListener("DOMContentLoaded", () => {
+  initializeApp();
+  initDeductionsNav();
+});
