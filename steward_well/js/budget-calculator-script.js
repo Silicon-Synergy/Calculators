@@ -443,12 +443,49 @@ function calculateBudget(
 
 // Determines the user's budget zone (Green, Moderate, Red, Extreme Red) based on expense ratio.
 function determineBudgetZoneAndOptions(expensesPercentage) {
+  if (isNaN(expensesPercentage)) {
+    // return ["GREEN", "Enter expenses to see guidance.", true, true];
+      return [null, null, true, true];
+  }
+
   if (expensesPercentage <= 70) {
-    return [null, "", true, true];
+    // Healthy: ample room to save/invest
+    return [
+      // "GREEN",
+      // "Healthy budget: allocate to savings and investments.",
+      null,
+      null,
+      true,
+      true,
+    ];
+  } else if (expensesPercentage <= 80) {
+    // Caution: watch lifestyle creep, keep cashflow positive
+    return [
+      // "MODERATE",
+      // "Caution: spending is close to your take-home; keep cashflow positive.",
+      null,
+      null,
+      true,
+      true,
+    ];
   } else if (expensesPercentage <= 85) {
-    return [null, "", true, true];
+    // Red: prioritize cashflow, reduce expenses; investments not recommended
+    return [
+      // "RED",
+      // "Focus on reducing expenses and maintaining cashflow.",
+      null, null,
+      true,
+      false,
+    ];
   } else {
-    return [null, "", false, false];
+    // Extreme Red: cut expenses immediately; pause savings/investments
+    return [
+      // "EXTREME RED",
+      // "Critical: expenses too high; pause savings/investments and cut costs.",
+      null, null,
+      false,
+      false,
+    ];
   }
 }
 
@@ -558,18 +595,18 @@ function initializeProvinceDropdown() {
  * Creates read-only input fields to display tax deduction breakdown.
  */
 function createDeductionInputs(deductions) {
-  // ... existing code ...
   deductionInputsContainer.innerHTML = "";
-
-  const colorMap = {
-    federal_tax: "bg-rose-500",
-    provincial_tax: "bg-purple-500",
-    cpp: "bg-green-500",
-    ei: "bg-blue-500",
-    retirement: "bg-yellow-500",
+4
+  const deductionHexColors = {
+    federal_tax: "#D6426C",
+    provincial_tax: "#9D88E1",
+    cpp: "#8DE188",
+    ei: "#3364E1",
+    retirement: "#94a3b8"
   };
 
-  // Render each tax/deduction row
+  const gradientStyle = "linear-gradient(to right, #177F5B, #154D80)";
+
   Object.entries(deductions).forEach(([key, deduction]) => {
     const row = document.createElement("div");
     row.className = "flex items-center justify-between py-2";
@@ -578,20 +615,17 @@ function createDeductionInputs(deductions) {
     left.className = "flex items-center gap-3";
 
     const dot = document.createElement("span");
-    dot.className = `w-3 h-3 rounded-sm ${colorMap[key] || "bg-slate-400"}`;
+    dot.className = "w-3 h-3 rounded-sm";
+    dot.style.backgroundColor = deductionHexColors[key] || "#94a3b8";
     left.appendChild(dot);
 
-    // Prefer generic “Provincial tax” label (matches screenshot)
     const name = key === "provincial_tax" ? "Provincial tax" : deduction.name;
 
     const labelText = document.createElement("span");
     labelText.className = "text-sm font-medium";
-    labelText.innerHTML = `${name} <span class="text-zinc-400">(${deduction.percentage.toFixed(
-      2
-    )}%)</span>`;
+    labelText.innerHTML = `${name} <span class="text-zinc-400">(${deduction.percentage.toFixed(2)}%)</span>`;
     left.appendChild(labelText);
 
-    // Add robust tooltip for CPP/EI (hover and click)
     if (key === "cpp" || key === "ei") {
       const infoWrap = document.createElement("span");
       infoWrap.style.position = "relative";
@@ -639,9 +673,7 @@ function createDeductionInputs(deductions) {
       infoWrap.addEventListener("mouseleave", hideTooltip);
       infoWrap.addEventListener("click", (e) => {
         e.stopPropagation();
-        const visible = tooltip.style.visibility === "visible";
-        if (visible) hideTooltip();
-        else showTooltip();
+        tooltip.style.visibility === "visible" ? hideTooltip() : showTooltip();
       });
 
       infoWrap.appendChild(info);
@@ -653,7 +685,10 @@ function createDeductionInputs(deductions) {
     dotted.className = "flex-1 border-t border-dashed border-emerald-200 mx-3";
 
     const amount = document.createElement("span");
-    amount.className = "text-green-600 font-semibold";
+    amount.style.background = gradientStyle;
+    amount.style.webkitBackgroundClip = "text";
+    amount.style.webkitTextFillColor = "transparent";
+    amount.style.fontWeight = "600";
     amount.textContent = formatCurrency(deduction.amount);
 
     row.appendChild(left);
@@ -664,10 +699,7 @@ function createDeductionInputs(deductions) {
   });
 
   // Summary rows: Total Annual Deduction, Annual & Monthly Take Home Pay
-  const totalAmount = Object.values(deductions).reduce(
-    (sum, d) => sum + d.amount,
-    0
-  );
+  const totalAmount = Object.values(deductions).reduce((sum, d) => sum + d.amount, 0);
   const totalPct =
     calculatorState.annualIncome > 0
       ? (totalAmount / calculatorState.annualIncome) * 100
@@ -675,16 +707,8 @@ function createDeductionInputs(deductions) {
 
   const summaryRows = [
     { name: "Total Annual Deduction", pct: totalPct, value: totalAmount },
-    {
-      name: "Annual Take Home Pay",
-      pct: null,
-      value: calculatorState.annualDisposable,
-    },
-    {
-      name: "Monthly Take Home Pay",
-      pct: null,
-      value: calculatorState.monthlyDisposableIncome,
-    },
+    { name: "Annual Take Home Pay", pct: null, value: calculatorState.annualDisposable },
+    { name: "Monthly Take Home Pay", pct: null, value: calculatorState.monthlyDisposableIncome },
   ];
 
   summaryRows.forEach(({ name, pct, value }) => {
@@ -694,10 +718,11 @@ function createDeductionInputs(deductions) {
     const left = document.createElement("div");
     left.className = "flex items-center gap-2";
 
-    // Add orange dot for Annual Take Home Pay
+    // Dot for Annual Take Home Pay with your specified color
     if (name === "Annual Take Home Pay") {
       const dot = document.createElement("span");
-      dot.className = "w-3 h-3 rounded-sm bg-orange-500";
+      dot.className = "w-3 h-3 rounded-sm";
+      dot.style.backgroundColor = "#FB725A";
       left.appendChild(dot);
     }
 
@@ -713,7 +738,10 @@ function createDeductionInputs(deductions) {
     dotted.className = "flex-1 border-t border-dashed border-emerald-200 mx-3";
 
     const amount = document.createElement("span");
-    amount.className = "text-green-600 font-semibold";
+    amount.style.background = gradientStyle;
+    amount.style.webkitBackgroundClip = "text";
+    amount.style.webkitTextFillColor = "transparent";
+    amount.style.fontWeight = "600";
     amount.textContent = formatCurrency(value);
 
     row.appendChild(left);
@@ -722,7 +750,6 @@ function createDeductionInputs(deductions) {
 
     deductionInputsContainer.appendChild(row);
   });
-  // ... existing code ...
 }
 // Utility functions for validation and formatting.
 
@@ -831,12 +858,12 @@ function renderDeductionsProgressBar(deductions) {
     return;
   }
 
-  const colorMap = {
-    federal_tax: "bg-rose-500",
-    provincial_tax: "bg-purple-500",
-    cpp: "bg-green-500",
-    ei: "bg-blue-500",
-    take_home: "bg-orange-400",
+  const hexMap = {
+    federal_tax: "#D6426C",
+    provincial_tax: "#9D88E1",
+    cpp: "#8DE188",
+    ei: "#3364E1",
+    take_home: "#FB725A",
   };
 
   // Build ordered segments
@@ -853,20 +880,21 @@ function renderDeductionsProgressBar(deductions) {
   });
 
   const takeHomePct = Math.max(0, 100 - totalDeductPct);
-
   segmentsEl.innerHTML = "";
 
-  // Render deduction segments
+  // Render deduction segments with exact hex colors
   widths.forEach(({ key, pct }) => {
     const seg = document.createElement("div");
-    seg.className = `h-full ${colorMap[key]}`;
+    seg.className = "h-full";
+    seg.style.background = hexMap[key] || "#64748b"; // slate fallback
     seg.style.width = `${pct}%`;
     segmentsEl.appendChild(seg);
   });
 
-  // Render take-home segment last
+  // Render take-home segment last with exact hex color
   const takeHomeSeg = document.createElement("div");
-  takeHomeSeg.className = `h-full ${colorMap.take_home}`;
+  takeHomeSeg.className = "h-full";
+  takeHomeSeg.style.background = hexMap.take_home;
   takeHomeSeg.style.width = `${takeHomePct}%`;
   segmentsEl.appendChild(takeHomeSeg);
 }
@@ -1443,7 +1471,6 @@ function updateAllUI(budget) {
   if (budget.monthly_disposable_income > 0) {
     ctaSection.classList.remove("hidden");
 
-    // Use the custom cashflow for the check if it exists, otherwise use recommended.
     const cashflowToCheck = budget.custom_allocations
       ? budget.custom_allocations.monthly_cashflow
       : budget.recommended_allocations.monthly_cashflow;
@@ -1453,9 +1480,16 @@ function updateAllUI(budget) {
 
     if (cashflowPctToCheck < MIN_CASHFLOW_PCT) {
       // Caution message
-      ctaMessage.innerHTML = `Great Job, lets walk you through a clear next step to build sustainable wealth`;
-      ctaSection.classList.remove("bg-white/5", "border-white/10");
-      ctaSection.classList.add("bg-red-900/30", "border-red-500/50");
+      ctaMessage.innerHTML = `Your <strong class="font-semibold">recommended</strong> cashflow is <span class="text-red-400">${formatPercentage(
+        cashflowPctToCheck
+      )}</span>, which is <span class="text-red-400">${formatCurrency(
+        cashflowToCheck
+      )}</span>. To learn how to manage and secure your finances, click the button below`;
+
+      // Remove any background colors; only use border for emphasis
+      ctaSection.classList.remove("bg-white/5", "bg-red-900/30");
+      ctaSection.classList.remove("border-white/10");
+      ctaSection.classList.add("border-red-500/50");
     } else {
       // Standard message
       ctaMessage.innerHTML = `Your <strong class="font-semibold">recommended</strong> cashflow is <span class="text-green-400">${formatPercentage(
@@ -1463,8 +1497,11 @@ function updateAllUI(budget) {
       )}</span>, which is <span class="text-green-400">${formatCurrency(
         budget.recommended_allocations.monthly_cashflow
       )}</span>. To learn how to manage and secure your finances, click the button below.`;
-      ctaSection.classList.add("bg-white/5", "border-white/10");
-      ctaSection.classList.remove("bg-red-900/30", "border-red-500/50");
+
+      // Remove any background colors; only use border for normal state
+      ctaSection.classList.remove("bg-white/5", "bg-red-900/30");
+      ctaSection.classList.remove("border-red-500/50");
+      ctaSection.classList.add("border-white/10");
     }
   } else {
     ctaSection.classList.add("hidden");
@@ -1600,6 +1637,30 @@ function setupEventListeners() {
       handlePrimaryInputChange();
     }
   });
+
+  // CTA: Reset to recommended numbers
+  const ctaResetBtn = document.getElementById("cta-reset-btn");
+  if (ctaResetBtn) {
+    ctaResetBtn.addEventListener("click", () => {
+      const budget = calculatorState.currentBudget;
+      if (!budget) return;
+
+      // Set inputs to recommended percentages
+      savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
+      investmentsPercentageInput.value = budget.recommended_investments_pct.toFixed(1);
+
+      // Set amount inputs to recommended monthly amounts
+      customSavingsAmountInput.value = formatCurrency(
+        budget.recommended_allocations.monthly_savings
+      );
+      customInvestmentsAmountInput.value = formatCurrency(
+        budget.recommended_allocations.monthly_investments
+      );
+
+      // Recalculate with these values to update charts and cashflow
+      handleExpenseOrAllocationChange();
+    });
+  };
 
   // Custom Allocations Toggle Button
   const toggleCustomAllocationsBtn = document.getElementById(
@@ -1956,8 +2017,12 @@ function toggleCategory(categoryName) {
 // Function to toggle all expense categories at once
 function toggleAllExpenses() {
   const toggleAllButton = document.getElementById("toggle-all-expenses");
+  const label = document.getElementById("toggle-all-expenses-text");
   const expenseCategories = document.querySelectorAll(".expense-category");
-  const isExpanding = toggleAllButton.textContent.includes("Expand");
+
+  const isExpanding = label
+    ? label.textContent.trim().toLowerCase().includes("expand")
+    : true; // default to expanding if label not found
 
   expenseCategories.forEach((category) => {
     const categoryContent = category.querySelector(".category-content");
@@ -1967,17 +2032,19 @@ function toggleAllExpenses() {
       categoryContent.style.maxHeight !== "0px";
 
     if (isExpanding && !isExpanded) {
-      // Expand it
       categoryContent.style.maxHeight = categoryContent.scrollHeight + "px";
       arrow.style.transform = "rotate(180deg)";
     } else if (!isExpanding && isExpanded) {
-      // Collapse it
       categoryContent.style.maxHeight = "0px";
       arrow.style.transform = "rotate(0deg)";
     }
   });
 
-  toggleAllButton.textContent = isExpanding ? "Collapse All" : "Expand All";
+  // Update only the label text so icons never disappear
+  if (label) {
+    label.textContent = isExpanding ? "Collapse all" : "Expand all";
+  }
+  // DO NOT set toggleAllButton.textContent (it would remove the icons)
 }
 
 // Function to toggle deduction inputs expansion/collapse
@@ -2663,10 +2730,8 @@ function updateProgressBar(expensesPercentage) {
 }
 
 function updateExpenseHealthBar(budget) {
-  const overlay = document.getElementById("expenseHealthBar");
-  const usedText = document.getElementById("expenseUsedText");
-  const leftText = document.getElementById("expenseLeftText");
-  if (!overlay || !usedText || !leftText) return;
+  // ... existing code ...
+  const hasUserCustomInput = !!(budget && budget.custom_allocations);
 
   const percentUsed = Math.max(
     0,
@@ -2678,13 +2743,48 @@ function updateExpenseHealthBar(budget) {
       (budget?.total_monthly_expenses || 0)
   );
 
-  // Labels (match the image style)
-  usedText.textContent = `${percentUsed.toFixed(0)}% used`;
-  leftText.textContent = `${formatCurrency(leftAmount)} left`;
+  // Update only the percentage value; keep gradient and sizing intact
+  const usedValueSpan = document.getElementById("expenseUsedValue");
+  const usedText = document.getElementById("expenseUsedText");
+  if (usedValueSpan) {
+    usedValueSpan.textContent = `${percentUsed.toFixed(0)}%`;
+  } else if (usedText) {
+    // Fallback if markup isn't split yet
+    usedText.textContent = `${percentUsed.toFixed(0)}% used`;
+  }
+
+  // Right-side label
+  const leftText = document.getElementById("expenseLeftText");
+  if (leftText) {
+    leftText.textContent = `${formatCurrency(leftAmount)} left of ${formatCurrency(
+      budget?.monthly_disposable_income || 0
+    )}`;
+  }
 
   // Grey overlay covers the unused portion from the right
-  const remainder = 100 - percentUsed;
-  overlay.style.width = `${remainder}%`;
+  const overlay = document.getElementById("expenseHealthBar");
+  if (overlay) {
+    const remainder = 100 - percentUsed;
+    overlay.style.width = `${remainder}%`;
+  }
+
+  // If no custom input, set the simple cashflow display from current budget
+  if (!hasUserCustomInput) {
+    const currentCashflowAmount =
+      (budget?.monthly_disposable_income || 0) -
+      (budget?.total_monthly_expenses || 0);
+    const currentCashflowPct = 100 - (budget?.expenses_percentage || 0);
+
+    const cashflowAmtEl = document.getElementById("customCashflowAmount");
+    const cashflowPctEl = document.getElementById("customCashflowPercentage");
+    if (cashflowAmtEl) {
+      cashflowAmtEl.textContent = formatCurrency(currentCashflowAmount);
+    }
+    if (cashflowPctEl) {
+      cashflowPctEl.textContent = `(${currentCashflowPct.toFixed(1)}%)`;
+    }
+  }
+  // ... existing code ...
 }
 
 function updateExpenseCategorySummary(budget) {
@@ -2794,6 +2894,7 @@ function initDeductionsNav() {
       const active = btn.dataset.tab === key;
       btn.classList.toggle("bg-[#dbece6]", active);
       btn.classList.toggle("font-semibold", active);
+      btn.classList.remove("font-semibold");
     });
     Object.entries(contents).forEach(([name, el]) => {
       if (!el) return;
@@ -2813,4 +2914,60 @@ function initDeductionsNav() {
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
   initDeductionsNav();
+
+  const printDownloadBtn = document.getElementById("print-download-btn");
+  const resultsWrapper = document.getElementById("deductions-disposable-section");
+  const taxesContent = document.getElementById("taxes-content");
+
+  function handlePrint() {
+    if (resultsWrapper && resultsWrapper.classList.contains("hidden")) {
+      resultsWrapper.classList.remove("hidden");
+    }
+    if (taxesContent && taxesContent.classList.contains("hidden")) {
+      taxesContent.classList.remove("hidden");
+    }
+    window.print();
+  }
+
+  function handleDirectDownloadPDF() {
+    if (resultsWrapper && resultsWrapper.classList.contains("hidden")) {
+      resultsWrapper.classList.remove("hidden");
+    }
+    if (taxesContent && taxesContent.classList.contains("hidden")) {
+      taxesContent.classList.remove("hidden");
+    }
+
+    const target = taxesContent || resultsWrapper || document.body;
+
+    if (typeof html2pdf === "undefined") {
+      handlePrint();
+      return;
+    }
+
+    const opt = {
+      margin: 10,
+      filename: "Steward Well Capital - Budget Results.pdf",
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    try {
+      const worker = html2pdf().set(opt).from(target).save();
+      if (worker && typeof worker.then === "function") {
+        worker.then(() => handlePrint()).catch(() => handlePrint());
+      } else {
+        setTimeout(handlePrint, 800);
+      }
+    } catch (e) {
+      setTimeout(handlePrint, 800);
+    }
+  }
+
+  if (printDownloadBtn) {
+    printDownloadBtn.addEventListener("click", (evt) => {
+      evt.preventDefault();
+      handleDirectDownloadPDF();
+    });
+  }
 });

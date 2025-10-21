@@ -546,33 +546,54 @@ input::-webkit-inner-spin-button {
 }
 
 .healthy-box {
-  border-color: rgba(16, 185, 129, 0.3);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(4, 120, 87, 0.1));
+  border-color: rgba(22, 138, 83, 0.3); /* #168A53 */
+  background: linear-gradient(
+    135deg,
+    rgba(22, 138, 83, 0.10),
+    rgba(22, 138, 83, 0.15)
+  );
 }
-
 .healthy-box:hover {
-  border-color: rgba(16, 185, 129, 0.6);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(4, 120, 87, 0.15));
+  border-color: rgba(22, 138, 83, 0.6); /* #168A53 */
+  background: linear-gradient(
+    135deg,
+    rgba(22, 138, 83, 0.15),
+    rgba(22, 138, 83, 0.25)
+  );
 }
 
 .caution-box {
   border-color: rgba(245, 158, 11, 0.3);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(180, 83, 9, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.1),
+    rgba(245, 158, 11, 0.15)
+  );
 }
-
 .caution-box:hover {
   border-color: rgba(245, 158, 11, 0.6);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(180, 83, 9, 0.15));
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15),
+    rgba(245, 158, 11, 0.25)
+  );
 }
 
 .critical-box {
   border-color: rgba(239, 68, 68, 0.3);
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(185, 28, 28, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(239, 68, 68, 0.15)
+  );
 }
-
 .critical-box:hover {
   border-color: rgba(239, 68, 68, 0.6);
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.15));
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.15),
+    rgba(239, 68, 68, 0.25)
+  );
 }
 
 .box-icon {
