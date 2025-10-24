@@ -1403,7 +1403,8 @@ function updateAllUI(budget) {
   }
 
   if (!isInvestmentsModified) {
-    investmentsPercentageInput.value = budget.recommended_investments_pct.toFixed(1);
+    investmentsPercentageInput.value =
+      budget.recommended_investments_pct.toFixed(1);
     customInvestmentsAmountInput.value = formatCurrency(
       budget.recommended_allocations.monthly_investments
     );
@@ -1432,7 +1433,9 @@ function updateAllUI(budget) {
 
   // Update Custom Allocations Display (Amounts and Percentages)
   const userEnteredSavingsPct = parseFloat(savingsPercentageInput.value);
-  const userEnteredInvestmentsPct = parseFloat(investmentsPercentageInput.value);
+  const userEnteredInvestmentsPct = parseFloat(
+    investmentsPercentageInput.value
+  );
   const hasAnyUserCustomInputForCashflow =
     savingsPercentageInput.dataset.userModified === "true" ||
     investmentsPercentageInput.dataset.userModified === "true" ||
@@ -1443,7 +1446,9 @@ function updateAllUI(budget) {
   if (isSavingsModified) {
     if (!customSavingsAmountInput.matches(":focus")) {
       customSavingsAmountInput.value = formatCurrency(
-        budget.custom_allocations ? budget.custom_allocations.monthly_savings : 0
+        budget.custom_allocations
+          ? budget.custom_allocations.monthly_savings
+          : 0
       );
     }
   } else {
@@ -1455,7 +1460,9 @@ function updateAllUI(budget) {
   if (isInvestmentsModified) {
     if (!customInvestmentsAmountInput.matches(":focus")) {
       customInvestmentsAmountInput.value = formatCurrency(
-        budget.custom_allocations ? budget.custom_allocations.monthly_investments : 0
+        budget.custom_allocations
+          ? budget.custom_allocations.monthly_investments
+          : 0
       );
     }
   } else {
@@ -1483,7 +1490,9 @@ function updateAllUI(budget) {
     // Show recommended cashflow when no custom inputs are provided
     document.getElementById("customCashflowAmount").textContent =
       formatCurrency(budget.recommended_allocations.monthly_cashflow);
-    document.getElementById("customCashflowPercentage").textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
+    document.getElementById(
+      "customCashflowPercentage"
+    ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
   }
 
   // === START: CTA DISPLAY LOGIC ===
@@ -1676,7 +1685,8 @@ function setupEventListeners() {
 
       // Set inputs to recommended percentages
       savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
-      investmentsPercentageInput.value = budget.recommended_investments_pct.toFixed(1);
+      investmentsPercentageInput.value =
+        budget.recommended_investments_pct.toFixed(1);
 
       // Set amount inputs to recommended monthly amounts
       customSavingsAmountInput.value = formatCurrency(
@@ -2594,19 +2604,25 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   const summaryElement = document.getElementById(summaryId);
   if (!summaryElement) return;
   const leader = `<span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>`;
-    const greenAmt = (val) =>
-      `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(val)}</span>`;
+  const greenAmt = (val) =>
+    `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(
+      val
+    )}</span>`;
 
-    summaryElement.innerHTML = `
+  summaryElement.innerHTML = `
     <div class="space-y-2 text-sm text-gray-700">
       <div class="flex font-thin items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[0]}"></span>
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
+          colors.background[0]
+        }"></span>
         <span class="ml-2">${labels[0]} (${pctContrib}%)</span>
         ${leader}
         ${greenAmt(totalContributions)}
       </div>
       <div class="flex font-thin items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[1]}"></span>
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
+          colors.background[1]
+        }"></span>
         <span class="ml-2">${labels[1]} (${pctInterest}%)</span>
         ${leader}
         ${greenAmt(interestEarned)}
@@ -2983,6 +2999,9 @@ function initDeductionsNav() {
     });
   };
 
+  // Expose programmatic tab switching
+  window.switchDeductionsTab = setActive;
+
   tabs.forEach((btn) =>
     btn.addEventListener("click", () => setActive(btn.dataset.tab))
   );
@@ -2995,6 +3014,71 @@ function initDeductionsNav() {
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
   initDeductionsNav();
+
+  // Auto-switch to Expenses when interacting with Monthly Expenditure section
+  const livingExpensesSection = document.getElementById(
+    "living-expenses-section"
+  );
+  if (livingExpensesSection) {
+    const switchToExpenses = () => {
+      if (window.switchDeductionsTab) window.switchDeductionsTab("expenses");
+    };
+
+    // Delegate common interactions
+    livingExpensesSection.addEventListener("focusin", switchToExpenses);
+    livingExpensesSection.addEventListener("input", switchToExpenses);
+    livingExpensesSection.addEventListener("change", switchToExpenses);
+    livingExpensesSection.addEventListener("click", (e) => {
+      const target = e.target;
+      if (
+        target.matches("input, select, textarea, button") ||
+        target.classList.contains("category-toggle") ||
+        target.closest(".input-group")
+      ) {
+        switchToExpenses();
+      }
+    });
+  }
+
+  // Auto-switch to Taxes when interacting with Income section
+  const annualIncomeSection = document.getElementById("annual-income-section");
+  if (annualIncomeSection) {
+    const switchToTaxes = () => {
+      if (window.switchDeductionsTab) window.switchDeductionsTab("taxes");
+    };
+
+    annualIncomeSection.addEventListener("focusin", switchToTaxes);
+    annualIncomeSection.addEventListener("input", switchToTaxes);
+    annualIncomeSection.addEventListener("change", switchToTaxes);
+    annualIncomeSection.addEventListener("click", (e) => {
+      const target = e.target;
+      if (
+        target.matches("input, select, textarea, button") ||
+        target.closest(".input-group") ||
+        target.classList.contains("income-toggle")
+      ) {
+        switchToTaxes();
+      }
+    });
+  }
+
+  // Auto-switch to Save when interacting with Savings & Investments section
+  const savingsInvestmentsSectionEl = document.getElementById(
+    "savings-investments-section"
+  );
+  if (savingsInvestmentsSectionEl) {
+    const switchToSave = () => {
+      if (window.switchDeductionsTab) window.switchDeductionsTab("save");
+    };
+
+    // Switch on any interaction within the section, including the container box
+    savingsInvestmentsSectionEl.addEventListener("focusin", switchToSave);
+    savingsInvestmentsSectionEl.addEventListener("input", switchToSave);
+    savingsInvestmentsSectionEl.addEventListener("change", switchToSave);
+    savingsInvestmentsSectionEl.addEventListener("click", () => {
+      switchToSave();
+    });
+  }
 
   const printDownloadBtn = document.getElementById("print-download-btn");
   const resultsWrapper = document.getElementById(
