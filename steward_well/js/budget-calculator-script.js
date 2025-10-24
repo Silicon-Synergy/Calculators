@@ -1382,22 +1382,37 @@ function updateAllUI(budget) {
       ? "Set your custom goals below, or use our recommendations."
       : "Savings and investments are not recommended at this time. Focus on cashflow.";
 
-  // Update Recommended Allocations Display
-  document.getElementById("recommended-savings-amount").textContent =
-    formatCurrency(budget.recommended_allocations.monthly_savings);
-  document.getElementById("recommended-investments-amount").textContent =
-    formatCurrency(budget.recommended_allocations.monthly_investments);
-  document.getElementById("recommended-cashflow-amount").textContent =
-    formatCurrency(budget.recommended_allocations.monthly_cashflow);
-  document.getElementById(
-    "recommended-savings-percentage"
-  ).textContent = `${budget.recommended_savings_pct.toFixed(1)}%`;
-  document.getElementById(
-    "recommended-investments-percentage"
-  ).textContent = `${budget.recommended_investments_pct.toFixed(1)}%`;
-  document.getElementById(
-    "recommended-cashflow-percentage"
-  ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
+  // Populate unified inputs with recommended defaults if not user-modified
+  const isSavingsModified =
+    savingsPercentageInput.dataset.userModified === "true" ||
+    customSavingsAmountInput.dataset.userModified === "true";
+  const isInvestmentsModified =
+    investmentsPercentageInput.dataset.userModified === "true" ||
+    customInvestmentsAmountInput.dataset.userModified === "true";
+
+  if (!isSavingsModified) {
+    savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
+    customSavingsAmountInput.value = formatCurrency(
+      budget.recommended_allocations.monthly_savings
+    );
+    savingsPercentageInput.classList.add("opacity-70");
+    customSavingsAmountInput.classList.add("opacity-70");
+  } else {
+    savingsPercentageInput.classList.remove("opacity-70");
+    customSavingsAmountInput.classList.remove("opacity-70");
+  }
+
+  if (!isInvestmentsModified) {
+    investmentsPercentageInput.value = budget.recommended_investments_pct.toFixed(1);
+    customInvestmentsAmountInput.value = formatCurrency(
+      budget.recommended_allocations.monthly_investments
+    );
+    investmentsPercentageInput.classList.add("opacity-70");
+    customInvestmentsAmountInput.classList.add("opacity-70");
+  } else {
+    investmentsPercentageInput.classList.remove("opacity-70");
+    customInvestmentsAmountInput.classList.remove("opacity-70");
+  }
 
   // Store monthly investment amount in localStorage for use in investment calculator
   const monthlyInvestmentAmount = budget.custom_allocations
@@ -1417,43 +1432,36 @@ function updateAllUI(budget) {
 
   // Update Custom Allocations Display (Amounts and Percentages)
   const userEnteredSavingsPct = parseFloat(savingsPercentageInput.value);
-  const userEnteredInvestmentsPct = parseFloat(
-    investmentsPercentageInput.value
-  );
+  const userEnteredInvestmentsPct = parseFloat(investmentsPercentageInput.value);
   const hasAnyUserCustomInputForCashflow =
-    (!isNaN(userEnteredSavingsPct) && String(userEnteredSavingsPct) !== "") ||
-    (!isNaN(userEnteredInvestmentsPct) &&
-      String(userEnteredInvestmentsPct) !== "");
+    savingsPercentageInput.dataset.userModified === "true" ||
+    investmentsPercentageInput.dataset.userModified === "true" ||
+    customSavingsAmountInput.dataset.userModified === "true" ||
+    customInvestmentsAmountInput.dataset.userModified === "true";
 
-  // Custom Savings Amount - preserve user input if directly editing amount
-  if (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== "") {
-    // Only update the amount field if the user hasn't directly edited it
+  // Update amounts based on user-modified inputs; otherwise keep recommended
+  if (isSavingsModified) {
     if (!customSavingsAmountInput.matches(":focus")) {
       customSavingsAmountInput.value = formatCurrency(
-        budget.custom_allocations
-          ? budget.custom_allocations.monthly_savings
-          : 0
+        budget.custom_allocations ? budget.custom_allocations.monthly_savings : 0
       );
     }
   } else {
-    customSavingsAmountInput.value = ""; // Clear if no valid custom percentage
+    customSavingsAmountInput.value = formatCurrency(
+      budget.recommended_allocations.monthly_savings
+    );
   }
 
-  // Custom Investments Amount - preserve user input if directly editing amount
-  if (
-    !isNaN(userEnteredInvestmentsPct) &&
-    investmentsPercentageInput.value !== ""
-  ) {
-    // Only update the amount field if the user hasn't directly edited it
+  if (isInvestmentsModified) {
     if (!customInvestmentsAmountInput.matches(":focus")) {
       customInvestmentsAmountInput.value = formatCurrency(
-        budget.custom_allocations
-          ? budget.custom_allocations.monthly_investments
-          : 0
+        budget.custom_allocations ? budget.custom_allocations.monthly_investments : 0
       );
     }
   } else {
-    customInvestmentsAmountInput.value = ""; // Clear if no valid custom percentage
+    customInvestmentsAmountInput.value = formatCurrency(
+      budget.recommended_allocations.monthly_investments
+    );
   }
 
   // Custom Cashflow Amount and Percentage
@@ -1472,15 +1480,10 @@ function updateAllUI(budget) {
       ).textContent = `(0.0%)`;
     }
   } else {
-    // If no custom percentages for S&I, custom cashflow is just disposable income minus expenses
-    const currentCashflowAmount =
-      budget.monthly_disposable_income - budget.total_monthly_expenses;
-    const currentCashflowPct = 100 - budget.expenses_percentage;
+    // Show recommended cashflow when no custom inputs are provided
     document.getElementById("customCashflowAmount").textContent =
-      formatCurrency(currentCashflowAmount);
-    document.getElementById(
-      "customCashflowPercentage"
-    ).textContent = `(${currentCashflowPct.toFixed(1)}%)`;
+      formatCurrency(budget.recommended_allocations.monthly_cashflow);
+    document.getElementById("customCashflowPercentage").textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
   }
 
   // === START: CTA DISPLAY LOGIC ===
@@ -1665,10 +1668,15 @@ function setupEventListeners() {
       const budget = calculatorState.currentBudget;
       if (!budget) return;
 
+      // Clear user-modified flags
+      savingsPercentageInput.dataset.userModified = "false";
+      investmentsPercentageInput.dataset.userModified = "false";
+      customSavingsAmountInput.dataset.userModified = "false";
+      customInvestmentsAmountInput.dataset.userModified = "false";
+
       // Set inputs to recommended percentages
       savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
-      investmentsPercentageInput.value =
-        budget.recommended_investments_pct.toFixed(1);
+      investmentsPercentageInput.value = budget.recommended_investments_pct.toFixed(1);
 
       // Set amount inputs to recommended monthly amounts
       customSavingsAmountInput.value = formatCurrency(
@@ -1677,6 +1685,12 @@ function setupEventListeners() {
       customInvestmentsAmountInput.value = formatCurrency(
         budget.recommended_allocations.monthly_investments
       );
+
+      // Reapply faded styling for recommended values
+      savingsPercentageInput.classList.add("opacity-70");
+      investmentsPercentageInput.classList.add("opacity-70");
+      customSavingsAmountInput.classList.add("opacity-70");
+      customInvestmentsAmountInput.classList.add("opacity-70");
 
       // Recalculate with these values to update charts and cashflow
       handleExpenseOrAllocationChange();
@@ -1748,21 +1762,41 @@ function setupEventListeners() {
   });
 
   // Custom savings and investments inputs
+  savingsPercentageInput.addEventListener("focus", () => {
+    savingsPercentageInput.classList.remove("opacity-70");
+  });
   savingsPercentageInput.addEventListener("input", () => {
-    // No need to set isSavingsCustom here, as handleExpenseOrAllocationChange reads directly from input.
+    savingsPercentageInput.dataset.userModified = "true";
+    savingsPercentageInput.classList.remove("opacity-70");
     handleExpenseOrAllocationChange();
   });
+
+  investmentsPercentageInput.addEventListener("focus", () => {
+    investmentsPercentageInput.classList.remove("opacity-70");
+  });
   investmentsPercentageInput.addEventListener("input", () => {
-    // No need to set isInvestmentsCustom here, as handleExpenseOrAllocationChange reads directly from input.
+    investmentsPercentageInput.dataset.userModified = "true";
+    investmentsPercentageInput.classList.remove("opacity-70");
     handleExpenseOrAllocationChange();
   });
 
   // Custom amount inputs
-  customSavingsAmountInput.addEventListener("input", handleCustomAmountChange);
-  customInvestmentsAmountInput.addEventListener(
-    "input",
-    handleCustomAmountChange
-  );
+  customSavingsAmountInput.addEventListener("focus", () => {
+    customSavingsAmountInput.classList.remove("opacity-70");
+  });
+  customSavingsAmountInput.addEventListener("input", (e) => {
+    customSavingsAmountInput.dataset.userModified = "true";
+    customSavingsAmountInput.classList.remove("opacity-70");
+    handleCustomAmountChange(e);
+  });
+  customInvestmentsAmountInput.addEventListener("focus", () => {
+    customInvestmentsAmountInput.classList.remove("opacity-70");
+  });
+  customInvestmentsAmountInput.addEventListener("input", (e) => {
+    customInvestmentsAmountInput.dataset.userModified = "true";
+    customInvestmentsAmountInput.classList.remove("opacity-70");
+    handleCustomAmountChange(e);
+  });
 
   // Chart projection buttons
   const savingsChartBtn = document.getElementById("savingsChartBtn");
