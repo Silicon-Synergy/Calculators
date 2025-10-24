@@ -466,8 +466,8 @@
     }
 
     .expense-summary-name {
-      font-weight: 500;
-      color: inherit;
+      font-weight: 300;
+      color: #333434;
     }
 
     .expense-summary-line {
@@ -613,10 +613,10 @@
       </div>
     </div>
 
-    <div class="flex gap-4 justify-center">
+    <div class="flex flex-col lg:flex-row gap-4 justify-center">
       <!-- ÷first place i need to fix -->
       <!-- Annual Income Input -->
-      <div class="w-[60%]">
+      <div class="w-full lg:w-[60%]">
         <section id="annual-income-section" class="">
           <div class="rounded-tr-3xl rounded-tl-3xl p-8 bg-white border-white/10 hover:border-primary/30 transition-all duration-300">
             <div class="flex items-center space-x-3 mb-6">
@@ -700,12 +700,12 @@
                   <div class="flex items-center gap-3 text-sm">
                     <div class="w-[50%]">
                       <input id="includeRetirement" type="radio" name="retirementOption" value="yes" class="sr-only peer" />
-                      <label for="includeRetirement" class="p-3 text-center rounded-xl bg-white/60 text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100">Yes</label>
+                      <label for="includeRetirement" class="p-5 text-center rounded-xl  text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100 bg-[#DFECE6]">Yes</label>
                     </div>
 
                     <div class="w-[50%]">
                       <input id="excludeRetirement" type="radio" name="retirementOption" value="no" class="sr-only peer" checked />
-                      <label for="excludeRetirement" class="p-3 text-center rounded-xl bg-white/60 text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100">No</label>
+                      <label for="excludeRetirement" class="p-5 text-center rounded-xl bg-[#DFECE6] text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100">No</label>
                     </div>
                   </div>
                 </div>
@@ -775,7 +775,7 @@
           </div>
 
           <div class="space-y-4">
-            <div class="expense-category glass-effect rounded-2xl border border-white/10">
+            <div class="expense-category border-[1px] glass-effect border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white border border-transparent transition-all duration-300 rounded-2xl" onclick="toggleCategory('housing')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
@@ -794,8 +794,8 @@
                 <div class="p-3 pt-4">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="input-group">
-                      <label class="block text-sm font-medium text-gray-300 mb-2">Rent/Mortgage
-                        <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <label class="block text-sm font-medium text-gray-300 mb-2">Rent/Mortgage</label>
+                      <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Electricity</label>
@@ -810,9 +810,8 @@
                       <input type="number" id="gas-heating" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
-                      <label class="block text-sm font-medium text-gray-300 mb-2">Home Insurance
-
-                        <input type="number" id="home-insurance" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <label class="block text-sm font-medium text-gray-300 mb-2">Home Insurance</label>
+                      <input type="number" id="home-insurance" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others</label>
@@ -823,16 +822,10 @@
               </div>
             </div>
 
-            <div class="expense-category glass-effect rounded-2xl border border-white/10">
+            <div class="expense-category border-[1px] glass-effect border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white border transition-all duration-300 rounded-2xl" onclick="toggleCategory('living')">
                 <div class="flex items-center gap-3">
-                  <!-- <div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                </svg>
-              </div> -->
                   <h2 class="font-medium text-[1.5rem]">Everyday Spending</h2>
-
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -872,7 +865,7 @@
               </div>
             </div>
 
-            <div class="expense-category glass-effect rounded-2xl border border-white/10">
+            <div class="expense-category glass-effect select-none border-[1px] border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('transportation')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-green-600 rounded-lg flex items-center justify-center">
@@ -923,7 +916,7 @@
               </div>
             </div>
 
-            <div class="expense-category glass-effect rounded-2xl border border-white/10">
+            <div class="expense-category glass-effect border-[1px] border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('loans')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-red-400 to-red-600 rounded-lg flex items-center justify-center">
@@ -975,7 +968,7 @@
               </div>
             </div>
 
-            <div class="expense-category glass-effect rounded-2xl border border-white/10">
+            <div class="expense-category glass-effect border-[1px] border-b-gray-200 pb-2">
               <!-- border border-transparent bg-gradient-to-r from-green-200 to-emerald-200 -->
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('children')">
                 <div class="flex items-center gap-3">
@@ -1027,7 +1020,7 @@
               </div>
             </div>
 
-            <div class="expense-category glass-effect rounded-2xl border border-white/10">
+            <div class="expense-category glass-effect border-[1px] border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('miscellaneous')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center">
@@ -1147,11 +1140,10 @@
         <section id="savings-investments-section" class=" opacity-50 pointer-events-none glass-effect p-8 rounded-b-3xl text-white border border-white/10 hover:border-primary/30 transition-all duration-300 backdrop-blur-sm shadow-lg bg-white">
           <h2 class="text-[1.8rem] md:text-3xl font-medium text-white mb-6 pb-4 border-gray-300 flex items-center gap-2">
             <img src="images/savings.svg" alt="Savings Icon" class="w-12 h-12 text-white" />
-            <span class="text-white"></span> Savings & Investments Goals
+            <span class="text-white"></span> Savings and Investments
+
             <div id="infoButton" class="focus:outline-none pointer-events-auto" onclick="document.getElementById('infoPopup').classList.remove('hidden')">
-              <svg class="w-5 h-5 text-blue-400 hover:text-blue-300 cursor-pointer transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-              </svg>
+              <span class="text-[1rem]" aria-hidden="true" style="color:#000; font-weight:400;">ⓘ</span>
             </div>
           </h2>
 
@@ -1199,14 +1191,14 @@
               </div>
             </div>
           </div>
-          <p id="si-guidance" class="text-white/90 text-base mb-8 leading-relaxed">
+          <p id="si-guidance" class="text-white/90 text-base mb-3 leading-relaxed">
             You can choose to either set your custom savings and investments goals, or use our recommendations.
           </p>
 
           <!-- Two Column Layout -->
           <div class="gap-8">
             <!-- Left Column: Recommended Allocations -->
-            <div class="space-y-6 hidden">
+            <div class="space-y-6 ">
               <!-- <div class="flex items-center gap-2 mb-6">
             <span>📊</span>
             <h3 class="text-xl font-semibold text-white">
@@ -1414,22 +1406,21 @@
           </div>
 
           <!-- Centered CTA Section -->
-            <div class="mt-8 flex justify-center">
+          <div class="mt-8 flex justify-center">
             <div id="recommended-cashflow-cta" class="w-full  flex flex-col gap-4">
               <p id="cta-message" class="text-center text-slate-800 text-base font-medium leading-relaxed">
                 <!-- This content will be set by JavaScript -->
               </p>
 
               <!-- Outlined gradient button -->
-              <button id="cta-reset-btn" type="button" class="w-full rounded-xl p-[1px] bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition">
-                <span class="block w-full rounded-xl bg-white px-6 py-3 text-[#177F5B] font-medium">
+              <button id="cta-reset-btn" type="button" class="w-full rounded-xl p-[1px] bg-[linear-gradient(to_right,#177F5B,#154D80)] border-[1px] hover:opacity-90 transition">
+                <span class="block w-full rounded-xl bg-white px-6 py-3 text-[#177F5B] font-thin">
                   Reset to recommended numbers
                 </span>
               </button>
 
               <!-- Filled gradient button -->
-              <a href="index.html#contact-us" id="recommended-nav_cta"
-                 class="w-full px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
+              <a href="index.html#contact-us" id="recommended-nav_cta" class="w-full px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
                 Talk to an expert
               </a>
             </div>
@@ -1437,7 +1428,7 @@
         </section>
       </div>
       <!-- right side -->
-      <div id="deductions-disposable-section" class="rounded-3xl p-5 w-[40%]  self-start  bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box hidden animate-slide-up z-40">
+      <div id="deductions-disposable-section" class="rounded-3xl p-5 w-full lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box hidden animate-slide-up z-40">
         <div id="deductions-nav" class="flex items-center pl-6 py-2 font-medium text-[1rem]  gap-10 bg-[#eef5f1] py-1 rounded-md text-[.8rem]">
           <button type="button" data-tab="taxes" class="deductions-tab px-6 py-3 rounded-md bg-[#dbece6] text-slate-800 ">
             Taxes
@@ -1486,12 +1477,12 @@
             .legend-text {
               margin: 0;
               font-size: 14px;
-              font-weight: 600;
+              font-weight: 100;
             }
 
             .legend-info {
               margin-left: 6px;
-              color: #8a8a8a;
+              color: #333434;
             }
 
             /* Progress bar styles with full-zone gradient */
@@ -1543,17 +1534,19 @@
           <div class="flex flex-col py-4 gap-3">
             <div class="flex gap-2 items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#21a34f;"></span>
-              <h2 class="text-[1rem]" style="color:#000; -webkit-text-fill-color:#000; font-weight:400;">Healthy (from 0% to 70%)</h2>
+
+              <h2 class="text-[1rem] font-thin opacity-80" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Healthy (from 0% to 70%)</h2>
+
               <span class="text-[.6rem]" aria-hidden="true" style="color:#000; font-weight:400;">&#9432;</span>
             </div>
             <div class="flex gap-2 items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#f2c94c;"></span>
-              <h2 class="text-[1rem]" style="color:#000; -webkit-text-fill-color:#000; font-weight:400;">Caution (from 70% to 85%)</h2>
+              <h2 class="text-[1rem] opacity-80 font-thin"  style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Caution (from 70% to 85%)</h2>
               <span class="text-[.6rem]" aria-hidden="true" style="color:#000; font-weight:400;">&#9432;</span>
             </div>
             <div class="flex gap-2  items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#eb5757;"></span>
-              <h2 class="text-[1rem]" style="color:#000; -webkit-text-fill-color:#000; font-weight:400;">Critical (from 85% to 100%)</h2>
+              <h2 class="text-[1rem] opacity-80 font-thin"  style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Critical (from 85% to 100%)</h2>
               <span class="text-[.6rem]" aria-hidden="true" style="color:#000; font-weight:400;">&#9432;</span>
             </div>
           </div>
@@ -1561,8 +1554,8 @@
           <!-- Progress bar with zone gradient; grey overlay covers unused -->
           <div class="expense-health-progress" aria-label="Expense health progress">
             <div class="expense-health-labels">
-              <span id="expenseUsedText" class="gradient-text text-[.8rem]"><span text-[2rem]>0%</span> used</span>
-              <span id="expenseLeftText" class="gradient-text text-[.8rem]">$0.00 left of $0.00</span>
+              <span id="expenseUsedText" class="gradient-text"><span class="text-[1.8rem] font-medium">0%</span> <span class="text-[1rem]">used</span></span>
+              <span id="expenseLeftText" class="gradient-text text-[1rem] font-medium">$0.00 left of $0.00</span>
             </div>
             <div class="expense-health-bar">
               <div id="expenseHealthBar" class="expense-health-fill"></div>
@@ -1571,83 +1564,96 @@
           <div class="expense-summary flex flex-col gap-4 mt-5" id="expense-category-summary ">
             <div class="expense-summary-row flex justify-between">
               <div class="">
-                <span class="expense-summary-name text-gray-500">Housing and utilities (<span id="summary-housing-pct">0%</span>span>
+                <span class="expense-summary-name font-thin text-gray-500">Housing and utilities (<span id="summary-housing-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-housing-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-housing-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name text-gray-500">Everyday spending (<span id="summary-living-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Everyday spending (<span id="summary-living-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-living-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-living-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name text-gray-500">Transportation (<span id="summary-transportation-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Transportation (<span id="summary-transportation-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-transportation-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-transportation-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name text-gray-500">Loans and insurance (<span id="summary-loans-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Loans and insurance (<span id="summary-loans-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-loans-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-loans-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name text-gray-500">Children and education (<span id="summary-children-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Children and education (<span id="summary-children-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-children-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin id=" summary-children-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name text-gray-500">Miscellaneous (<span id="summary-miscellaneous-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Miscellaneous (<span id="summary-miscellaneous-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-miscellaneous-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-miscellaneous-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name text-gray-500">Total Monthly Expenses</span>
+                <span class="expense-summary-name font-thin text-gray-500">Total Monthly Expenses</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount" id="summary-total-expenses">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-total-expenses">$0.00</span>
             </div>
           </div>
         </div>
 
         <div id="save-invest-content" class="hidden mt-4">
           <div class="space-y-6">
-            <!-- Stacked views -->
+            <!-- Custom tabs -->
+            <div class="flex gap-3">
+              <button id="customSavingsChartBtn" class="flex-1 px-4 py-3 rounded-lg font-medium cursor-pointer duration-300 bg-[#dbece6] text-black">
+                Savings
+              </button>
+              <button id="customInvestmentsChartBtn" class="flex-1 px-4 py-3 rounded-lg font-medium cursor-pointer duration-300 bg-[#dbece6] text-black">
+                Investments
+              </button>
+              <button id="customBothChartBtn" class="flex-1 px-4 py-3 rounded-lg font-medium cursor-pointer duration-300 bg-[#dbece6] text-black">
+                Both
+              </button>
+            </div>
+
+            <!-- Tabbed views -->
             <div class="flex flex-col space-y-10">
 
               <!-- Savings view -->
-              <div class="space-y-3">
+              <div id="customSavingsView" class="space-y-3">
                 <p id="customSavingsTitle" class="text-sm text-gray-700"></p>
-                <div class="flex justify-start">
+                <div class="flex justify-center items-center">
                   <canvas id="customSavingsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
                 </div>
                 <div id="customSavingsProjectionSummary" class="p-0"></div>
               </div>
 
               <!-- Investments view -->
-              <div class="space-y-3">
+              <div id="customInvestmentsView" class="space-y-3 hidden">
                 <p id="customInvestmentsTitle" class="text-sm text-gray-700"></p>
-                <div class="flex justify-start">
+                <div class="flex justify-center items-center">
                   <canvas id="customInvestmentsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
                 </div>
                 <div id="customInvestmentsProjectionSummary" class="p-0"></div>
               </div>
 
               <!-- Both (combined) view -->
-              <div class="space-y-3">
+              <div id="customBothView" class="space-y-3 hidden">
                 <p id="customBothTitle" class="text-sm text-gray-700"></p>
-                <div class="flex justify-start">
+                <div class="flex justify-center items-center">
                   <canvas id="customBothPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
                 </div>
                 <div id="customBothProjectionSummary" class="p-0"></div>

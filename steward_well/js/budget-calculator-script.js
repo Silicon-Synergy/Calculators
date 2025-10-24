@@ -445,7 +445,7 @@ function calculateBudget(
 function determineBudgetZoneAndOptions(expensesPercentage) {
   if (isNaN(expensesPercentage)) {
     // return ["GREEN", "Enter expenses to see guidance.", true, true];
-      return [null, null, true, true];
+    return [null, null, true, true];
   }
 
   if (expensesPercentage <= 70) {
@@ -473,7 +473,8 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
     return [
       // "RED",
       // "Focus on reducing expenses and maintaining cashflow.",
-      null, null,
+      null,
+      null,
       true,
       false,
     ];
@@ -482,7 +483,8 @@ function determineBudgetZoneAndOptions(expensesPercentage) {
     return [
       // "EXTREME RED",
       // "Critical: expenses too high; pause savings/investments and cut costs.",
-      null, null,
+      null,
+      null,
       false,
       false,
     ];
@@ -596,13 +598,13 @@ function initializeProvinceDropdown() {
  */
 function createDeductionInputs(deductions) {
   deductionInputsContainer.innerHTML = "";
-4
+  4;
   const deductionHexColors = {
     federal_tax: "#D6426C",
     provincial_tax: "#9D88E1",
     cpp: "#8DE188",
     ei: "#3364E1",
-    retirement: "#94a3b8"
+    retirement: "#94a3b8",
   };
 
   const gradientStyle = "linear-gradient(to right, #177F5B, #154D80)";
@@ -622,8 +624,10 @@ function createDeductionInputs(deductions) {
     const name = key === "provincial_tax" ? "Provincial tax" : deduction.name;
 
     const labelText = document.createElement("span");
-    labelText.className = "text-sm font-medium";
-    labelText.innerHTML = `${name} <span class="text-zinc-400">(${deduction.percentage.toFixed(2)}%)</span>`;
+    labelText.className = "text-gray-200 text-sm ";
+    labelText.innerHTML = `${name} <span class="text-zinc-400">(${deduction.percentage.toFixed(
+      2
+    )}%)</span>`;
     left.appendChild(labelText);
 
     if (key === "cpp" || key === "ei") {
@@ -699,7 +703,10 @@ function createDeductionInputs(deductions) {
   });
 
   // Summary rows: Total Annual Deduction, Annual & Monthly Take Home Pay
-  const totalAmount = Object.values(deductions).reduce((sum, d) => sum + d.amount, 0);
+  const totalAmount = Object.values(deductions).reduce(
+    (sum, d) => sum + d.amount,
+    0
+  );
   const totalPct =
     calculatorState.annualIncome > 0
       ? (totalAmount / calculatorState.annualIncome) * 100
@@ -707,8 +714,16 @@ function createDeductionInputs(deductions) {
 
   const summaryRows = [
     { name: "Total Annual Deduction", pct: totalPct, value: totalAmount },
-    { name: "Annual Take Home Pay", pct: null, value: calculatorState.annualDisposable },
-    { name: "Monthly Take Home Pay", pct: null, value: calculatorState.monthlyDisposableIncome },
+    {
+      name: "Annual Take Home Pay",
+      pct: null,
+      value: calculatorState.annualDisposable,
+    },
+    {
+      name: "Monthly Take Home Pay",
+      pct: null,
+      value: calculatorState.monthlyDisposableIncome,
+    },
   ];
 
   summaryRows.forEach(({ name, pct, value }) => {
@@ -727,7 +742,7 @@ function createDeductionInputs(deductions) {
     }
 
     const labelText = document.createElement("span");
-    labelText.className = "text-sm font-medium";
+    labelText.className = "text-gray-200 ";
     labelText.innerHTML =
       pct != null
         ? `${name}<span class="text-zinc-400">(${pct.toFixed(2)}%)</span>`
@@ -1061,19 +1076,24 @@ function updateChartButtonStates(budget) {
     setButtonState(bothChartBtn, false);
   }
 
-  // Check custom allocations percentages
+  // Check custom allocations percentages (fallback to recommended if custom is not set)
   let customSavingsAmount = 0;
   let customInvestmentsAmount = 0;
 
   if (budget.custom_allocations) {
     customSavingsAmount = budget.custom_allocations.monthly_savings;
     customInvestmentsAmount = budget.custom_allocations.monthly_investments;
+  } else {
+    // Fallback so custom tabs stay usable
+    customSavingsAmount = budget.recommended_allocations.monthly_savings;
+    customInvestmentsAmount =
+      budget.recommended_allocations.monthly_investments;
   }
 
   const hasCustomSavings = customSavingsAmount > 0;
   const hasCustomInvestments = customInvestmentsAmount > 0;
 
-  // Update custom allocation buttons
+  // Update custom allocation buttons (now stay enabled with fallback)
   setButtonState(customSavingsChartBtn, hasCustomSavings);
   setButtonState(customInvestmentsChartBtn, hasCustomInvestments);
   setButtonState(customBothChartBtn, hasCustomSavings && hasCustomInvestments);
@@ -1647,7 +1667,8 @@ function setupEventListeners() {
 
       // Set inputs to recommended percentages
       savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
-      investmentsPercentageInput.value = budget.recommended_investments_pct.toFixed(1);
+      investmentsPercentageInput.value =
+        budget.recommended_investments_pct.toFixed(1);
 
       // Set amount inputs to recommended monthly amounts
       customSavingsAmountInput.value = formatCurrency(
@@ -1660,7 +1681,7 @@ function setupEventListeners() {
       // Recalculate with these values to update charts and cashflow
       handleExpenseOrAllocationChange();
     });
-  };
+  }
 
   // Custom Allocations Toggle Button
   const toggleCustomAllocationsBtn = document.getElementById(
@@ -1833,6 +1854,18 @@ function setupEventListeners() {
     customInvestmentsChartBtn &&
     customBothChartBtn
   ) {
+    // NEW: tabbed view toggling
+    const customViews = {
+      savings: document.getElementById("customSavingsView"),
+      investments: document.getElementById("customInvestmentsView"),
+      both: document.getElementById("customBothView"),
+    };
+    const showCustomView = (key) => {
+      Object.entries(customViews).forEach(([name, el]) => {
+        if (el) el.classList.toggle("hidden", name !== key);
+      });
+    };
+
     // Helper function to update active button styling for custom buttons
     const updateCustomActiveButton = (activeBtn) => {
       [
@@ -1864,20 +1897,26 @@ function setupEventListeners() {
     customSavingsChartBtn.addEventListener("click", () => {
       calculatorState.customCompoundInterest.currentChartType = "savings";
       updateCustomActiveButton(customSavingsChartBtn);
+      showCustomView("savings");
       updateCustomProjectionChart();
     });
 
     customInvestmentsChartBtn.addEventListener("click", () => {
       calculatorState.customCompoundInterest.currentChartType = "investments";
       updateCustomActiveButton(customInvestmentsChartBtn);
+      showCustomView("investments");
       updateCustomProjectionChart();
     });
 
     customBothChartBtn.addEventListener("click", () => {
       calculatorState.customCompoundInterest.currentChartType = "both";
       updateCustomActiveButton(customBothChartBtn);
+      showCustomView("both");
       updateCustomProjectionChart();
     });
+
+    // Default visible tab
+    showCustomView("savings");
 
     // Custom projection now uses same parameters as recommended allocations
     // No separate event listeners needed
@@ -2377,22 +2416,31 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   if (!calculatorState.currentBudget) return;
   const currentBudget = calculatorState.currentBudget;
 
+  // Fallback to recommended amounts when custom values are empty
+  const rec = currentBudget.recommended_allocations || {
+    monthly_savings: 0,
+    monthly_investments: 0,
+  };
+  const cust = currentBudget.custom_allocations || null;
+
   let monthlyContribution = 0;
   let returnRate = 0;
-  if (currentBudget.custom_allocations) {
-    if (chartType === "savings") {
-      monthlyContribution = currentBudget.custom_allocations.monthly_savings;
-      returnRate = 3;
-    } else if (chartType === "investments") {
-      monthlyContribution =
-        currentBudget.custom_allocations.monthly_investments;
-      returnRate = 10;
-    } else {
-      const s = currentBudget.custom_allocations.monthly_savings;
-      const i = currentBudget.custom_allocations.monthly_investments;
-      monthlyContribution = s + i;
-      returnRate = (3 + 10) / 2; // 6.5% combined
-    }
+
+  if (chartType === "savings") {
+    monthlyContribution =
+      (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+    returnRate = 3;
+  } else if (chartType === "investments") {
+    monthlyContribution =
+      (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+    returnRate = 10;
+  } else {
+    const s = (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+    const i = (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+    monthlyContribution = s + i;
+    // Weighted average when both are present; else simple average
+    const total = s + i;
+    returnRate = total > 0 ? (s * 3 + i * 10) / total : (3 + 10) / 2;
   }
 
   const { endingBalance, totalContributions, interestEarned } =
@@ -2402,6 +2450,14 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
       returnRate,
       compoundFrequency
     );
+
+  // Avoid divide-by-zero
+  const pctContrib =
+    endingBalance > 0
+      ? Math.round((totalContributions / endingBalance) * 100)
+      : 0;
+  const pctInterest =
+    endingBalance > 0 ? Math.round((interestEarned / endingBalance) * 100) : 0;
 
   const colors = {
     savings: {
@@ -2421,9 +2477,6 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
     },
   }[chartType];
 
-  const pctContrib = Math.round((totalContributions / endingBalance) * 100);
-  const pctInterest = Math.round((interestEarned / endingBalance) * 100);
-
   const labels =
     chartType === "savings"
       ? ["Total savings", "Interest earned"]
@@ -2434,6 +2487,7 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   const chartElement = document.getElementById(canvasId);
   if (!chartElement) return;
   let chart = Chart.getChart(chartElement);
+
   if (chart) {
     chart.data.labels = labels;
     chart.data.datasets[0].data = [pctContrib, pctInterest];
@@ -2478,10 +2532,7 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
           datalabels: {
             color: "white",
             font: { weight: "bold", size: 12 },
-            formatter: function () {
-              // No percentage labels inside chart (match screenshot)
-              return "";
-            },
+            formatter: () => "",
           },
         },
         layout: { padding: 10 },
@@ -2489,7 +2540,6 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
     });
   }
 
-  // Title text above chart
   const titleElement = document.getElementById(titleId);
   if (titleElement) {
     const titleText =
@@ -2507,35 +2557,33 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
     titleElement.textContent = titleText;
   }
 
-  // Summary rows with dotted leaders and green amounts
   const summaryElement = document.getElementById(summaryId);
   if (!summaryElement) return;
   const leader = `<span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>`;
-  const greenAmt = (val) =>
-    `<span class="font-semibold text-[#177F5B]">${formatCurrency(val)}</span>`;
+    const greenAmt = (val) =>
+      `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(val)}</span>`;
 
-  summaryElement.innerHTML = `
+    summaryElement.innerHTML = `
     <div class="space-y-2 text-sm text-gray-700">
-      <div class="flex items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
-          colors.background[0]
-        }"></span>
+      <div class="flex font-thin items-center">
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[0]}"></span>
         <span class="ml-2">${labels[0]} (${pctContrib}%)</span>
         ${leader}
         ${greenAmt(totalContributions)}
       </div>
-      <div class="flex items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
-          colors.background[1]
-        }"></span>
+      <div class="flex font-thin items-center">
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[1]}"></span>
         <span class="ml-2">${labels[1]} (${pctInterest}%)</span>
         ${leader}
         ${greenAmt(interestEarned)}
       </div>
-      <div class="flex items-center">
-        <span class="ml-5">Ending balance</span>
+      <div class="flex font-thin items-center">
+        <span class="font-thin">Ending balance</span>
+        <span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>
+        <span class="">
         ${leader}
         ${greenAmt(endingBalance)}
+        </span>
       </div>
     </div>
   `;
@@ -2749,16 +2797,15 @@ function updateExpenseHealthBar(budget) {
   if (usedValueSpan) {
     usedValueSpan.textContent = `${percentUsed.toFixed(0)}%`;
   } else if (usedText) {
-    // Fallback if markup isn't split yet
-    usedText.textContent = `${percentUsed.toFixed(0)}% used`;
+    // usedText.textContent = `${percentUsed.toFixed(0)}% used`;
   }
 
   // Right-side label
   const leftText = document.getElementById("expenseLeftText");
   if (leftText) {
-    leftText.textContent = `${formatCurrency(leftAmount)} left of ${formatCurrency(
-      budget?.monthly_disposable_income || 0
-    )}`;
+    leftText.textContent = `${formatCurrency(
+      leftAmount
+    )} left of ${formatCurrency(budget?.monthly_disposable_income || 0)}`;
   }
 
   // Grey overlay covers the unused portion from the right
@@ -2916,7 +2963,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initDeductionsNav();
 
   const printDownloadBtn = document.getElementById("print-download-btn");
-  const resultsWrapper = document.getElementById("deductions-disposable-section");
+  const resultsWrapper = document.getElementById(
+    "deductions-disposable-section"
+  );
   const taxesContent = document.getElementById("taxes-content");
 
   function handlePrint() {
