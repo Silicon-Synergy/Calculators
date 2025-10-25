@@ -1672,6 +1672,22 @@ function setupEventListeners() {
 
   // CTA: Reset to recommended numbers
   const ctaResetBtn = document.getElementById("cta-reset-btn");
+
+  // Helper: toggle reset CTA visibility based on savings inputs
+  const updateResetButtonVisibility = () => {
+    if (!ctaResetBtn) return;
+    const pct = parseFloat(savingsPercentageInput.value) || 0;
+    const amt =
+      parseFloat(
+        String(customSavingsAmountInput.value).replace(/[^0-9.-]/g, "")
+      ) || 0;
+    if (pct <= 0 && amt <= 0) {
+      ctaResetBtn.classList.add("hidden");
+    } else {
+      ctaResetBtn.classList.remove("hidden");
+    }
+  };
+
   if (ctaResetBtn) {
     ctaResetBtn.addEventListener("click", () => {
       const budget = calculatorState.currentBudget;
@@ -1704,7 +1720,20 @@ function setupEventListeners() {
 
       // Recalculate with these values to update charts and cashflow
       handleExpenseOrAllocationChange();
+
+      // Reflect new values in visibility
+      updateResetButtonVisibility();
     });
+  }
+
+  // Trigger visibility updates across the savings section
+  if (savingsInvestmentsSection) {
+    savingsInvestmentsSection.addEventListener(
+      "input",
+      updateResetButtonVisibility
+    );
+    // Initial check
+    updateResetButtonVisibility();
   }
 
   // Custom Allocations Toggle Button
@@ -3136,5 +3165,29 @@ document.addEventListener("DOMContentLoaded", () => {
       evt.preventDefault();
       handleDirectDownloadPDF();
     });
+  }
+});
+
+function closeAllCategories() {
+  const allCategoryContents = document.querySelectorAll(
+    ".expense-category .category-content"
+  );
+  const allCategoryArrows = document.querySelectorAll(
+    ".expense-category .category-arrow"
+  );
+
+  allCategoryContents.forEach((content, index) => {
+    content.style.maxHeight = "0px";
+    allCategoryArrows[index].style.transform = "rotate(0deg)";
+  });
+}
+
+window.addEventListener("scroll", () => {
+  const savingsSection = document.getElementById("savings-investments-section");
+  if (savingsSection) {
+    const rect = savingsSection.getBoundingClientRect();
+    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+      closeAllCategories();
+    }
   }
 });
