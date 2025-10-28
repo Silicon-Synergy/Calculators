@@ -436,6 +436,7 @@ a,
                   >
                   <!-- Updated Calculator Dropdown -->
                   <div
+                    
                     class="calculator-dropdown"
                     style="display: inline-block"
                   >
@@ -1688,20 +1689,44 @@ a,
       });
     </script>
     <script>
-      //Stop body from scrolling when menu button is clicked
+      // Lock body scroll only when mobile nav is open
       $(".nav_button").on("click", function () {
-        $("body").toggleClass("no-scroll");
+        const $btn = $(this);
+        // Wait for Webflow to toggle w--open on the button
+        setTimeout(function () {
+          if ($btn.hasClass("w--open")) {
+            $("body").addClass("no-scroll");
+          } else {
+            $("body").removeClass("no-scroll");
+          }
+        }, 0);
       });
     </script>
     <script>
-      // Ensure the navbar closes and icon reverts when a menu link is clicked
-      $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on(
-        "click",
-        function () {
-          // Simulate a click on the nav_button to trigger Webflow's built-in close animation
-          $(".nav_button").click();
+      // Close mobile nav on link click and smooth-scroll to section
+      $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on("click", function (event) {
+        const href = $(this).attr("href") || "";
+        const isHashLink = href.startsWith("#") && href.length > 1;
+
+        // Only smooth-scroll for in-page hash links
+        if (isHashLink) {
+          event.preventDefault();
+          if (typeof lenis !== "undefined" && typeof lenis.scrollTo === "function") {
+            lenis.scrollTo(href);
+          } else {
+            const targetEl = document.querySelector(href);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: "smooth" });
+            }
+          }
         }
-      );
+
+        // Close the mobile menu only if it's visible and currently open
+        const $btn = $(".nav_button");
+        if ($btn.is(":visible") && $btn.hasClass("w--open")) {
+          $btn.click();
+        }
+      });
     </script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.23/bundled/lenis.min.js"></script>
     <script>
