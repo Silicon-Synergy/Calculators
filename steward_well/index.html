@@ -436,6 +436,7 @@ a,
                   >
                   <!-- Updated Calculator Dropdown -->
                   <div
+                    
                     class="calculator-dropdown"
                     style="display: inline-block"
                   >
@@ -1731,7 +1732,13 @@ a,
             $btn.click();
           }
         }
-      );
+
+        // Close the mobile menu only if it's visible and currently open
+        const $btn = $(".nav_button");
+        if ($btn.is(":visible") && $btn.hasClass("w--open")) {
+          $btn.click();
+        }
+      });
     </script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.23/bundled/lenis.min.js"></script>
     <script>
