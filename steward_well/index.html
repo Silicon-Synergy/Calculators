@@ -1704,20 +1704,32 @@ a,
     </script>
     <script>
       // Close mobile nav on link click and smooth-scroll to section
-      $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on("click", function (event) {
-        const href = $(this).attr("href") || "";
-        const isHashLink = href.startsWith("#") && href.length > 1;
+      $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on(
+        "click",
+        function (event) {
+          const href = $(this).attr("href") || "";
+          const isHashLink = href.startsWith("#") && href.length > 1;
 
-        // Only smooth-scroll for in-page hash links
-        if (isHashLink) {
-          event.preventDefault();
-          if (typeof lenis !== "undefined" && typeof lenis.scrollTo === "function") {
-            lenis.scrollTo(href);
-          } else {
-            const targetEl = document.querySelector(href);
-            if (targetEl) {
-              targetEl.scrollIntoView({ behavior: "smooth" });
+          // Only smooth-scroll for in-page hash links
+          if (isHashLink) {
+            event.preventDefault();
+            if (
+              typeof lenis !== "undefined" &&
+              typeof lenis.scrollTo === "function"
+            ) {
+              lenis.scrollTo(href);
+            } else {
+              const targetEl = document.querySelector(href);
+              if (targetEl) {
+                targetEl.scrollIntoView({ behavior: "smooth" });
+              }
             }
+          }
+
+          // Close the mobile menu only if it's visible and currently open
+          const $btn = $(".nav_button");
+          if ($btn.is(":visible") && $btn.hasClass("w--open")) {
+            $btn.click();
           }
         }
 
