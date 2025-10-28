@@ -1262,14 +1262,14 @@
       </div>
       <!-- right side -->
       <div id="deductions-disposable-section" class="rounded-3xl p-5 w-full lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box animate-slide-up z-40">
-        <div id="deductions-nav" class="flex items-center pl-6 py-2 font-medium text-[1rem]  gap-10 bg-[#eef5f1] py-1 rounded-md text-[.8rem]">
-          <button type="button" data-tab="taxes" class="deductions-tab px-6 py-3 rounded-md bg-[#dbece6] text-slate-800 ">
+        <div id="deductions-nav" class="flex items-center justify-between px-6 py-2 font-medium bg-[#eef5f1] py-1 rounded-md">
+          <button type="button" data-tab="taxes" class="deductions-tab flex-1 px-4 py-3 rounded-md bg-[#dbece6] text-slate-800 whitespace-nowrap text-[.8rem]">
             Taxes
           </button>
-          <button type="button" data-tab="expenses" class="deductions-tab px-6 py-3 rounded-md text-slate-800 hover:bg-gray-100">
+          <button type="button" data-tab="expenses" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem] mx-2">
             Expenses
           </button>
-          <button type="button" data-tab="save" class="deductions-tab px-6  py-3 rounded-md text-sm text-slate-800 hover:bg-gray-100">
+          <button type="button" data-tab="save" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem]">
             Save & Invest
           </button>
         </div>
@@ -1541,6 +1541,28 @@
     </div>
   </div>
 
+  <script src="data/province.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="./js/budget-calculator-script.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
+  <script src="js/webflow.js" type="text/javascript"></script>
+  <script>
+    //Stop body from scrolling when menu button is clicked
+    $(".nav_button").on("click", function() {
+      $("body").toggleClass("no-scroll");
+    });
+  </script>
+  <script>
+    // Ensure the navbar closes and icon reverts when a menu link is clicked
+    $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on(
+      "click",
+      function() {
+        // Simulate a click on the nav_button to trigger Webflow's built-in close animation
+        $(".nav_button").click();
+      }
+    );
+  </script>
+  
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const calculatorToggle = document.getElementById("calculatorToggle");
@@ -1573,11 +1595,6 @@
       }
     });
   </script>
-  <script src="data/province.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="./js/budget-calculator-script.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
-  <script src="js/webflow.js" type="text/javascript"></script>
 </body>
 
 </html>
