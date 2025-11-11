@@ -1382,38 +1382,22 @@ function updateAllUI(budget) {
       ? "Set your custom goals below, or use our recommendations."
       : "Savings and investments are not recommended at this time. Focus on cashflow.";
 
-  // Populate unified inputs with recommended defaults if not user-modified
-  const isSavingsModified =
-    savingsPercentageInput.dataset.userModified === "true" ||
-    customSavingsAmountInput.dataset.userModified === "true";
-  const isInvestmentsModified =
-    investmentsPercentageInput.dataset.userModified === "true" ||
-    customInvestmentsAmountInput.dataset.userModified === "true";
-
-  if (!isSavingsModified) {
-    savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
-    customSavingsAmountInput.value = formatCurrency(
-      budget.recommended_allocations.monthly_savings
-    );
-    savingsPercentageInput.classList.add("opacity-70");
-    customSavingsAmountInput.classList.add("opacity-70");
-  } else {
-    savingsPercentageInput.classList.remove("opacity-70");
-    customSavingsAmountInput.classList.remove("opacity-70");
-  }
-
-  if (!isInvestmentsModified) {
-    investmentsPercentageInput.value =
-      budget.recommended_investments_pct.toFixed(1);
-    customInvestmentsAmountInput.value = formatCurrency(
-      budget.recommended_allocations.monthly_investments
-    );
-    investmentsPercentageInput.classList.add("opacity-70");
-    customInvestmentsAmountInput.classList.add("opacity-70");
-  } else {
-    investmentsPercentageInput.classList.remove("opacity-70");
-    customInvestmentsAmountInput.classList.remove("opacity-70");
-  }
+  // Update Recommended Allocations Display
+  document.getElementById("recommended-savings-amount").textContent =
+    formatCurrency(budget.recommended_allocations.monthly_savings);
+  document.getElementById("recommended-investments-amount").textContent =
+    formatCurrency(budget.recommended_allocations.monthly_investments);
+  document.getElementById("recommended-cashflow-amount").textContent =
+    formatCurrency(budget.recommended_allocations.monthly_cashflow);
+  document.getElementById(
+    "recommended-savings-percentage"
+  ).textContent = `${budget.recommended_savings_pct.toFixed(1)}%`;
+  document.getElementById(
+    "recommended-investments-percentage"
+  ).textContent = `${budget.recommended_investments_pct.toFixed(1)}%`;
+  document.getElementById(
+    "recommended-cashflow-percentage"
+  ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
 
   // Store monthly investment amount in localStorage for use in investment calculator
   const monthlyInvestmentAmount = budget.custom_allocations
@@ -1437,13 +1421,13 @@ function updateAllUI(budget) {
     investmentsPercentageInput.value
   );
   const hasAnyUserCustomInputForCashflow =
-    savingsPercentageInput.dataset.userModified === "true" ||
-    investmentsPercentageInput.dataset.userModified === "true" ||
-    customSavingsAmountInput.dataset.userModified === "true" ||
-    customInvestmentsAmountInput.dataset.userModified === "true";
+    (!isNaN(userEnteredSavingsPct) && String(userEnteredSavingsPct) !== "") ||
+    (!isNaN(userEnteredInvestmentsPct) &&
+      String(userEnteredInvestmentsPct) !== "");
 
-  // Update amounts based on user-modified inputs; otherwise keep recommended
-  if (isSavingsModified) {
+  // Custom Savings Amount - preserve user input if directly editing amount
+  if (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== "") {
+    // Only update the amount field if the user hasn't directly edited it
     if (!customSavingsAmountInput.matches(":focus")) {
       customSavingsAmountInput.value = formatCurrency(
         budget.custom_allocations
@@ -1452,12 +1436,15 @@ function updateAllUI(budget) {
       );
     }
   } else {
-    customSavingsAmountInput.value = formatCurrency(
-      budget.recommended_allocations.monthly_savings
-    );
+    customSavingsAmountInput.value = ""; // Clear if no valid custom percentage
   }
 
-  if (isInvestmentsModified) {
+  // Custom Investments Amount - preserve user input if directly editing amount
+  if (
+    !isNaN(userEnteredInvestmentsPct) &&
+    investmentsPercentageInput.value !== ""
+  ) {
+    // Only update the amount field if the user hasn't directly edited it
     if (!customInvestmentsAmountInput.matches(":focus")) {
       customInvestmentsAmountInput.value = formatCurrency(
         budget.custom_allocations
@@ -1466,9 +1453,7 @@ function updateAllUI(budget) {
       );
     }
   } else {
-    customInvestmentsAmountInput.value = formatCurrency(
-      budget.recommended_allocations.monthly_investments
-    );
+    customInvestmentsAmountInput.value = ""; // Clear if no valid custom percentage
   }
 
   // Custom Cashflow Amount and Percentage
@@ -1487,12 +1472,15 @@ function updateAllUI(budget) {
       ).textContent = `(0.0%)`;
     }
   } else {
-    // Show recommended cashflow when no custom inputs are provided
+    // If no custom percentages for S&I, custom cashflow is just disposable income minus expenses
+    const currentCashflowAmount =
+      budget.monthly_disposable_income - budget.total_monthly_expenses;
+    const currentCashflowPct = 100 - budget.expenses_percentage;
     document.getElementById("customCashflowAmount").textContent =
-      formatCurrency(budget.recommended_allocations.monthly_cashflow);
+      formatCurrency(currentCashflowAmount);
     document.getElementById(
       "customCashflowPercentage"
-    ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
+    ).textContent = `(${currentCashflowPct.toFixed(1)}%)`;
   }
 
   // === START: CTA DISPLAY LOGIC ===
@@ -1672,32 +1660,10 @@ function setupEventListeners() {
 
   // CTA: Reset to recommended numbers
   const ctaResetBtn = document.getElementById("cta-reset-btn");
-
-  // Helper: toggle reset CTA visibility based on savings inputs
-  const updateResetButtonVisibility = () => {
-    if (!ctaResetBtn) return;
-    const pct = parseFloat(savingsPercentageInput.value) || 0;
-    const amt =
-      parseFloat(
-        String(customSavingsAmountInput.value).replace(/[^0-9.-]/g, "")
-      ) || 0;
-    if (pct <= 0 && amt <= 0) {
-      ctaResetBtn.classList.add("hidden");
-    } else {
-      ctaResetBtn.classList.remove("hidden");
-    }
-  };
-
   if (ctaResetBtn) {
     ctaResetBtn.addEventListener("click", () => {
       const budget = calculatorState.currentBudget;
       if (!budget) return;
-
-      // Clear user-modified flags
-      savingsPercentageInput.dataset.userModified = "false";
-      investmentsPercentageInput.dataset.userModified = "false";
-      customSavingsAmountInput.dataset.userModified = "false";
-      customInvestmentsAmountInput.dataset.userModified = "false";
 
       // Set inputs to recommended percentages
       savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
@@ -1712,28 +1678,9 @@ function setupEventListeners() {
         budget.recommended_allocations.monthly_investments
       );
 
-      // Reapply faded styling for recommended values
-      savingsPercentageInput.classList.add("opacity-70");
-      investmentsPercentageInput.classList.add("opacity-70");
-      customSavingsAmountInput.classList.add("opacity-70");
-      customInvestmentsAmountInput.classList.add("opacity-70");
-
       // Recalculate with these values to update charts and cashflow
       handleExpenseOrAllocationChange();
-
-      // Reflect new values in visibility
-      updateResetButtonVisibility();
     });
-  }
-
-  // Trigger visibility updates across the savings section
-  if (savingsInvestmentsSection) {
-    savingsInvestmentsSection.addEventListener(
-      "input",
-      updateResetButtonVisibility
-    );
-    // Initial check
-    updateResetButtonVisibility();
   }
 
   // Custom Allocations Toggle Button
@@ -1801,41 +1748,21 @@ function setupEventListeners() {
   });
 
   // Custom savings and investments inputs
-  savingsPercentageInput.addEventListener("focus", () => {
-    savingsPercentageInput.classList.remove("opacity-70");
-  });
   savingsPercentageInput.addEventListener("input", () => {
-    savingsPercentageInput.dataset.userModified = "true";
-    savingsPercentageInput.classList.remove("opacity-70");
+    // No need to set isSavingsCustom here, as handleExpenseOrAllocationChange reads directly from input.
     handleExpenseOrAllocationChange();
   });
-
-  investmentsPercentageInput.addEventListener("focus", () => {
-    investmentsPercentageInput.classList.remove("opacity-70");
-  });
   investmentsPercentageInput.addEventListener("input", () => {
-    investmentsPercentageInput.dataset.userModified = "true";
-    investmentsPercentageInput.classList.remove("opacity-70");
+    // No need to set isInvestmentsCustom here, as handleExpenseOrAllocationChange reads directly from input.
     handleExpenseOrAllocationChange();
   });
 
   // Custom amount inputs
-  customSavingsAmountInput.addEventListener("focus", () => {
-    customSavingsAmountInput.classList.remove("opacity-70");
-  });
-  customSavingsAmountInput.addEventListener("input", (e) => {
-    customSavingsAmountInput.dataset.userModified = "true";
-    customSavingsAmountInput.classList.remove("opacity-70");
-    handleCustomAmountChange(e);
-  });
-  customInvestmentsAmountInput.addEventListener("focus", () => {
-    customInvestmentsAmountInput.classList.remove("opacity-70");
-  });
-  customInvestmentsAmountInput.addEventListener("input", (e) => {
-    customInvestmentsAmountInput.dataset.userModified = "true";
-    customInvestmentsAmountInput.classList.remove("opacity-70");
-    handleCustomAmountChange(e);
-  });
+  customSavingsAmountInput.addEventListener("input", handleCustomAmountChange);
+  customInvestmentsAmountInput.addEventListener(
+    "input",
+    handleCustomAmountChange
+  );
 
   // Chart projection buttons
   const savingsChartBtn = document.getElementById("savingsChartBtn");
@@ -1993,6 +1920,28 @@ function setupEventListeners() {
 
     // Custom projection now uses same parameters as recommended allocations
     // No separate event listeners needed
+  }
+
+  // Toggle combined view for Save & Invest section
+  const showCombinedToggle = document.getElementById("showCombinedToggle");
+  if (showCombinedToggle) {
+    const savingsEl = document.getElementById("customSavingsView");
+    const investmentsEl = document.getElementById("customInvestmentsView");
+    const bothEl = document.getElementById("customBothView");
+
+    const applyVisibility = (isCombined) => {
+      if (!savingsEl || !investmentsEl || !bothEl) return;
+      savingsEl.classList.toggle("hidden", isCombined);
+      investmentsEl.classList.toggle("hidden", isCombined);
+      bothEl.classList.toggle("hidden", !isCombined);
+    };
+
+    // Initial state: OFF => show savings + investments
+    applyVisibility(showCombinedToggle.checked);
+
+    showCombinedToggle.addEventListener("change", (e) => {
+      applyVisibility(e.target.checked);
+    });
   }
 
   // UI Toggles
@@ -2633,25 +2582,19 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   const summaryElement = document.getElementById(summaryId);
   if (!summaryElement) return;
   const leader = `<span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>`;
-  const greenAmt = (val) =>
-    `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(
-      val
-    )}</span>`;
+    const greenAmt = (val) =>
+      `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(val)}</span>`;
 
-  summaryElement.innerHTML = `
+    summaryElement.innerHTML = `
     <div class="space-y-2 text-sm text-gray-700">
       <div class="flex font-thin items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
-          colors.background[0]
-        }"></span>
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[0]}"></span>
         <span class="ml-2">${labels[0]} (${pctContrib}%)</span>
         ${leader}
         ${greenAmt(totalContributions)}
       </div>
       <div class="flex font-thin items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
-          colors.background[1]
-        }"></span>
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[1]}"></span>
         <span class="ml-2">${labels[1]} (${pctInterest}%)</span>
         ${leader}
         ${greenAmt(interestEarned)}
@@ -3028,9 +2971,6 @@ function initDeductionsNav() {
     });
   };
 
-  // Expose programmatic tab switching
-  window.switchDeductionsTab = setActive;
-
   tabs.forEach((btn) =>
     btn.addEventListener("click", () => setActive(btn.dataset.tab))
   );
@@ -3043,71 +2983,6 @@ function initDeductionsNav() {
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
   initDeductionsNav();
-
-  // Auto-switch to Expenses when interacting with Monthly Expenditure section
-  const livingExpensesSection = document.getElementById(
-    "living-expenses-section"
-  );
-  if (livingExpensesSection) {
-    const switchToExpenses = () => {
-      if (window.switchDeductionsTab) window.switchDeductionsTab("expenses");
-    };
-
-    // Delegate common interactions
-    livingExpensesSection.addEventListener("focusin", switchToExpenses);
-    livingExpensesSection.addEventListener("input", switchToExpenses);
-    livingExpensesSection.addEventListener("change", switchToExpenses);
-    livingExpensesSection.addEventListener("click", (e) => {
-      const target = e.target;
-      if (
-        target.matches("input, select, textarea, button") ||
-        target.classList.contains("category-toggle") ||
-        target.closest(".input-group")
-      ) {
-        switchToExpenses();
-      }
-    });
-  }
-
-  // Auto-switch to Taxes when interacting with Income section
-  const annualIncomeSection = document.getElementById("annual-income-section");
-  if (annualIncomeSection) {
-    const switchToTaxes = () => {
-      if (window.switchDeductionsTab) window.switchDeductionsTab("taxes");
-    };
-
-    annualIncomeSection.addEventListener("focusin", switchToTaxes);
-    annualIncomeSection.addEventListener("input", switchToTaxes);
-    annualIncomeSection.addEventListener("change", switchToTaxes);
-    annualIncomeSection.addEventListener("click", (e) => {
-      const target = e.target;
-      if (
-        target.matches("input, select, textarea, button") ||
-        target.closest(".input-group") ||
-        target.classList.contains("income-toggle")
-      ) {
-        switchToTaxes();
-      }
-    });
-  }
-
-  // Auto-switch to Save when interacting with Savings & Investments section
-  const savingsInvestmentsSectionEl = document.getElementById(
-    "savings-investments-section"
-  );
-  if (savingsInvestmentsSectionEl) {
-    const switchToSave = () => {
-      if (window.switchDeductionsTab) window.switchDeductionsTab("save");
-    };
-
-    // Switch on any interaction within the section, including the container box
-    savingsInvestmentsSectionEl.addEventListener("focusin", switchToSave);
-    savingsInvestmentsSectionEl.addEventListener("input", switchToSave);
-    savingsInvestmentsSectionEl.addEventListener("change", switchToSave);
-    savingsInvestmentsSectionEl.addEventListener("click", () => {
-      switchToSave();
-    });
-  }
 
   const printDownloadBtn = document.getElementById("print-download-btn");
   const resultsWrapper = document.getElementById(
@@ -3165,29 +3040,5 @@ document.addEventListener("DOMContentLoaded", () => {
       evt.preventDefault();
       handleDirectDownloadPDF();
     });
-  }
-});
-
-function closeAllCategories() {
-  const allCategoryContents = document.querySelectorAll(
-    ".expense-category .category-content"
-  );
-  const allCategoryArrows = document.querySelectorAll(
-    ".expense-category .category-arrow"
-  );
-
-  allCategoryContents.forEach((content, index) => {
-    content.style.maxHeight = "0px";
-    allCategoryArrows[index].style.transform = "rotate(0deg)";
-  });
-}
-
-window.addEventListener("scroll", () => {
-  const savingsSection = document.getElementById("savings-investments-section");
-  if (savingsSection) {
-    const rect = savingsSection.getBoundingClientRect();
-    if (rect.top <= window.innerHeight && rect.bottom >= 0) {
-      closeAllCategories();
-    }
   }
 });
