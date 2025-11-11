@@ -1261,15 +1261,15 @@
         </section>
       </div>
       <!-- right side -->
-      <div id="deductions-disposable-section" class="rounded-3xl p-5 w-full lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box hidden animate-slide-up z-40">
-        <div id="deductions-nav" class="flex items-center pl-6 py-2 font-medium text-[1rem]  gap-10 bg-[#eef5f1] py-1 rounded-md text-[.8rem]">
-          <button type="button" data-tab="taxes" class="deductions-tab px-6 py-3 rounded-md bg-[#dbece6] text-slate-800 ">
+      <div id="deductions-disposable-section" class="rounded-3xl p-5 w-full lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box animate-slide-up z-40">
+        <div id="deductions-nav" class="flex items-center justify-between px-6 py-2 font-medium bg-[#eef5f1] py-1 rounded-md">
+          <button type="button" data-tab="taxes" class="deductions-tab flex-1 px-4 py-3 rounded-md bg-[#dbece6] text-slate-800 whitespace-nowrap text-[.8rem]">
             Taxes
           </button>
-          <button type="button" data-tab="expenses" class="deductions-tab px-6 py-3 rounded-md text-slate-800 hover:bg-gray-100">
+          <button type="button" data-tab="expenses" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem] mx-2">
             Expenses
           </button>
-          <button type="button" data-tab="save" class="deductions-tab px-4  py-3 rounded-md text-sm text-slate-800 hover:bg-gray-100">
+          <button type="button" data-tab="save" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem]">
             Save & Invest
           </button>
         </div>
@@ -1581,7 +1581,7 @@
       }
     );
   </script>
-
+  
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const calculatorToggle = document.getElementById("calculatorToggle");
