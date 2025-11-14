@@ -11,6 +11,11 @@ const calculatorState = {
   livingExpenses: {},
   totalMonthlyExpensesEntered: 0,
   annualDisposable: 0,
+  // Track if user has entered custom savings/investment values
+  hasCustomSavings: false,
+  hasCustomInvestments: false,
+  // Track if custom savings/investments toggle is on
+  customSavingsToggleEnabled: false,
   // Default values for compound interest calculation
   compoundInterest: {
     years: 5, // Default number of years
@@ -372,6 +377,10 @@ function calculateBudget(
   // END: DYNAMIC RECOMMENDATION LOGIC
   // ===================================================================================
 
+  // Determine budget zone and options (this still uses the original logic for status messages and UI toggles)
+  const [zone, status, savingsAllowed, investmentsAllowed] =
+    determineBudgetZoneAndOptions(expensesPercentage);
+
   // Calculate custom allocations if percentages are provided
   let customAllocations = null;
   let finalUserSavingsPct = parseFloat(userSavingsPct) || 0;
@@ -383,8 +392,13 @@ function calculateBudget(
     (!isNaN(userInvestmentsPct) && String(userInvestmentsPct) !== "");
 
   if (hasUserCustomInput) {
-    // As per the previous request, no restrictions on custom allocations.
-    // User's input is taken directly.
+    // Override user percentages to 0% if savings/investments are not allowed in current zone
+    if (!savingsAllowed) {
+      finalUserSavingsPct = 0;
+    }
+    if (!investmentsAllowed) {
+      finalUserInvestmentsPct = 0;
+    }
 
     const customMonthlySavings =
       (finalUserSavingsPct / 100) * monthlyDisposableIncome;
@@ -404,10 +418,6 @@ function calculateBudget(
       monthly_cashflow: customMonthlyCashflow,
     };
   }
-
-  // Determine budget zone and options (this still uses the original logic for status messages and UI toggles)
-  const [zone, status, savingsAllowed, investmentsAllowed] =
-    determineBudgetZoneAndOptions(expensesPercentage);
 
   return {
     annual_income: annualIncome,
@@ -551,6 +561,8 @@ const investmentsPercentageInput = document.getElementById(
 const livingExpensesSection = document.getElementById(
   "living-expenses-section"
 );
+
+const annualIncomeSection = document.getElementById("annual-income-section");
 
 const customSavingsAmountInput = document.getElementById("customSavingsAmount");
 const customInvestmentsAmountInput = document.getElementById(
@@ -983,6 +995,10 @@ function handlePrimaryInputChange() {
 function handleExpenseOrAllocationChange() {
   if (calculatorState.monthlyDisposableIncome <= 0) return;
 
+  console.log("=== HANDLE EXPENSE CHANGE START ===");
+  console.log("Savings input value:", savingsPercentageInput.value);
+  console.log("Investments input value:", investmentsPercentageInput.value);
+
   // 1. Gather all current living expenses from inputs
   let totalExpenses = 0;
   const currentExpenses = {};
@@ -1000,8 +1016,15 @@ function handleExpenseOrAllocationChange() {
   calculatorState.livingExpenses = currentExpenses;
 
   // 2. Gather custom allocation percentages (these are now meant to be percentages of DISPOSABLE INCOME)
-  const userSavingsPct = parseFloat(savingsPercentageInput.value) || 0;
-  const userInvestmentsPct = parseFloat(investmentsPercentageInput.value) || 0;
+  const userSavingsPct = parseFloat(savingsPercentageInput.value);
+  const userInvestmentsPct = parseFloat(investmentsPercentageInput.value);
+
+  console.log("=== HANDLE EXPENSE CHANGE DEBUG ===");
+  console.log("User savings % from input:", userSavingsPct);
+  console.log("User investments % from input:", userInvestmentsPct);
+  console.log("Annual income:", calculatorState.annualIncome);
+  console.log("Province:", calculatorState.province);
+  console.log("Living expenses:", calculatorState.livingExpenses);
 
   // 3. Perform the main budget calculation with all current data
   const budget = calculateBudget(
@@ -1013,11 +1036,27 @@ function handleExpenseOrAllocationChange() {
     userInvestmentsPct
   );
 
+  console.log("Budget calculation result:");
+  console.log("Total monthly expenses:", budget.total_monthly_expenses);
+  console.log("Recommended savings %:", budget.recommended_savings_pct);
+  console.log("Recommended investments %:", budget.recommended_investments_pct);
+  console.log(
+    "Recommended savings amount:",
+    budget.recommended_allocations.monthly_savings
+  );
+  console.log(
+    "Recommended investments amount:",
+    budget.recommended_allocations.monthly_investments
+  );
+
   // Store the current budget in calculatorState for access by other functions
   calculatorState.currentBudget = budget;
 
   // 4. Update all UI elements with the new budget data
   updateAllUI(budget);
+
+  // Update charts immediately when budget data becomes available
+  updateAllCustomProjectionCharts();
 }
 
 /**
@@ -1373,31 +1412,286 @@ function updateAllUI(budget) {
       budget.total_monthly_expenses
     );
   }
-  // Custom allocation inputs are always enabled
-  savingsPercentageInput.disabled = false;
-  investmentsPercentageInput.disabled = false;
+  // Custom allocation inputs are enabled based on toggle state
+  const isCustomToggleEnabled = calculatorState.customSavingsToggleEnabled;
+  savingsPercentageInput.disabled = !isCustomToggleEnabled;
+  investmentsPercentageInput.disabled = !isCustomToggleEnabled;
+  customSavingsAmountInput.disabled = !isCustomToggleEnabled;
+  customInvestmentsAmountInput.disabled = !isCustomToggleEnabled;
+
+  // Update field appearance based on enabled state
+  const updateFieldAppearance = (input, enabled) => {
+    if (enabled) {
+      input.classList.remove("opacity-50", "cursor-not-allowed");
+      input.classList.add("cursor-text");
+    } else {
+      input.classList.add("opacity-50", "cursor-not-allowed");
+      input.classList.remove("cursor-text");
+    }
+  };
+
+  updateFieldAppearance(savingsPercentageInput, isCustomToggleEnabled);
+  updateFieldAppearance(investmentsPercentageInput, isCustomToggleEnabled);
+  updateFieldAppearance(customSavingsAmountInput, isCustomToggleEnabled);
+  updateFieldAppearance(customInvestmentsAmountInput, isCustomToggleEnabled);
 
   siGuidanceP.textContent =
     budget.savings_allowed || budget.investments_allowed
-      ? "Set your custom goals below, or use our recommendations."
+      ? calculatorState.customSavingsToggleEnabled
+        ? "You can now edit your custom savings and investments goals."
+        : "Set your custom goals below, or use our recommendations."
       : "Savings and investments are not recommended at this time. Focus on cashflow.";
 
-  // Update Recommended Allocations Display
-  document.getElementById("recommended-savings-amount").textContent =
-    formatCurrency(budget.recommended_allocations.monthly_savings);
-  document.getElementById("recommended-investments-amount").textContent =
-    formatCurrency(budget.recommended_allocations.monthly_investments);
-  document.getElementById("recommended-cashflow-amount").textContent =
-    formatCurrency(budget.recommended_allocations.monthly_cashflow);
-  document.getElementById(
+  // Update Recommended Allocations Display (only update elements that exist)
+  const recommendedSavingsAmountEl = document.getElementById(
+    "recommended-savings-amount"
+  );
+  const recommendedInvestmentsAmountEl = document.getElementById(
+    "recommended-investments-amount"
+  );
+  const recommendedCashflowAmountEl = document.getElementById(
+    "recommended-cashflow-amount"
+  );
+  const recommendedSavingsPctEl = document.getElementById(
     "recommended-savings-percentage"
-  ).textContent = `${budget.recommended_savings_pct.toFixed(1)}%`;
-  document.getElementById(
+  );
+  const recommendedInvestmentsPctEl = document.getElementById(
     "recommended-investments-percentage"
-  ).textContent = `${budget.recommended_investments_pct.toFixed(1)}%`;
-  document.getElementById(
+  );
+  const recommendedCashflowPctEl = document.getElementById(
     "recommended-cashflow-percentage"
-  ).textContent = `(${budget.recommended_cashflow_pct.toFixed(1)}%)`;
+  );
+
+  if (recommendedSavingsAmountEl)
+    recommendedSavingsAmountEl.textContent = formatCurrency(
+      budget.recommended_allocations.monthly_savings
+    );
+  if (recommendedInvestmentsAmountEl)
+    recommendedInvestmentsAmountEl.textContent = formatCurrency(
+      budget.recommended_allocations.monthly_investments
+    );
+  if (recommendedCashflowAmountEl)
+    recommendedCashflowAmountEl.textContent = formatCurrency(
+      budget.recommended_allocations.monthly_cashflow
+    );
+  if (recommendedSavingsPctEl)
+    recommendedSavingsPctEl.textContent = `${budget.recommended_savings_pct.toFixed(
+      1
+    )}%`;
+  if (recommendedInvestmentsPctEl)
+    recommendedInvestmentsPctEl.textContent = `${budget.recommended_investments_pct.toFixed(
+      1
+    )}%`;
+  if (recommendedCashflowPctEl)
+    recommendedCashflowPctEl.textContent = `(${budget.recommended_cashflow_pct.toFixed(
+      1
+    )}%)`;
+
+  // Debug logging
+  console.log("=== UPDATE ALL UI DEBUG ===");
+  console.log("Total monthly expenses:", budget.total_monthly_expenses);
+  console.log("Recommended savings %:", budget.recommended_savings_pct);
+  console.log("Recommended investments %:", budget.recommended_investments_pct);
+  console.log(
+    "Recommended savings amount:",
+    budget.recommended_allocations.monthly_savings
+  );
+  console.log(
+    "Recommended investments amount:",
+    budget.recommended_allocations.monthly_investments
+  );
+  console.log("Current savings % input:", savingsPercentageInput.value);
+  console.log("Current investments % input:", investmentsPercentageInput.value);
+  console.log("Custom allocations available:", !!budget.custom_allocations);
+
+  // Auto-populate defaults when user has not entered custom values yet
+  const isSavingsPctEmpty =
+    savingsPercentageInput.value === "" || savingsPercentageInput.value === "0";
+  const isInvestPctEmpty =
+    investmentsPercentageInput.value === "" ||
+    investmentsPercentageInput.value === "0";
+  const isSavingsAmtEmpty =
+    !customSavingsAmountInput.value ||
+    customSavingsAmountInput.value.trim() === "" ||
+    customSavingsAmountInput.value === "$0.00";
+  const isInvestAmtEmpty =
+    !customInvestmentsAmountInput.value ||
+    customInvestmentsAmountInput.value.trim() === "" ||
+    customInvestmentsAmountInput.value === "$0.00";
+
+  console.log("Field empty states:");
+  console.log(
+    "Is savings % empty?",
+    isSavingsPctEmpty,
+    "(value:",
+    savingsPercentageInput.value,
+    ")"
+  );
+  console.log(
+    "Is investments % empty?",
+    isInvestPctEmpty,
+    "(value:",
+    investmentsPercentageInput.value,
+    ")"
+  );
+  console.log(
+    "Is savings amount empty?",
+    isSavingsAmtEmpty,
+    "(value:",
+    customSavingsAmountInput.value,
+    ")"
+  );
+  console.log(
+    "Is investments amount empty?",
+    isInvestAmtEmpty,
+    "(value:",
+    customInvestmentsAmountInput.value,
+    ")"
+  );
+  console.log("Has custom savings?", calculatorState.hasCustomSavings);
+  console.log("Has custom investments?", calculatorState.hasCustomInvestments);
+
+  // Check if this is the first time auto-populating (fields are empty) OR if recommended values have changed
+  const currentSavingsPct = parseFloat(savingsPercentageInput.value) || 0;
+  const currentInvestPct = parseFloat(investmentsPercentageInput.value) || 0;
+  const recommendedSavingsPct = budget.recommended_savings_pct;
+  const recommendedInvestPct = budget.recommended_investments_pct;
+
+  // Check if recommended values have changed significantly (more than 0.01%)
+  // BUT skip this check if the user is currently editing the field
+  const isUserEditingSavings = savingsPercentageInput.matches(":focus");
+  const isUserEditingInvestments = investmentsPercentageInput.matches(":focus");
+
+  const hasRecommendedValuesChanged =
+    (!isUserEditingSavings &&
+      Math.abs(currentSavingsPct - recommendedSavingsPct) > 0.01) ||
+    (!isUserEditingInvestments &&
+      Math.abs(currentInvestPct - recommendedInvestPct) > 0.01);
+
+  console.log(
+    "Current savings %:",
+    currentSavingsPct,
+    "Recommended:",
+    recommendedSavingsPct
+  );
+  console.log(
+    "Current investments %:",
+    currentInvestPct,
+    "Recommended:",
+    recommendedInvestPct
+  );
+  console.log("Have recommended values changed?", hasRecommendedValuesChanged);
+
+  // Auto-populate recommended values when:
+  // 1. Fields are empty/0 (first time), OR
+  // 2. Recommended values have changed due to expense updates AND user hasn't entered custom values
+  // 3. BUT NOT when user is actively editing (difference is due to user input, not expense changes)
+  // 4. AND only when custom toggle is disabled (user wants recommended values)
+  const shouldAutoPopulate =
+    !calculatorState.customSavingsToggleEnabled &&
+    (isSavingsPctEmpty ||
+      isInvestPctEmpty ||
+      isSavingsAmtEmpty ||
+      isInvestAmtEmpty ||
+      (hasRecommendedValuesChanged &&
+        !calculatorState.hasCustomSavings &&
+        !calculatorState.hasCustomInvestments));
+
+  console.log("=== AUTO-POPULATION DECISION ===");
+  console.log("Should auto-populate?", shouldAutoPopulate);
+  console.log(
+    "Is custom toggle enabled?",
+    calculatorState.customSavingsToggleEnabled
+  );
+  console.log("Is savings field empty?", isSavingsPctEmpty);
+  console.log("Is investments field empty?", isInvestPctEmpty);
+  console.log("Has custom savings?", calculatorState.hasCustomSavings);
+  console.log("Has custom investments?", calculatorState.hasCustomInvestments);
+  console.log("Recommended values changed?", hasRecommendedValuesChanged);
+  console.log("Is user editing savings?", isUserEditingSavings);
+  console.log("Is user editing investments?", isUserEditingInvestments);
+  console.log("Current savings % input:", savingsPercentageInput.value);
+  console.log("Current investments % input:", investmentsPercentageInput.value);
+  console.log("Recommended savings %:", budget.recommended_savings_pct);
+  console.log("Recommended investments %:", budget.recommended_investments_pct);
+
+  if (shouldAutoPopulate) {
+    console.log("🎯 Auto-population condition MET - updating fields");
+
+    // Update charts immediately when auto-populating recommended values
+    updateAllCustomProjectionCharts();
+
+    // Only update fields if user hasn't entered custom values (unless fields are empty)
+    // AND don't update if user is currently editing that field
+    if (
+      (isSavingsPctEmpty && !isUserEditingSavings) ||
+      (!calculatorState.hasCustomSavings &&
+        hasRecommendedValuesChanged &&
+        !isUserEditingSavings)
+    ) {
+      console.log(
+        "✅ Setting savings % to:",
+        budget.recommended_savings_pct.toFixed(1)
+      );
+      savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
+    }
+    if (
+      (isInvestPctEmpty && !isUserEditingInvestments) ||
+      (!calculatorState.hasCustomInvestments &&
+        hasRecommendedValuesChanged &&
+        !isUserEditingInvestments)
+    ) {
+      console.log(
+        "✅ Setting investments % to:",
+        budget.recommended_investments_pct.toFixed(1)
+      );
+      investmentsPercentageInput.value =
+        budget.recommended_investments_pct.toFixed(1);
+    }
+    if (
+      isSavingsAmtEmpty ||
+      (!calculatorState.hasCustomSavings && hasRecommendedValuesChanged)
+    ) {
+      console.log(
+        "✅ Setting savings amount to:",
+        budget.recommended_allocations.monthly_savings
+      );
+      customSavingsAmountInput.value = formatCurrency(
+        budget.recommended_allocations.monthly_savings
+      );
+    }
+    if (
+      isInvestAmtEmpty ||
+      (!calculatorState.hasCustomInvestments && hasRecommendedValuesChanged)
+    ) {
+      console.log(
+        "✅ Setting investments amount to:",
+        budget.recommended_allocations.monthly_investments
+      );
+      customInvestmentsAmountInput.value = formatCurrency(
+        budget.recommended_allocations.monthly_investments
+      );
+    }
+  } else {
+    console.log("❌ Auto-population condition NOT MET");
+    console.log(
+      "Custom toggle enabled?",
+      calculatorState.customSavingsToggleEnabled
+    );
+    console.log("Has custom savings?", calculatorState.hasCustomSavings);
+    console.log(
+      "Has custom investments?",
+      calculatorState.hasCustomInvestments
+    );
+    console.log(
+      "Any field empty?",
+      isSavingsPctEmpty ||
+        isInvestPctEmpty ||
+        isSavingsAmtEmpty ||
+        isInvestAmtEmpty
+    );
+    console.log("Recommended values changed?", hasRecommendedValuesChanged);
+  }
 
   // Store monthly investment amount in localStorage for use in investment calculator
   const monthlyInvestmentAmount = budget.custom_allocations
@@ -1420,13 +1714,39 @@ function updateAllUI(budget) {
   const userEnteredInvestmentsPct = parseFloat(
     investmentsPercentageInput.value
   );
+
+  // Check if this is the first time we're showing recommended values (auto-population case)
+  const isFirstTimeRecommended =
+    (savingsPercentageInput.value === "" ||
+      savingsPercentageInput.value === "0") &&
+    (investmentsPercentageInput.value === "" ||
+      investmentsPercentageInput.value === "0") &&
+    budget.total_monthly_expenses > 0;
+
+  console.log("isFirstTimeRecommended:", isFirstTimeRecommended);
+  console.log("savingsPercentageInput.value:", savingsPercentageInput.value);
+  console.log(
+    "investmentsPercentageInput.value:",
+    investmentsPercentageInput.value
+  );
+
   const hasAnyUserCustomInputForCashflow =
-    (!isNaN(userEnteredSavingsPct) && String(userEnteredSavingsPct) !== "") ||
+    (!isNaN(userEnteredSavingsPct) &&
+      savingsPercentageInput.value !== "" &&
+      savingsPercentageInput.value !== "0" &&
+      !isFirstTimeRecommended) ||
     (!isNaN(userEnteredInvestmentsPct) &&
-      String(userEnteredInvestmentsPct) !== "");
+      investmentsPercentageInput.value !== "" &&
+      investmentsPercentageInput.value !== "0" &&
+      !isFirstTimeRecommended);
 
   // Custom Savings Amount - preserve user input if directly editing amount
-  if (!isNaN(userEnteredSavingsPct) && savingsPercentageInput.value !== "") {
+  if (
+    !isNaN(userEnteredSavingsPct) &&
+    savingsPercentageInput.value !== "" &&
+    savingsPercentageInput.value !== "0" &&
+    !isFirstTimeRecommended
+  ) {
     // Only update the amount field if the user hasn't directly edited it
     if (!customSavingsAmountInput.matches(":focus")) {
       customSavingsAmountInput.value = formatCurrency(
@@ -1435,14 +1755,25 @@ function updateAllUI(budget) {
           : 0
       );
     }
+  } else if (
+    savingsPercentageInput.value === "0" ||
+    savingsPercentageInput.value === ""
+  ) {
+    // If percentage is explicitly 0 or empty (showing placeholder 0), show $0.00
+    customSavingsAmountInput.value = formatCurrency(0);
   } else {
-    customSavingsAmountInput.value = ""; // Clear if no valid custom percentage
+    // If user hasn't provided a custom percentage, keep showing recommended amount
+    customSavingsAmountInput.value = formatCurrency(
+      budget.recommended_allocations.monthly_savings || 0
+    );
   }
 
   // Custom Investments Amount - preserve user input if directly editing amount
   if (
     !isNaN(userEnteredInvestmentsPct) &&
-    investmentsPercentageInput.value !== ""
+    investmentsPercentageInput.value !== "" &&
+    investmentsPercentageInput.value !== "0" &&
+    !isFirstTimeRecommended
   ) {
     // Only update the amount field if the user hasn't directly edited it
     if (!customInvestmentsAmountInput.matches(":focus")) {
@@ -1452,8 +1783,17 @@ function updateAllUI(budget) {
           : 0
       );
     }
+  } else if (
+    investmentsPercentageInput.value === "0" ||
+    investmentsPercentageInput.value === ""
+  ) {
+    // If percentage is explicitly 0 or empty (showing placeholder 0), show $0.00
+    customInvestmentsAmountInput.value = formatCurrency(0);
   } else {
-    customInvestmentsAmountInput.value = ""; // Clear if no valid custom percentage
+    // If user hasn't provided a custom percentage, keep showing recommended amount
+    customInvestmentsAmountInput.value = formatCurrency(
+      budget.recommended_allocations.monthly_investments || 0
+    );
   }
 
   // Custom Cashflow Amount and Percentage
@@ -1500,11 +1840,11 @@ function updateAllUI(budget) {
 
     if (cashflowPctToCheck < MIN_CASHFLOW_PCT) {
       // Caution message
-      ctaMessage.innerHTML = `Your <strong class="font-semibold">recommended</strong> cashflow is <span class="text-red-400">${formatPercentage(
+      ctaMessage.innerHTML = `<strong class="font-semibold">Your recommended cashflow is <span class="text-red-400">${formatPercentage(
         cashflowPctToCheck
       )}</span>, which is <span class="text-red-400">${formatCurrency(
         cashflowToCheck
-      )}</span>. To learn how to manage and secure your finances, click the button below`;
+      )}</span>. To learn how to manage and secure your finances, click the button below</strong>`;
 
       // Remove any background colors; only use border for emphasis
       ctaSection.classList.remove("bg-white/5", "bg-red-900/30");
@@ -1512,11 +1852,11 @@ function updateAllUI(budget) {
       ctaSection.classList.add("border-red-500/50");
     } else {
       // Standard message
-      ctaMessage.innerHTML = `Your <strong class="font-semibold">recommended</strong> cashflow is <span class="text-green-400">${formatPercentage(
+      ctaMessage.innerHTML = `<strong class="font-semibold">Your recommended cashflow is <span class="text-green-400">${formatPercentage(
         budget.recommended_cashflow_pct
       )}</span>, which is <span class="text-green-400">${formatCurrency(
         budget.recommended_allocations.monthly_cashflow
-      )}</span>. To learn how to manage and secure your finances, click the button below.`;
+      )}</span>. To learn how to manage and secure your finances, click the button below.</strong>`;
 
       // Remove any background colors; only use border for normal state
       ctaSection.classList.remove("bg-white/5", "bg-red-900/30");
@@ -1639,13 +1979,22 @@ function updateExpensePercentageLabels(monthlyDisposableIncome) {
 
 function setupEventListeners() {
   // Primary income and deduction inputs
-  annualIncomeInput.addEventListener("input", handlePrimaryInputChange);
-  provinceSelect.addEventListener("change", handlePrimaryInputChange);
+  annualIncomeInput.addEventListener("focus", switchToTaxesTab);
+  annualIncomeInput.addEventListener("input", () => {
+    switchToTaxesTab();
+    handlePrimaryInputChange();
+  });
+  provinceSelect.addEventListener("change", () => {
+    switchToTaxesTab();
+    handlePrimaryInputChange();
+  });
   includeRetirementCheckbox.addEventListener("change", () => {
+    switchToTaxesTab();
     toggleRetirementSection(true);
     handlePrimaryInputChange();
   });
   excludeRetirementCheckbox.addEventListener("change", () => {
+    switchToTaxesTab();
     toggleRetirementSection(false);
     if (excludeRetirementCheckbox.checked) {
       retirementPercentageInput.value = "";
@@ -1653,35 +2002,11 @@ function setupEventListeners() {
     handlePrimaryInputChange();
   });
   retirementPercentageInput.addEventListener("input", () => {
+    switchToTaxesTab();
     if (validateRetirementPercentage()) {
       handlePrimaryInputChange();
     }
   });
-
-  // CTA: Reset to recommended numbers
-  const ctaResetBtn = document.getElementById("cta-reset-btn");
-  if (ctaResetBtn) {
-    ctaResetBtn.addEventListener("click", () => {
-      const budget = calculatorState.currentBudget;
-      if (!budget) return;
-
-      // Set inputs to recommended percentages
-      savingsPercentageInput.value = budget.recommended_savings_pct.toFixed(1);
-      investmentsPercentageInput.value =
-        budget.recommended_investments_pct.toFixed(1);
-
-      // Set amount inputs to recommended monthly amounts
-      customSavingsAmountInput.value = formatCurrency(
-        budget.recommended_allocations.monthly_savings
-      );
-      customInvestmentsAmountInput.value = formatCurrency(
-        budget.recommended_allocations.monthly_investments
-      );
-
-      // Recalculate with these values to update charts and cashflow
-      handleExpenseOrAllocationChange();
-    });
-  }
 
   // Custom Allocations Toggle Button
   const toggleCustomAllocationsBtn = document.getElementById(
@@ -1702,6 +2027,7 @@ function setupEventListeners() {
 
   if (toggleCustomAllocationsBtn && customAllocationsSection) {
     toggleCustomAllocationsBtn.addEventListener("click", () => {
+      switchToSaveTab();
       const isHidden = customAllocationsSection.classList.contains("hidden");
 
       if (isHidden) {
@@ -1744,25 +2070,244 @@ function setupEventListeners() {
     '#living-expenses-section input[type="number"]'
   );
   expenseInputs.forEach((input) => {
-    input.addEventListener("input", handleExpenseOrAllocationChange);
+    input.addEventListener("focus", switchToExpensesTab);
+    input.addEventListener("input", () => {
+      switchToExpensesTab();
+      handleExpenseOrAllocationChange();
+    });
   });
 
+  if (livingExpensesSection) {
+    livingExpensesSection.addEventListener("click", switchToExpensesTab);
+  }
+
+  if (savingsInvestmentsSection) {
+    savingsInvestmentsSection.addEventListener("click", switchToSaveTab);
+  }
+
+  if (annualIncomeSection) {
+    annualIncomeSection.addEventListener("click", switchToTaxesTab);
+  }
+
+  if (savingsInvestmentsSection && livingExpensesSection) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const livingBottom =
+            livingExpensesSection.offsetTop +
+            livingExpensesSection.offsetHeight;
+          const viewportCenter = window.scrollY + window.innerHeight / 2;
+          if (entry.isIntersecting && viewportCenter > livingBottom) {
+            collapseAllExpenses();
+          }
+        });
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(savingsInvestmentsSection);
+  }
+
+  if (savingsInvestmentsSection && livingExpensesSection) {
+    const maybeCollapseExpensesOnScroll = () => {
+      const savingsRect = savingsInvestmentsSection.getBoundingClientRect();
+      const livingRect = livingExpensesSection.getBoundingClientRect();
+      const nearSavings = savingsRect.top <= window.innerHeight * 0.65;
+      const pastLiving = livingRect.bottom <= 0;
+      if (nearSavings || pastLiving) collapseAllExpenses();
+    };
+    window.addEventListener("scroll", maybeCollapseExpensesOnScroll, {
+      passive: true,
+    });
+    window.addEventListener("resize", maybeCollapseExpensesOnScroll);
+  }
+
   // Custom savings and investments inputs
+  savingsPercentageInput.addEventListener("focus", switchToSaveTab);
   savingsPercentageInput.addEventListener("input", () => {
-    // No need to set isSavingsCustom here, as handleExpenseOrAllocationChange reads directly from input.
-    handleExpenseOrAllocationChange();
+    // Only process input if custom toggle is enabled
+    if (!calculatorState.customSavingsToggleEnabled) return;
+
+    switchToSaveTab();
+
+    // Debug logging to see what's happening
+    console.log("=== SAVINGS INPUT DEBUG ===");
+    console.log("Raw input value:", savingsPercentageInput.value);
+    console.log("Parsed value:", parseFloat(savingsPercentageInput.value));
+    console.log("Document.activeElement:", document.activeElement);
+    console.log(
+      "Is input focused?",
+      document.activeElement === savingsPercentageInput
+    );
+
+    // Only set custom flag if user enters a non-empty value
+    if (savingsPercentageInput.value && savingsPercentageInput.value !== "0") {
+      calculatorState.hasCustomSavings = true;
+    } else {
+      calculatorState.hasCustomSavings = false; // Field is cleared
+    }
+
+    // Update charts immediately for real-time rendering
+    updateAllCustomProjectionCharts();
+
+    // Don't recalculate immediately if user is actively typing (debounce)
+    clearTimeout(window.savingsInputTimeout);
+    window.savingsInputTimeout = setTimeout(() => {
+      handleExpenseOrAllocationChange();
+    }, 300); // 300ms delay
   });
+  investmentsPercentageInput.addEventListener("focus", switchToSaveTab);
   investmentsPercentageInput.addEventListener("input", () => {
-    // No need to set isInvestmentsCustom here, as handleExpenseOrAllocationChange reads directly from input.
-    handleExpenseOrAllocationChange();
+    // Only process input if custom toggle is enabled
+    if (!calculatorState.customSavingsToggleEnabled) return;
+
+    switchToSaveTab();
+
+    // Debug logging to see what's happening
+    console.log("=== INVESTMENTS INPUT DEBUG ===");
+    console.log("Raw input value:", investmentsPercentageInput.value);
+    console.log("Parsed value:", parseFloat(investmentsPercentageInput.value));
+
+    // Only set custom flag if user enters a non-empty value
+    if (
+      investmentsPercentageInput.value &&
+      investmentsPercentageInput.value !== "0"
+    ) {
+      calculatorState.hasCustomInvestments = true;
+    } else {
+      calculatorState.hasCustomInvestments = false; // Field is cleared
+    }
+
+    // Update charts immediately for real-time rendering
+    updateAllCustomProjectionCharts();
+
+    // Don't recalculate immediately if user is actively typing (debounce)
+    clearTimeout(window.investmentsInputTimeout);
+    window.investmentsInputTimeout = setTimeout(() => {
+      handleExpenseOrAllocationChange();
+    }, 300); // 300ms delay
   });
 
   // Custom amount inputs
-  customSavingsAmountInput.addEventListener("input", handleCustomAmountChange);
-  customInvestmentsAmountInput.addEventListener(
-    "input",
-    handleCustomAmountChange
-  );
+  customSavingsAmountInput.addEventListener("focus", switchToSaveTab);
+  customSavingsAmountInput.addEventListener("input", (e) => {
+    // Only process input if custom toggle is enabled
+    if (!calculatorState.customSavingsToggleEnabled) return;
+
+    switchToSaveTab();
+    // Only set custom flag if user enters a non-empty value
+    if (
+      customSavingsAmountInput.value &&
+      customSavingsAmountInput.value !== "$0.00"
+    ) {
+      calculatorState.hasCustomSavings = true;
+    } else {
+      calculatorState.hasCustomSavings = false; // Field is cleared
+    }
+    handleCustomAmountChange(e);
+
+    // Update charts immediately for real-time rendering
+    updateAllCustomProjectionCharts();
+
+    // Update charts immediately for real-time rendering
+    updateAllCustomProjectionCharts();
+  });
+  customInvestmentsAmountInput.addEventListener("focus", switchToSaveTab);
+  customInvestmentsAmountInput.addEventListener("input", (e) => {
+    // Only process input if custom toggle is enabled
+    if (!calculatorState.customSavingsToggleEnabled) return;
+
+    switchToSaveTab();
+    // Only set custom flag if user enters a non-empty value
+    if (
+      customInvestmentsAmountInput.value &&
+      customInvestmentsAmountInput.value !== "$0.00"
+    ) {
+      calculatorState.hasCustomInvestments = true;
+    } else {
+      calculatorState.hasCustomInvestments = false; // Field is cleared
+    }
+    handleCustomAmountChange(e);
+
+    // Update charts immediately for real-time rendering
+    updateAllCustomProjectionCharts();
+  });
+
+  // Custom Savings Toggle functionality
+  const customSavingsToggle = document.getElementById("customSavingsToggle");
+  const siToggleText = document.getElementById("si-toggle-text");
+
+  if (customSavingsToggle) {
+    customSavingsToggle.addEventListener("change", () => {
+      calculatorState.customSavingsToggleEnabled = customSavingsToggle.checked;
+
+      // Update toggle text
+      if (siToggleText) {
+        siToggleText.textContent = customSavingsToggle.checked
+          ? "Turn off to revert back to recommended goals"
+          : "Turn on to set your custom goals";
+      }
+
+      // Enable/disable input fields based on toggle state
+      const isEnabled = customSavingsToggle.checked;
+      savingsPercentageInput.disabled = !isEnabled;
+      investmentsPercentageInput.disabled = !isEnabled;
+      customSavingsAmountInput.disabled = !isEnabled;
+      customInvestmentsAmountInput.disabled = !isEnabled;
+
+      // Update field appearance based on enabled state
+      const updateFieldAppearance = (input, enabled) => {
+        if (enabled) {
+          input.classList.remove("opacity-50", "cursor-not-allowed");
+          input.classList.add("cursor-text");
+        } else {
+          input.classList.add("opacity-50", "cursor-not-allowed");
+          input.classList.remove("cursor-text");
+        }
+      };
+
+      updateFieldAppearance(savingsPercentageInput, isEnabled);
+      updateFieldAppearance(investmentsPercentageInput, isEnabled);
+      updateFieldAppearance(customSavingsAmountInput, isEnabled);
+      updateFieldAppearance(customInvestmentsAmountInput, isEnabled);
+
+      // If toggle is turned off, reset to recommended numbers
+      if (!isEnabled) {
+        const budget = calculatorState.currentBudget;
+        if (budget) {
+          // Clear custom flags since we're resetting to recommended
+          calculatorState.hasCustomSavings = false;
+          calculatorState.hasCustomInvestments = false;
+
+          // Set inputs to recommended percentages
+          savingsPercentageInput.value =
+            budget.recommended_savings_pct.toFixed(1);
+          investmentsPercentageInput.value =
+            budget.recommended_investments_pct.toFixed(1);
+
+          // Set amount inputs to recommended monthly amounts
+          customSavingsAmountInput.value = formatCurrency(
+            budget.recommended_allocations.monthly_savings
+          );
+          customInvestmentsAmountInput.value = formatCurrency(
+            budget.recommended_allocations.monthly_investments
+          );
+
+          // Recalculate with these values to update charts and cashflow
+          handleExpenseOrAllocationChange();
+
+          // Update charts immediately after toggle change
+          updateAllCustomProjectionCharts();
+        }
+      }
+    });
+
+    // Initialize toggle state - disabled by default (recommended values mode)
+    customSavingsToggle.checked = false;
+    calculatorState.customSavingsToggleEnabled = false;
+    if (siToggleText) {
+      siToggleText.textContent = "Turn on to set your custom goals";
+    }
+  }
 
   // Chart projection buttons
   const savingsChartBtn = document.getElementById("savingsChartBtn");
@@ -1948,6 +2493,7 @@ function setupEventListeners() {
   const dropdownBtn = document.getElementById("dropdownBtn");
   const dropdownList = document.getElementById("customProvinceOptions");
   dropdownBtn.addEventListener("click", () => {
+    switchToTaxesTab();
     toggleProvinceDropdown();
   });
 
@@ -1982,6 +2528,7 @@ function setupEventListeners() {
 
   // Handle dropdown toggle
   ageDropdownBtn.addEventListener("click", () => {
+    switchToTaxesTab();
     toggleAgeDropdown();
   });
 
@@ -1992,6 +2539,7 @@ function setupEventListeners() {
       document.getElementById("ageDropdownSelected").textContent =
         option.textContent;
       toggleAgeDropdown();
+      switchToTaxesTab();
       handlePrimaryInputChange(); // Trigger validation and recalculation
     });
   });
@@ -2108,6 +2656,19 @@ function toggleAllExpenses() {
   // DO NOT set toggleAllButton.textContent (it would remove the icons)
 }
 
+function collapseAllExpenses() {
+  const contents = document.querySelectorAll(
+    ".expense-category .category-content"
+  );
+  const arrows = document.querySelectorAll(".expense-category .category-arrow");
+  contents.forEach((content, index) => {
+    content.style.maxHeight = "0px";
+    if (arrows[index]) arrows[index].style.transform = "rotate(0deg)";
+  });
+  const label = document.getElementById("toggle-all-expenses-text");
+  if (label) label.textContent = "Expand all";
+}
+
 // Function to toggle deduction inputs expansion/collapse
 
 // function toggleDeductionInputs() {
@@ -2208,6 +2769,12 @@ function updateProjectionChart() {
 
   // Get the chart instance
   const chartElement = document.getElementById("myPieChart2");
+
+  // Check if chart element exists
+  if (!chartElement) {
+    console.log("Chart element myPieChart2 not found, skipping chart update");
+    return;
+  }
   let chart = Chart.getChart(chartElement);
 
   // If no budget calculation has been performed yet, return early
@@ -2218,21 +2785,50 @@ function updateProjectionChart() {
 
   const currentBudget = calculatorState.currentBudget;
 
+  // Get the current input values to check if user has entered 0% or empty
+  const savingsPercentageInput = document.getElementById("savingsPercentage");
+  const investmentsPercentageInput = document.getElementById(
+    "investmentsPercentage"
+  );
+
+  const savingsInputValue = savingsPercentageInput
+    ? savingsPercentageInput.value
+    : "";
+  const investmentsInputValue = investmentsPercentageInput
+    ? investmentsPercentageInput.value
+    : "";
+
   // Determine the monthly contribution and return rate based on the selected chart type
   let monthlyContribution = 0;
   let returnRate = 0;
 
   if (currentChartType === "savings") {
-    monthlyContribution = currentBudget.recommended_allocations.monthly_savings;
+    // Check if savings input is 0% or empty - if so, show $0.00
+    if (savingsInputValue === "0" || savingsInputValue === "") {
+      monthlyContribution = 0;
+    } else {
+      monthlyContribution =
+        currentBudget.recommended_allocations.monthly_savings;
+    }
     returnRate = 3; // 3% for savings
   } else if (currentChartType === "investments") {
-    monthlyContribution =
-      currentBudget.recommended_allocations.monthly_investments;
+    // Check if investments input is 0% or empty - if so, show $0.00
+    if (investmentsInputValue === "0" || investmentsInputValue === "") {
+      monthlyContribution = 0;
+    } else {
+      monthlyContribution =
+        currentBudget.recommended_allocations.monthly_investments;
+    }
     returnRate = 10; // 10% for investments
   } else if (currentChartType === "both") {
-    const savingsAmount = currentBudget.recommended_allocations.monthly_savings;
+    const savingsAmount =
+      savingsInputValue === "0" || savingsInputValue === ""
+        ? 0
+        : currentBudget.recommended_allocations.monthly_savings;
     const investmentsAmount =
-      currentBudget.recommended_allocations.monthly_investments;
+      investmentsInputValue === "0" || investmentsInputValue === ""
+        ? 0
+        : currentBudget.recommended_allocations.monthly_investments;
     monthlyContribution = savingsAmount + investmentsAmount;
     // Use simple average of 3% and 10%
     returnRate = (3 + 10) / 2; // 6.5%
@@ -2438,6 +3034,19 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   if (!calculatorState.currentBudget) return;
   const currentBudget = calculatorState.currentBudget;
 
+  // Get the current input values to check if user has entered 0% or empty
+  const savingsPercentageInput = document.getElementById("savingsPercentage");
+  const investmentsPercentageInput = document.getElementById(
+    "investmentsPercentage"
+  );
+
+  const savingsInputValue = savingsPercentageInput
+    ? savingsPercentageInput.value
+    : "";
+  const investmentsInputValue = investmentsPercentageInput
+    ? investmentsPercentageInput.value
+    : "";
+
   // Fallback to recommended amounts when custom values are empty
   const rec = currentBudget.recommended_allocations || {
     monthly_savings: 0,
@@ -2449,20 +3058,36 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   let returnRate = 0;
 
   if (chartType === "savings") {
-    monthlyContribution =
-      (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+    // Check if savings input is 0% or empty - if so, show $0.00
+    if (savingsInputValue === "0" || savingsInputValue === "") {
+      monthlyContribution = 0;
+    } else {
+      monthlyContribution =
+        (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+    }
     returnRate = 3;
   } else if (chartType === "investments") {
-    monthlyContribution =
-      (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+    // Check if investments input is 0% or empty - if so, show $0.00
+    if (investmentsInputValue === "0" || investmentsInputValue === "") {
+      monthlyContribution = 0;
+    } else {
+      monthlyContribution =
+        (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+    }
     returnRate = 10;
   } else {
-    const s = (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
-    const i = (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+    const s =
+      savingsInputValue === "0" || savingsInputValue === ""
+        ? 0
+        : (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+    const i =
+      investmentsInputValue === "0" || investmentsInputValue === ""
+        ? 0
+        : (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
     monthlyContribution = s + i;
-    // Weighted average when both are present; else simple average
+    // Weighted average when both are present; else simple average rounded to 7%
     const total = s + i;
-    returnRate = total > 0 ? (s * 3 + i * 10) / total : (3 + 10) / 2;
+    returnRate = total > 0 ? (s * 3 + i * 10) / total : 7;
   }
 
   const { endingBalance, totalContributions, interestEarned } =
@@ -2472,6 +3097,23 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
       returnRate,
       compoundFrequency
     );
+
+  // Hide the chart container if monthly contribution is 0
+  const containerId =
+    chartType === "savings"
+      ? "customSavingsView"
+      : chartType === "investments"
+      ? "customInvestmentsView"
+      : "customBothView";
+  const containerElement = document.getElementById(containerId);
+  if (containerElement) {
+    if (monthlyContribution === 0) {
+      containerElement.classList.add("hidden");
+      return; // Exit early if hidden
+    } else {
+      containerElement.classList.remove("hidden");
+    }
+  }
 
   // Avoid divide-by-zero
   const pctContrib =
@@ -2582,19 +3224,25 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   const summaryElement = document.getElementById(summaryId);
   if (!summaryElement) return;
   const leader = `<span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>`;
-    const greenAmt = (val) =>
-      `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(val)}</span>`;
+  const greenAmt = (val) =>
+    `<span class="font-semibold text-transparent" style="background-image: linear-gradient(to right, var(--base-color-brand--brand-green), var(--base-color-system--focus-state)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">${formatCurrency(
+      val
+    )}</span>`;
 
-    summaryElement.innerHTML = `
+  summaryElement.innerHTML = `
     <div class="space-y-2 text-sm text-gray-700">
       <div class="flex font-thin items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[0]}"></span>
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
+          colors.background[0]
+        }"></span>
         <span class="ml-2">${labels[0]} (${pctContrib}%)</span>
         ${leader}
         ${greenAmt(totalContributions)}
       </div>
       <div class="flex font-thin items-center">
-        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${colors.background[1]}"></span>
+        <span class="inline-block w-3 h-3 rounded-full" style="background-color:${
+          colors.background[1]
+        }"></span>
         <span class="ml-2">${labels[1]} (${pctInterest}%)</span>
         ${leader}
         ${greenAmt(interestEarned)}
@@ -2614,24 +3262,34 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
 // Render all stacked charts/summaries and titles
 function updateAllCustomProjectionCharts() {
   if (!calculatorState.currentBudget) return;
-  renderCustomProjection(
-    "savings",
-    "customSavingsPieChart",
-    "customSavingsProjectionSummary",
-    "customSavingsTitle"
-  );
-  renderCustomProjection(
-    "investments",
-    "customInvestmentsPieChart",
-    "customInvestmentsProjectionSummary",
-    "customInvestmentsTitle"
-  );
-  renderCustomProjection(
-    "both",
-    "customBothPieChart",
-    "customBothProjectionSummary",
-    "customBothTitle"
-  );
+
+  // Check if combined view is enabled
+  const showCombinedToggle = document.getElementById("showCombinedToggle");
+  const isCombined = showCombinedToggle ? showCombinedToggle.checked : false;
+
+  if (isCombined) {
+    // Show combined view - only render "both" chart
+    renderCustomProjection(
+      "both",
+      "customBothPieChart",
+      "customBothProjectionSummary",
+      "customBothTitle"
+    );
+  } else {
+    // Show individual views - render savings and investments charts
+    renderCustomProjection(
+      "savings",
+      "customSavingsPieChart",
+      "customSavingsProjectionSummary",
+      "customSavingsTitle"
+    );
+    renderCustomProjection(
+      "investments",
+      "customInvestmentsPieChart",
+      "customInvestmentsProjectionSummary",
+      "customInvestmentsTitle"
+    );
+  }
 }
 
 // Backward compatibility for existing calls
@@ -2977,6 +3635,34 @@ function initDeductionsNav() {
 
   // Default active tab
   setActive("taxes");
+}
+
+function switchToExpensesTab() {
+  const nav = document.getElementById("deductions-nav");
+  if (!nav) return;
+  const btn = nav.querySelector('.deductions-tab[data-tab="expenses"]');
+  if (btn) btn.click();
+}
+
+function switchToTaxesTab() {
+  const nav = document.getElementById("deductions-nav");
+  if (!nav) return;
+  const btn = nav.querySelector('.deductions-tab[data-tab="taxes"]');
+  if (btn) btn.click();
+}
+
+function switchToSaveTab() {
+  const nav = document.getElementById("deductions-nav");
+  if (!nav) return;
+  const btn = nav.querySelector('.deductions-tab[data-tab="save"]');
+  if (btn) btn.click();
+  if (typeof livingExpensesSection !== "undefined" && livingExpensesSection) {
+    const rect = livingExpensesSection.getBoundingClientRect();
+    const nearThreshold = window.innerHeight * 0.6;
+    if (rect.bottom <= nearThreshold || rect.bottom <= 0) {
+      collapseAllExpenses();
+    }
+  }
 }
 
 // Start the application once the DOM is fully loaded.

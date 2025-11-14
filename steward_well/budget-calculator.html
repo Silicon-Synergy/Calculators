@@ -600,16 +600,16 @@
     </div>
   </div>
 
-  <div id="main-calculator-card" class="max-w-[80rem] flex flex-col relative mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div id="main-calculator-card" class="max-w-[90rem] flex flex-col relative mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Hero Section -->
     <div class="text-left mt-24 mb-12 animate-fade-in">
-      <h2 class="text-4xl md:text-7xl w-[55%] font-thin text-white ">
-        Budget and Cashflow Calculator
+      <h2 class="text-4xl md:text-7xl w-[55%] font-medium text-white ">
+        Budget and<br>Cashflow Calculator
       </h2>
       <div class="opacity-50 mt-2 text-[1.2rem] w-[55%]">
         This tool helps you see your cashflow clearly, set purposeful
-        allocations, and view projections—simple budgeting that highlights
-        trends, flags overspending, and shows progress toward your goals.
+        allocations,<br>and view projections—simple budgeting that highlights
+        trends, flags<br>overspending, and shows progress toward your goals.
       </div>
     </div>
 
@@ -1183,17 +1183,28 @@
               </div>
             </div>
           </div>
+      
+
           <p id="si-guidance" class="text-white/90 text-base mb-3 leading-relaxed">
             You can choose to either set your custom savings and investments goals, or use our recommendations.
           </p>
+
+          <!-- Custom Goals Toggle -->
+          <div class="flex items-center justify-between mb-6">
+            <span id="si-toggle-text" class="text-sm text-gray-700">Turn on to set your custom goals</span>
+            <label for="customSavingsToggle" class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="customSavingsToggle" class="sr-only peer" />
+              <div class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5"></div>
+            </label>
+          </div>
 
           <!-- Unified Savings & Investments Form -->
           <div id="unifiedAllocations" class="space-y-6 flex flex-col w-[100%] mt-4">
             <!-- Savings -->
             <div class="space-y-3">
               <div class="flex justify-between">
-                <label class="block text-sm font-medium text-white/80">Monthly Savings percentage(%)</label>
-                <label class="block text-sm mr-32 font-medium text-white/80">Monthly Savings amount($)</label>
+                <label class="block text-sm font-medium text-white/80">Monthly Savings percentage (%)</label>
+                <label class="block text-sm mr-32 font-medium text-white/80">Monthly Savings amount ($)</label>
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
@@ -1241,16 +1252,9 @@
           <!-- Centered CTA Section -->
           <div class="mt-8 flex justify-center">
             <div id="recommended-cashflow-cta" class="w-full  flex flex-col gap-4">
-              <p id="cta-message" class="text-center text-slate-800 text-base font-medium leading-relaxed">
+              <p id="cta-message" class="text-left text-slate-800 text-base font-medium leading-relaxed">
                 <!-- This content will be set by JavaScript -->
               </p>
-
-              <!-- Outlined gradient button -->
-              <button id="cta-reset-btn" type="button" class="w-full rounded-xl p-[1px] bg-[linear-gradient(to_right,#177F5B,#154D80)] border-[1px] hover:opacity-90 transition">
-                <span class="block w-full rounded-xl bg-white px-6 py-3 text-[#177F5B] font-thin">
-                  Reset to recommended numbers
-                </span>
-              </button>
 
               <!-- Filled gradient button -->
               <a href="index.html#contact-us" id="recommended-nav_cta" class="w-full px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
@@ -1458,24 +1462,12 @@
                 </label>
               </div>
 
-              <!-- Custom tabs -->
-              <div class="flex gap-3">
-                <button id="customSavingsChartBtn" class="flex-1 px-4 py-3 rounded-lg font-medium cursor-pointer duration-300 bg-[#dbece6] text-black">
-                  Savings
-                </button>
-                <button id="customInvestmentsChartBtn" class="flex-1 px-4 py-3 rounded-lg font-medium cursor-pointer duration-300 bg-[#dbece6] text-black">
-                  Investments
-                </button>
-                <button id="customBothChartBtn" class="flex-1 px-4 py-3 rounded-lg font-medium cursor-pointer duration-300 bg-[#dbece6] text-black">
-                  Both
-                </button>
-              </div>
-
             <!-- Tabbed views -->
             <div class="flex flex-col space-y-10">
 
               <!-- Savings view -->
               <div id="customSavingsView" class="space-y-3">
+                <h3 class="text-xl font-bold text-gray-800 text-left mb-4">Savings</h3>
                 <p id="customSavingsTitle" class="text-sm text-gray-700"></p>
                 <div class="flex justify-center items-center">
                   <canvas id="customSavingsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
@@ -1485,6 +1477,7 @@
 
               <!-- Investments view (visible by default) -->
                 <div id="customInvestmentsView" class="space-y-3">
+                  <h3 class="text-xl font-bold text-gray-800 text-left mb-4">Investments</h3>
                   <p id="customInvestmentsTitle" class="text-sm text-gray-700"></p>
                   <div class="flex justify-center items-center">
                     <canvas id="customInvestmentsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
@@ -1494,6 +1487,7 @@
 
               <!-- Both (combined) view -->
               <div id="customBothView" class="space-y-3 hidden">
+                <h3 class="text-xl font-bold text-gray-800 text-left mb-4">Both</h3>
                 <p id="customBothTitle" class="text-sm text-gray-700"></p>
                 <div class="flex justify-center items-center">
                   <canvas id="customBothPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
@@ -1501,10 +1495,6 @@
                 <div id="customBothProjectionSummary" class="p-0"></div>
               </div>
             </div>
-
-            <!-- <button id="AllocationsBtn" class="w-full px-4 py-3 rounded-lg font-medium !text-white transition-all duration-300 shadow-md bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
-              Allocations
-            </button> -->
 
             <div id="infoPopup2" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
               <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
