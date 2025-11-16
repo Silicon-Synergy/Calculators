@@ -1740,11 +1740,18 @@ function updateAllUI(budget) {
       investmentsPercentageInput.value !== "0" &&
       !isFirstTimeRecommended);
 
-  // Custom Savings Amount - preserve user input if directly editing amount
+  // Custom Savings Amount - ensure synchronization with percentage
   if (
+    savingsPercentageInput.value === "0" ||
+    savingsPercentageInput.value === ""
+  ) {
+    // If percentage is explicitly 0 or empty, show $0.00
+    if (!customSavingsAmountInput.matches(":focus")) {
+      customSavingsAmountInput.value = formatCurrency(0);
+    }
+  } else if (
     !isNaN(userEnteredSavingsPct) &&
     savingsPercentageInput.value !== "" &&
-    savingsPercentageInput.value !== "0" &&
     !isFirstTimeRecommended
   ) {
     // Only update the amount field if the user hasn't directly edited it
@@ -1755,24 +1762,27 @@ function updateAllUI(budget) {
           : 0
       );
     }
-  } else if (
-    savingsPercentageInput.value === "0" ||
-    savingsPercentageInput.value === ""
-  ) {
-    // If percentage is explicitly 0 or empty (showing placeholder 0), show $0.00
-    customSavingsAmountInput.value = formatCurrency(0);
   } else {
     // If user hasn't provided a custom percentage, keep showing recommended amount
-    customSavingsAmountInput.value = formatCurrency(
-      budget.recommended_allocations.monthly_savings || 0
-    );
+    if (!customSavingsAmountInput.matches(":focus")) {
+      customSavingsAmountInput.value = formatCurrency(
+        budget.recommended_allocations.monthly_savings || 0
+      );
+    }
   }
 
-  // Custom Investments Amount - preserve user input if directly editing amount
+  // Custom Investments Amount - ensure synchronization with percentage
   if (
+    investmentsPercentageInput.value === "0" ||
+    investmentsPercentageInput.value === ""
+  ) {
+    // If percentage is explicitly 0 or empty, show $0.00
+    if (!customInvestmentsAmountInput.matches(":focus")) {
+      customInvestmentsAmountInput.value = formatCurrency(0);
+    }
+  } else if (
     !isNaN(userEnteredInvestmentsPct) &&
     investmentsPercentageInput.value !== "" &&
-    investmentsPercentageInput.value !== "0" &&
     !isFirstTimeRecommended
   ) {
     // Only update the amount field if the user hasn't directly edited it
@@ -1783,17 +1793,38 @@ function updateAllUI(budget) {
           : 0
       );
     }
-  } else if (
-    investmentsPercentageInput.value === "0" ||
-    investmentsPercentageInput.value === ""
-  ) {
-    // If percentage is explicitly 0 or empty (showing placeholder 0), show $0.00
-    customInvestmentsAmountInput.value = formatCurrency(0);
   } else {
     // If user hasn't provided a custom percentage, keep showing recommended amount
-    customInvestmentsAmountInput.value = formatCurrency(
-      budget.recommended_allocations.monthly_investments || 0
-    );
+    if (!customInvestmentsAmountInput.matches(":focus")) {
+      customInvestmentsAmountInput.value = formatCurrency(
+        budget.recommended_allocations.monthly_investments || 0
+      );
+    }
+  }
+
+  if (!calculatorState.customSavingsToggleEnabled) {
+    const sPctVal = parseFloat(savingsPercentageInput.value) || 0;
+    const iPctVal = parseFloat(investmentsPercentageInput.value) || 0;
+
+    // Update savings amount based on percentage (including 0%)
+    if (!customSavingsAmountInput.matches(":focus")) {
+      if (sPctVal > 0) {
+        const sAmtVal = (sPctVal / 100) * budget.monthly_disposable_income;
+        customSavingsAmountInput.value = formatCurrency(sAmtVal);
+      } else {
+        customSavingsAmountInput.value = formatCurrency(0);
+      }
+    }
+
+    // Update investments amount based on percentage (including 0%)
+    if (!customInvestmentsAmountInput.matches(":focus")) {
+      if (iPctVal > 0) {
+        const iAmtVal = (iPctVal / 100) * budget.monthly_disposable_income;
+        customInvestmentsAmountInput.value = formatCurrency(iAmtVal);
+      } else {
+        customInvestmentsAmountInput.value = formatCurrency(0);
+      }
+    }
   }
 
   // Custom Cashflow Amount and Percentage
@@ -2073,7 +2104,8 @@ function setupEventListeners() {
     input.addEventListener("focus", switchToExpensesTab);
     input.addEventListener("input", () => {
       switchToExpensesTab();
-      handleExpenseOrAllocationChange();
+      // Use the new function that handles percentage/amount sync
+      handleExpenseChangeWithChartSync();
     });
   });
 
@@ -2124,9 +2156,7 @@ function setupEventListeners() {
   // Custom savings and investments inputs
   savingsPercentageInput.addEventListener("focus", switchToSaveTab);
   savingsPercentageInput.addEventListener("input", () => {
-    // Only process input if custom toggle is enabled
-    if (!calculatorState.customSavingsToggleEnabled) return;
-
+    // Process input regardless of toggle state for real-time updates
     switchToSaveTab();
 
     // Debug logging to see what's happening
@@ -2146,8 +2176,18 @@ function setupEventListeners() {
       calculatorState.hasCustomSavings = false; // Field is cleared
     }
 
-    // Update charts immediately for real-time rendering
-    updateAllCustomProjectionCharts();
+    // Update charts immediately for real-time rendering (use debounced version)
+    debouncedChartUpdate();
+
+    // Force refresh if percentage dropped to 0 to clear cached data
+    if (
+      savingsPercentageInput.value === "0" ||
+      savingsPercentageInput.value === ""
+    ) {
+      setTimeout(() => {
+        forceRefreshCharts();
+      }, 150);
+    }
 
     // Don't recalculate immediately if user is actively typing (debounce)
     clearTimeout(window.savingsInputTimeout);
@@ -2157,9 +2197,7 @@ function setupEventListeners() {
   });
   investmentsPercentageInput.addEventListener("focus", switchToSaveTab);
   investmentsPercentageInput.addEventListener("input", () => {
-    // Only process input if custom toggle is enabled
-    if (!calculatorState.customSavingsToggleEnabled) return;
-
+    // Process input regardless of toggle state for real-time updates
     switchToSaveTab();
 
     // Debug logging to see what's happening
@@ -2177,8 +2215,18 @@ function setupEventListeners() {
       calculatorState.hasCustomInvestments = false; // Field is cleared
     }
 
-    // Update charts immediately for real-time rendering
-    updateAllCustomProjectionCharts();
+    // Update charts immediately for real-time rendering (use debounced version)
+    debouncedChartUpdate();
+
+    // Force refresh if percentage dropped to 0 to clear cached data
+    if (
+      investmentsPercentageInput.value === "0" ||
+      investmentsPercentageInput.value === ""
+    ) {
+      setTimeout(() => {
+        forceRefreshCharts();
+      }, 150);
+    }
 
     // Don't recalculate immediately if user is actively typing (debounce)
     clearTimeout(window.investmentsInputTimeout);
@@ -2190,9 +2238,7 @@ function setupEventListeners() {
   // Custom amount inputs
   customSavingsAmountInput.addEventListener("focus", switchToSaveTab);
   customSavingsAmountInput.addEventListener("input", (e) => {
-    // Only process input if custom toggle is enabled
-    if (!calculatorState.customSavingsToggleEnabled) return;
-
+    // Process input regardless of toggle state for real-time updates
     switchToSaveTab();
     // Only set custom flag if user enters a non-empty value
     if (
@@ -2205,17 +2251,12 @@ function setupEventListeners() {
     }
     handleCustomAmountChange(e);
 
-    // Update charts immediately for real-time rendering
-    updateAllCustomProjectionCharts();
-
-    // Update charts immediately for real-time rendering
-    updateAllCustomProjectionCharts();
+    // Update charts immediately for real-time rendering (use debounced version)
+    debouncedChartUpdate();
   });
   customInvestmentsAmountInput.addEventListener("focus", switchToSaveTab);
   customInvestmentsAmountInput.addEventListener("input", (e) => {
-    // Only process input if custom toggle is enabled
-    if (!calculatorState.customSavingsToggleEnabled) return;
-
+    // Process input regardless of toggle state for real-time updates
     switchToSaveTab();
     // Only set custom flag if user enters a non-empty value
     if (
@@ -2228,8 +2269,8 @@ function setupEventListeners() {
     }
     handleCustomAmountChange(e);
 
-    // Update charts immediately for real-time rendering
-    updateAllCustomProjectionCharts();
+    // Update charts immediately for real-time rendering (use debounced version)
+    debouncedChartUpdate();
   });
 
   // Custom Savings Toggle functionality
@@ -2476,15 +2517,48 @@ function setupEventListeners() {
 
     const applyVisibility = (isCombined) => {
       if (!savingsEl || !investmentsEl || !bothEl) return;
-      savingsEl.classList.toggle("hidden", isCombined);
-      investmentsEl.classList.toggle("hidden", isCombined);
-      bothEl.classList.toggle("hidden", !isCombined);
+
+      console.log("Applying visibility - isCombined:", isCombined);
+      console.log("Savings element:", savingsEl);
+      console.log("Investments element:", investmentsEl);
+      console.log("Both element:", bothEl);
+
+      // Ensure proper class management - use add/remove instead of toggle for clarity
+      if (isCombined) {
+        savingsEl.classList.add("hidden");
+        investmentsEl.classList.add("hidden");
+        bothEl.classList.remove("hidden");
+        const chartsContainer = document.getElementById("customChartsContainer");
+        if (chartsContainer) {
+          chartsContainer.classList.remove("space-y-10");
+          chartsContainer.classList.add("space-y-0");
+        }
+      } else {
+        savingsEl.classList.remove("hidden");
+        investmentsEl.classList.remove("hidden");
+        bothEl.classList.add("hidden");
+        const chartsContainer = document.getElementById("customChartsContainer");
+        if (chartsContainer) {
+          chartsContainer.classList.remove("space-y-0");
+          chartsContainer.classList.add("space-y-10");
+        }
+      }
+
+      // Force chart update when toggle changes
+      setTimeout(() => {
+        updateAllCustomProjectionCharts();
+      }, 50);
     };
 
     // Initial state: OFF => show savings + investments
+    console.log(
+      "Initial showCombinedToggle.checked:",
+      showCombinedToggle.checked
+    );
     applyVisibility(showCombinedToggle.checked);
 
     showCombinedToggle.addEventListener("change", (e) => {
+      console.log("showCombinedToggle changed to:", e.target.checked);
       applyVisibility(e.target.checked);
     });
   }
@@ -3062,8 +3136,11 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
     if (savingsInputValue === "0" || savingsInputValue === "") {
       monthlyContribution = 0;
     } else {
+      // Use the actual current percentage value, not the cached allocation
+      const currentSavingsPct = parseFloat(savingsInputValue) || 0;
       monthlyContribution =
-        (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+        (currentSavingsPct / 100) *
+        (currentBudget.monthly_disposable_income || 0);
     }
     returnRate = 3;
   } else if (chartType === "investments") {
@@ -3071,23 +3148,26 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
     if (investmentsInputValue === "0" || investmentsInputValue === "") {
       monthlyContribution = 0;
     } else {
+      // Use the actual current percentage value, not the cached allocation
+      const currentInvestmentsPct = parseFloat(investmentsInputValue) || 0;
       monthlyContribution =
-        (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+        (currentInvestmentsPct / 100) *
+        (currentBudget.monthly_disposable_income || 0);
     }
     returnRate = 10;
   } else {
+    const currentSavingsPct = parseFloat(savingsInputValue) || 0;
+    const currentInvestmentsPct = parseFloat(investmentsInputValue) || 0;
     const s =
-      savingsInputValue === "0" || savingsInputValue === ""
-        ? 0
-        : (cust ? cust.monthly_savings : rec.monthly_savings) || 0;
+      (currentSavingsPct / 100) *
+      (currentBudget.monthly_disposable_income || 0);
     const i =
-      investmentsInputValue === "0" || investmentsInputValue === ""
-        ? 0
-        : (cust ? cust.monthly_investments : rec.monthly_investments) || 0;
+      (currentInvestmentsPct / 100) *
+      (currentBudget.monthly_disposable_income || 0);
     monthlyContribution = s + i;
-    // Weighted average when both are present; else simple average rounded to 7%
     const total = s + i;
     returnRate = total > 0 ? (s * 3 + i * 10) / total : 7;
+    returnRate = Math.min(7, Math.round(returnRate * 10) / 10);
   }
 
   const { endingBalance, totalContributions, interestEarned } =
@@ -3098,7 +3178,7 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
       compoundFrequency
     );
 
-  // Hide the chart container if monthly contribution is 0
+  // Hide the chart container if monthly contribution is 0 and no data is available
   const containerId =
     chartType === "savings"
       ? "customSavingsView"
@@ -3107,7 +3187,19 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
       : "customBothView";
   const containerElement = document.getElementById(containerId);
   if (containerElement) {
-    if (monthlyContribution === 0) {
+    // Only hide if truly no data (both input is 0/empty AND no recommended data)
+    const hasData =
+      chartType === "savings"
+        ? currentBudget.recommended_savings_pct > 0 ||
+          (currentBudget.custom_savings_pct &&
+            currentBudget.custom_savings_pct > 0)
+        : chartType === "investments"
+        ? currentBudget.recommended_investments_pct > 0 ||
+          (currentBudget.custom_investments_pct &&
+            currentBudget.custom_investments_pct > 0)
+        : true; // Both chart always shows if either has data
+
+    if (monthlyContribution === 0 && !hasData) {
       containerElement.classList.add("hidden");
       return; // Exit early if hidden
     } else {
@@ -3125,18 +3217,18 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
 
   const colors = {
     savings: {
-      background: ["#b11b43", "#f6c462"],
-      border: ["#b11b43", "#f6c462"],
+      background: ["#16815A", "#CDEEE2"],
+      border: ["#16815A", "#CDEEE2"],
       borderWidth: 2,
     },
     investments: {
-      background: ["#16a34a", "#b11b43"],
-      border: ["#16a34a", "#b11b43"],
+      background: ["#164A83", "#BBD4F0"],
+      border: ["#164A83", "#BBD4F0"],
       borderWidth: 2,
     },
     both: {
-      background: ["#315eb3", "#f59e0b"],
-      border: ["#315eb3", "#f59e0b"],
+      background: ["#A33047", "#ECC9D0"],
+      border: ["#A33047", "#ECC9D0"],
       borderWidth: 2,
     },
   }[chartType];
@@ -3217,7 +3309,7 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
           )}/month for ${years} years at ${returnRate}% return (investment rate)`
         : `Investment and savings projection for ${formatCurrency(
             monthlyContribution
-          )}/month for ${years} years at ${returnRate}% return`;
+          )}/month for ${years} years at ${returnRate.toFixed(1)}% return`;
     titleElement.textContent = titleText;
   }
 
@@ -3259,36 +3351,166 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
   `;
 }
 
+// Debounced chart update function for performance
+function debouncedChartUpdate() {
+  clearTimeout(window.chartUpdateTimeout);
+  window.chartUpdateTimeout = setTimeout(() => {
+    updateAllCustomProjectionCharts();
+  }, 100); // 100ms delay for better performance
+}
+
+// Force refresh charts by destroying existing ones
+function forceRefreshCharts() {
+  // Destroy existing charts to prevent caching issues
+  const chartIds = [
+    "customSavingsPieChart",
+    "customInvestmentsPieChart",
+    "customBothPieChart",
+  ];
+  chartIds.forEach((chartId) => {
+    const canvas = document.getElementById(chartId);
+    if (canvas) {
+      const existingChart = Chart.getChart(canvas);
+      if (existingChart) {
+        existingChart.destroy();
+      }
+    }
+  });
+  // Then update with fresh data
+  updateAllCustomProjectionCharts();
+}
+
+// Handle expense changes that affect percentages and amounts
+function handleExpenseChangeWithChartSync() {
+  // Store previous percentages before recalculation
+  const prevSavingsPct = savingsPercentageInput.value;
+  const prevInvestmentsPct = investmentsPercentageInput.value;
+
+  // Let the normal calculation happen
+  handleExpenseOrAllocationChange();
+
+  // After calculation, check if percentages changed to 0
+  setTimeout(() => {
+    const budget = calculatorState.currentBudget;
+    if (!budget) return;
+
+    // Check if percentages dropped to 0 and amounts need sync
+    const currentSavingsPct = savingsPercentageInput.value;
+    const currentInvestmentsPct = investmentsPercentageInput.value;
+
+    // Force sync if percentages changed to 0
+    if (
+      (prevSavingsPct !== "0" && currentSavingsPct === "0") ||
+      (prevInvestmentsPct !== "0" && currentInvestmentsPct === "0")
+    ) {
+      // Force amount fields to $0.00
+      if (
+        currentSavingsPct === "0" &&
+        !customSavingsAmountInput.matches(":focus")
+      ) {
+        customSavingsAmountInput.value = formatCurrency(0);
+      }
+      if (
+        currentInvestmentsPct === "0" &&
+        !customInvestmentsAmountInput.matches(":focus")
+      ) {
+        customInvestmentsAmountInput.value = formatCurrency(0);
+      }
+
+      // Force chart refresh
+      forceRefreshCharts();
+    }
+  }, 400);
+}
+
 // Render all stacked charts/summaries and titles
 function updateAllCustomProjectionCharts() {
   if (!calculatorState.currentBudget) return;
+
+  // Get current budget data
+  const budget = calculatorState.currentBudget;
 
   // Check if combined view is enabled
   const showCombinedToggle = document.getElementById("showCombinedToggle");
   const isCombined = showCombinedToggle ? showCombinedToggle.checked : false;
 
+  console.log("=== updateAllCustomProjectionCharts ===");
+  console.log("showCombinedToggle element:", showCombinedToggle);
+  console.log("isCombined:", isCombined);
+
+  // Determine which charts should be shown based on available data
+  const hasSavingsData =
+    budget.recommended_savings_pct > 0 ||
+    (budget.custom_savings_pct && budget.custom_savings_pct > 0);
+  const hasInvestmentsData =
+    budget.recommended_investments_pct > 0 ||
+    (budget.custom_investments_pct && budget.custom_investments_pct > 0);
+
+  console.log(
+    "hasSavingsData:",
+    hasSavingsData,
+    "hasInvestmentsData:",
+    hasInvestmentsData
+  );
+
+  // Show/hide chart containers based on data availability
+  const savingsView = document.getElementById("customSavingsView");
+  const investmentsView = document.getElementById("customInvestmentsView");
+  const bothView = document.getElementById("customBothView");
+
+  console.log(
+    "savingsView:",
+    savingsView,
+    "investmentsView:",
+    investmentsView,
+    "bothView:",
+    bothView
+  );
+
+  if (savingsView) {
+    const shouldHide = isCombined || !hasSavingsData;
+    console.log("savingsView shouldHide:", shouldHide);
+    savingsView.classList.toggle("hidden", shouldHide);
+  }
+  if (investmentsView) {
+    const shouldHide = isCombined || !hasInvestmentsData;
+    console.log("investmentsView shouldHide:", shouldHide);
+    investmentsView.classList.toggle("hidden", shouldHide);
+  }
+  if (bothView) {
+    const shouldHide = !isCombined || (!hasSavingsData && !hasInvestmentsData);
+    console.log("bothView shouldHide:", shouldHide);
+    bothView.classList.toggle("hidden", shouldHide);
+  }
+
   if (isCombined) {
-    // Show combined view - only render "both" chart
-    renderCustomProjection(
-      "both",
-      "customBothPieChart",
-      "customBothProjectionSummary",
-      "customBothTitle"
-    );
+    // Show combined view - only render "both" chart if there's data
+    if (hasSavingsData || hasInvestmentsData) {
+      renderCustomProjection(
+        "both",
+        "customBothPieChart",
+        "customBothProjectionSummary",
+        "customBothTitle"
+      );
+    }
   } else {
-    // Show individual views - render savings and investments charts
-    renderCustomProjection(
-      "savings",
-      "customSavingsPieChart",
-      "customSavingsProjectionSummary",
-      "customSavingsTitle"
-    );
-    renderCustomProjection(
-      "investments",
-      "customInvestmentsPieChart",
-      "customInvestmentsProjectionSummary",
-      "customInvestmentsTitle"
-    );
+    // Show individual views - render only charts with available data
+    if (hasSavingsData) {
+      renderCustomProjection(
+        "savings",
+        "customSavingsPieChart",
+        "customSavingsProjectionSummary",
+        "customSavingsTitle"
+      );
+    }
+    if (hasInvestmentsData) {
+      renderCustomProjection(
+        "investments",
+        "customInvestmentsPieChart",
+        "customInvestmentsProjectionSummary",
+        "customInvestmentsTitle"
+      );
+    }
   }
 }
 
@@ -3627,6 +3849,14 @@ function initDeductionsNav() {
       if (!el) return;
       el.classList.toggle("hidden", name !== key);
     });
+
+    // Auto-render charts when switching to save & invest tab
+    if (key === "save") {
+      // Use a small delay to ensure the tab content is visible before rendering
+      setTimeout(() => {
+        debouncedChartUpdate();
+      }, 50);
+    }
   };
 
   tabs.forEach((btn) =>
@@ -3663,12 +3893,43 @@ function switchToSaveTab() {
       collapseAllExpenses();
     }
   }
+
+  // Immediately update charts when switching to save tab
+  setTimeout(() => {
+    debouncedChartUpdate();
+  }, 100);
 }
 
 // Start the application once the DOM is fully loaded.
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
   initDeductionsNav();
+
+  // Set up visibility observer for save & invest tab to ensure charts render properly
+  const saveInvestTab = document.getElementById("save-invest-content");
+  if (saveInvestTab) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class"
+        ) {
+          const isVisible = !saveInvestTab.classList.contains("hidden");
+          if (isVisible) {
+            // Tab became visible, update charts with a small delay
+            setTimeout(() => {
+              debouncedChartUpdate();
+            }, 100);
+          }
+        }
+      });
+    });
+
+    observer.observe(saveInvestTab, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
 
   const printDownloadBtn = document.getElementById("print-download-btn");
   const resultsWrapper = document.getElementById(
