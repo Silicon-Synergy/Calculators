@@ -3957,38 +3957,92 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleDirectDownloadPDF() {
+    // Ensure results wrapper is visible
     if (resultsWrapper && resultsWrapper.classList.contains("hidden")) {
       resultsWrapper.classList.remove("hidden");
     }
-    if (taxesContent && taxesContent.classList.contains("hidden")) {
-      taxesContent.classList.remove("hidden");
+
+    // Detect which tab is currently active by checking which content is visible
+    const expensesContent = document.getElementById("expenses-content");
+    const saveInvestContent = document.getElementById("save-invest-content");
+
+    let activeTabKey = "taxes"; // Default to taxes
+    if (saveInvestContent && !saveInvestContent.classList.contains("hidden")) {
+      activeTabKey = "save";
+    } else if (
+      expensesContent &&
+      !expensesContent.classList.contains("hidden")
+    ) {
+      activeTabKey = "expenses";
+    } else if (taxesContent && !taxesContent.classList.contains("hidden")) {
+      activeTabKey = "taxes";
     }
 
-    const target = taxesContent || resultsWrapper || document.body;
-
-    if (typeof html2pdf === "undefined") {
-      handlePrint();
-      return;
+    // Ensure the currently active tab content is visible
+    // Hide other tabs to ensure only the active one is captured
+    if (taxesContent) {
+      taxesContent.classList.toggle("hidden", activeTabKey !== "taxes");
+    }
+    if (expensesContent) {
+      expensesContent.classList.toggle("hidden", activeTabKey !== "expenses");
+    }
+    if (saveInvestContent) {
+      saveInvestContent.classList.toggle("hidden", activeTabKey !== "save");
     }
 
-    const opt = {
-      margin: 10,
-      filename: "Steward Well Capital - Budget Results.pdf",
-      image: { type: "jpeg", quality: 0.95 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
+    // Use the full results wrapper as target, not just one tab
+    // This captures the entire right panel including tab navigation and active tab content
+    const target = resultsWrapper || document.body;
 
-    try {
-      const worker = html2pdf().set(opt).from(target).save();
-      if (worker && typeof worker.then === "function") {
-        worker.then(() => handlePrint()).catch(() => handlePrint());
-      } else {
-        setTimeout(handlePrint, 800);
+    // if (typeof html2pdf === "undefined") {
+    //   handlePrint();
+    //   return;
+    // }
+
+    // Wait for charts and dynamic content to render before generating PDF
+    setTimeout(() => {
+      // Update charts if save-invest tab is currently active
+      if (activeTabKey === "save" && saveInvestContent) {
+        debouncedChartUpdate();
       }
-    } catch (e) {
-      setTimeout(handlePrint, 800);
-    }
+
+      // Additional delay to ensure all content (especially charts) is fully rendered
+      setTimeout(() => {
+        const opt = {
+          margin: 10,
+          filename: "Steward Well Capital - Budget Results.pdf",
+          image: { type: "jpeg", quality: 0.95 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            letterRendering: true,
+            allowTaint: false,
+            backgroundColor: "#ffffff",
+          },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        };
+
+        try {
+          const worker = html2pdf().set(opt).from(target).save();
+          if (worker && typeof worker.then === "function") {
+            worker
+              .then(() => {
+                handlePrint();
+              })
+              .catch((err) => {
+                console.error("PDF generation error:", err);
+                handlePrint();
+              });
+          } else {
+            setTimeout(handlePrint, 800);
+          }
+        } catch (e) {
+          console.error("PDF generation error:", e);
+          setTimeout(handlePrint, 800);
+        }
+      }, 500); // Increased delay to ensure charts are fully rendered
+    }, 200);
   }
 
   if (printDownloadBtn) {
