@@ -166,43 +166,49 @@ input::-webkit-inner-spin-button {
 
 .budget-progress-bar {
   position: relative;
-  display: flex;
+  display: block;
   height: 24px;
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.4);
+  background: linear-gradient(to right,
+    #21a34f 0%,
+    #21a34f 64%,
+    #38b165 69%,
+    #b8cf42 70%,
+    #b8cf42 72%,
+    #f2c94c 75%,
+    #f2c94c 83%,
+    #ff9f1a 88%,
+    #f05a49 92%,
+    #eb5757 96%,
+    #eb5757 100%);
   border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    inset 0 3px 6px rgba(0, 0, 0, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(15px);
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
   margin: 0.75rem 0;
 }
 
 .budget-zone {
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  border-right: none;
   overflow: hidden;
+  background: transparent;
+  pointer-events: none; /* zones no longer block gradient visuals */
 }
 
 .budget-zone:last-child {
   border-right: none;
 }
 
-.zone-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: all 0.4s ease;
-}
+.zone-gradient { display: none; }
 
-.green-zone {
-  flex: 70;
-}
+.green-zone { left: 0%; width: 70%; }
 
 .green-zone .zone-gradient {
   background: linear-gradient(135deg, 
@@ -211,9 +217,7 @@ input::-webkit-inner-spin-button {
     #047857 100%);
 }
 
-.amber-zone {
-  flex: 15;
-}
+.amber-zone { left: 70%; width: 15%; }
 
 .amber-zone .zone-gradient {
   background: linear-gradient(135deg, 
@@ -222,9 +226,7 @@ input::-webkit-inner-spin-button {
     #b45309 100%);
 }
 
-.red-zone {
-  flex: 15;
-}
+.red-zone { left: 85%; width: 15%; }
 
 .red-zone .zone-gradient {
   background: linear-gradient(135deg, 
@@ -233,11 +235,7 @@ input::-webkit-inner-spin-button {
     #b91c1c 100%);
 }
 
-.budget-zone:hover {
-  transform: scaleY(1.3);
-  filter: brightness(1.2) saturate(1.2);
-  z-index: 2;
-}
+.budget-zone:hover { transform: none; }
 
 .budget-zone:hover .zone-gradient {
   background-size: 110% 110%;

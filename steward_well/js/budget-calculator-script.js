@@ -31,6 +31,7 @@ const calculatorState = {
   },
   // Store the current budget calculation results
   currentBudget: null,
+  deductionsExpanded: false,
 };
 
 // Core tax and deduction calculation functions.
@@ -624,6 +625,7 @@ function createDeductionInputs(deductions) {
   Object.entries(deductions).forEach(([key, deduction]) => {
     const row = document.createElement("div");
     row.className = "flex items-center justify-between py-2";
+    row.setAttribute("data-row-type", "deduction");
 
     const left = document.createElement("div");
     left.className = "flex items-center gap-3";
@@ -741,6 +743,7 @@ function createDeductionInputs(deductions) {
   summaryRows.forEach(({ name, pct, value }) => {
     const row = document.createElement("div");
     row.className = "flex items-center justify-between py-2";
+    row.setAttribute("data-row-type", "summary");
 
     const left = document.createElement("div");
     left.className = "flex items-center gap-2";
@@ -777,6 +780,8 @@ function createDeductionInputs(deductions) {
 
     deductionInputsContainer.appendChild(row);
   });
+
+  applyDeductionsVisibility();
 }
 // Utility functions for validation and formatting.
 
@@ -2528,7 +2533,9 @@ function setupEventListeners() {
         savingsEl.classList.add("hidden");
         investmentsEl.classList.add("hidden");
         bothEl.classList.remove("hidden");
-        const chartsContainer = document.getElementById("customChartsContainer");
+        const chartsContainer = document.getElementById(
+          "customChartsContainer"
+        );
         if (chartsContainer) {
           chartsContainer.classList.remove("space-y-10");
           chartsContainer.classList.add("space-y-0");
@@ -2537,7 +2544,9 @@ function setupEventListeners() {
         savingsEl.classList.remove("hidden");
         investmentsEl.classList.remove("hidden");
         bothEl.classList.add("hidden");
-        const chartsContainer = document.getElementById("customChartsContainer");
+        const chartsContainer = document.getElementById(
+          "customChartsContainer"
+        );
         if (chartsContainer) {
           chartsContainer.classList.remove("space-y-0");
           chartsContainer.classList.add("space-y-10");
@@ -3989,3 +3998,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+function applyDeductionsVisibility() {
+  const container = document.getElementById("deduction-inputs-container");
+  if (!container) return;
+  const expanded = !!calculatorState.deductionsExpanded;
+  Array.from(container.children).forEach((row) => {
+    const t = row.getAttribute("data-row-type");
+    if (t === "deduction") {
+      row.classList.toggle("hidden", !expanded);
+    } else if (t === "summary") {
+      row.classList.remove("hidden");
+    }
+  });
+  const btn = document.getElementById("toggle-deductions-btn");
+  if (btn) {
+    btn.querySelector("span").textContent = expanded
+      ? "Collapse tax deductions"
+      : "Expand tax deductions";
+  }
+}
+const toggleDeductionsBtn = document.getElementById("toggle-deductions-btn");
+if (toggleDeductionsBtn) {
+  toggleDeductionsBtn.addEventListener("click", () => {
+    calculatorState.deductionsExpanded = !calculatorState.deductionsExpanded;
+    applyDeductionsVisibility();
+  });
+}
