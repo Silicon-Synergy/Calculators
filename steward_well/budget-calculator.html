@@ -5,12 +5,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Steward Well Capital</title>
+  <link href="https://fonts.cdnfonts.com/css/general-sans" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./css/style.css" />
   <link href="css/normalize.css" rel="stylesheet" type="text/css" />
   <link href="css/webflow.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="css/stewardwellcapital.webflow.css" rel="stylesheet" type="text/css" />
   <script>
     tailwind.config = {
@@ -90,6 +93,20 @@
       -webkit-text-fill-color: transparent;
       font-weight: 700;
       font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+    }
+
+    /* Custom placeholder color for all inputs */
+    input::placeholder,
+    textarea::placeholder,
+    select::placeholder {
+      color: #81998E !important;
+      opacity: 1 !important;
+    }
+
+    /* Override Tailwind's placeholder-gray-400 */
+    .placeholder-gray-400::placeholder {
+      color: #81998E !important;
+      opacity: 1 !important;
     }
 
     @media print {
@@ -203,7 +220,7 @@
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
-
+    
     /* Active button styling */
     button.active {
       box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
@@ -322,6 +339,7 @@
     /* Background for the "Monthly Living Expenses" container */
     #living-expenses-section {
       background-color: white;
+
       /* Gentle Warm Sand */
     }
 
@@ -402,6 +420,9 @@
       color: #0f172a;
       /* dark color */
     }
+    .info-tooltip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 9999px; border: 2px solid rgba(71,85,105,0.7); color: #81998E; font-weight: 700; font-size: 11px; line-height: 1; }
+    .info-tooltip .tooltip-panel { position: absolute; display: block; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #dbece6; color: #000 !important; border-radius: 10px; padding: 8px 10px; font-size: 12px; font-family: 'General Sans', sans-serif; font-weight: 400; line-height: 1.4; box-shadow: 0 10px 20px rgba(0,0,0,0.15); text-align: left; width: 280px; z-index: 999; opacity: 0; visibility: hidden; pointer-events: none; }
+    .info-tooltip:hover .tooltip-panel { opacity: 1; visibility: visible; }
 
     /* Mobile responsive for dropdown */
     @media (max-width: 768px) {
@@ -494,7 +515,7 @@
   </style>
 </head>
 
-<body class="min-h-screen bg-[#C7DFD2]">
+<body class="min-h-screen bg-[#F1F5F3]" style="font-family: 'General Sans', sans-serif;">
   <div class="nav_fixed">
     <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="nav_component w-nav">
       <div class="padding-global">
@@ -628,14 +649,14 @@
               <div class="input-group grid grid-cols-2 max-sm:grid-cols-1 w-full gap-x-8 gap-y-5">
                 <!-- Hidden real select -->
                 <select id="provinceSelect" class="hidden">
-                  <option value="">Choose your province...</option>
+                  <option value="" style="color: #81998E;">Choose your province...</option>
                 </select>
 
                 <!-- Custom dropdown UI -->
                 <div class="relative w-full">
                   <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Province</label>
                   <button id="dropdownBtn" type="button" class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] opacity-70 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
-                    <span id="dropdownSelected">Choose Province</span>
+                    <span id="dropdownSelected" style="color: #81998E;">Choose Province</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -719,26 +740,22 @@
                       transition: max-height 0.5s ease-in-out,
                         opacity 0.5s ease-in-out;
                     ">
-                  <label for="retirementPercentage" class="text-white text-sm">Annual Retirement Contribution Percentage (0-10%)</label>
+                  <label for="retirementPercentage" class="text-white text-sm flex items-center gap-2">Annual Retirement Contribution Percentage (0-10%)<span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Enter percentage of gross income (maximum 10%)</span></span></label>
                   <div>
                     <input type="number" min="0" max="10" step="0.1" id="retirementPercentage" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border border-white/20 rounded-xl mt-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="E.g. 5 for 5%" />
                     <p id="retirementPercentageError" class="error-message text-red-500 text-sm mt-2"></p>
-                    <p class="text-xs text-gray-500 mt-1">
-                      Enter percentage of gross income (maximum 10%)
-                    </p>
+
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
-        <!-- Deductions and Disposable Income Display -->
 
         <!-- Monthly Living Expenses Input -->
-
-        <section id="living-expenses-section" class=" border-[1px] border-t-gray-300 glass-effect opacity-50 pointer-events-none p-4 md:p-4 transition-colors duration-500 ease-in-out">
+        <section id="living-expenses-section" class=" border-[1px] border-t-0 glass-effect opacity-50 pointer-events-none px-4 pt-0 pb-4 md:px-4 transition-colors duration-500 ease-in-out">
           <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-3 mt-6">
               <img src="images/expenditure.svg" alt="Income Icon" class="w-12 h-12 text-white" />
               <div class="relative flex items-center">
                 <div class="flex flex-col">
@@ -927,7 +944,6 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Student Loan
-
                         <input type="number" id="student-loans" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
@@ -1010,7 +1026,7 @@
               </div>
             </div>
 
-            <div class="expense-category glass-effect border-[1px] border-b-gray-200">
+            <div class="expense-category glass-effect">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('miscellaneous')">
                 <div class="flex items-center gap-3">
                   <h2 class="font-medium text-[1.5rem]">Miscellaneous Expenses</h2>
@@ -1057,74 +1073,10 @@
               </div>
             </div>
           </div>
-
-
-          <div id="integrated-expense-summary" class="mt-2 glass-effect rounded-xl text-white hidden animate-slide-up">
-            <div class="mx-auto px-6 hidden py-2 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200 flex flex-col justify-center space-y-2">
-              <p id="currentZoneMessage" class="-mb-2 status-message text-white text-base italic text-center"></p>
-              <div class="budget-progress-container -mt-14 -mb-2">
-                <div class="progress-bar-wrapper flex flex-col gap-2">
-                  <div class="progress-bar-labels hidden">
-                    <span class="progress-label left">0%</span>
-                    <span class="progress-label center">70%</span>
-                    <span class="progress-label right">85%</span>
-                    <span class="progress-label far-right">100%</span>
-                  </div>
-                  <div class="budget-progress-bar hidden">
-                    <div class="budget-zone green-zone" data-tooltip="Your lifestyle spending sits well below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle creep—avoid amber (cutting it close) and red (overspending).">
-                      <div class="zone-gradient"></div>
-                    </div>
-                    <div class="budget-zone amber-zone" data-tooltip="Your lifestyle spending is close to your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you could slip into red.">
-                      <div class="zone-gradient"></div>
-                    </div>
-                    <div class="budget-zone red-zone" data-tooltip="Your lifestyle spending is over 85% of your take-home, leaving little to no cashflow or savings—investing isn't feasible right now thus increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle priorities to move to amber, then green.">
-                      <div class="zone-gradient"></div>
-                    </div>
-                    <div class="progress-indicator" id="progressIndicator">
-                      <div class="indicator-dot"></div>
-                      <div class="indicator-line"></div>
-                      <div class="indicator-value" id="indicatorValue">
-                        0%
-                      </div>
-                    </div>
-                  </div>
-                  <div class="tooltip-boxes hidden">
-                    <div class="tooltip-box healthy-box" data-tooltip="Your lifestyle spending sits well below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle creep—avoid amber (cutting it close) and red (overspending).">
-                      <div class="box-label">Healthy</div>
-                    </div>
-                    <div class="tooltip-box caution-box" data-tooltip="Your lifestyle spending is close to your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you could slip into red.">
-                      <div class="box-label">Caution</div>
-                    </div>
-                    <div class="tooltip-box critical-box" data-tooltip="Your lifestyle spending is over 85% of your take-home, leaving little to no cashflow or savings—investing isn't feasible right now thus increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle priorities to move to amber, then green.">
-                      <div class="box-label">Critical</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-1 hidden">
-                <p class="text-lg text-center font-medium mb-1">
-                  <strong>Total Monthly Expenses</strong>
-                </p>
-                <p class="text-3xl font-bold text-center mb-2">
-                  <span id="currentTotalExpenses" class="text-3xl font-bold">$0.00</span>
-                  (<span class="text-3xl font-bold" id="currentExpensesPercentage">0.0%</span>)
-                </p>
-              </div>
-            </div>
-
-            <div class="w-full mt-4 px-6 py-4 bg-white/5 hidden border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200 flex flex-col">
-              <p class="text-lg font-medium mb-2">
-                <strong>Budget Zone:</strong>
-              </p>
-              <span id="currentBudgetZone" class="status-badge text-3xl font-bold text-center">N/A</span>
-            </div>
-          </div>
-          <!-- this cocde is a dead code and i can't delete it yet because somehwere in javascript is using it -->
         </section>
 
         <!-- Savings & Investments Input - Updated Layout -->
-        <section id="savings-investments-section" class=" opacity-50 border-[1px] border-t-border-t-gray-300 pointer-events-none p-8 rounded-b-3xl text-white transition-all duration-300 backdrop-blur-sm shadow-lg bg-white">
+        <section id="savings-investments-section" class="opacity-50 border-[1px] border-t-border-t-gray-300 pointer-events-none px-8 pt-8 pb-0 rounded-b-3xl text-white transition-all duration-300 backdrop-blur-sm shadow-lg bg-white">
           <h2 class="text-[1.8rem] md:text-3xl font-medium text-white mb-6 pb-4 border-gray-300 flex items-center gap-2">
             <img src="images/savings.svg" alt="Savings Icon" class="w-12 h-12 text-white" />
             <span class="text-white"></span> Savings and Investments
@@ -1181,12 +1133,12 @@
       
 
           <p id="si-guidance" class="text-white/90 text-base mb-3 leading-relaxed">
-            You can choose to either set your custom savings and investments goals, or use our recommendations.
+           For sustainable wealth creation, view our recommended allocations below.
           </p>
 
           <!-- Custom Goals Toggle -->
           <div class="flex items-center justify-between mb-6">
-            <span id="si-toggle-text" class="text-sm text-gray-700">Turn on to set your custom goals</span>
+            <span id="si-toggle-text" class="text-sm text-gray-700">Set your custom allocations</span>
             <label for="customSavingsToggle" class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" id="customSavingsToggle" class="sr-only peer" />
               <div class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5"></div>
@@ -1197,9 +1149,9 @@
           <div id="unifiedAllocations" class="space-y-6 flex flex-col w-[100%] mt-4">
             <!-- Savings -->
             <div class="space-y-3">
-              <div class="flex justify-between">
-                <label class="block text-sm font-medium text-white/80">Monthly Savings percentage (%)</label>
-                <label class="block text-sm mr-32 font-medium text-white/80">Monthly Savings amount ($)</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly savings percentage (%)</label>
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly savings amount ($)</label>
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
@@ -1219,9 +1171,9 @@
 
             <!-- Investments -->
             <div class="space-y-3">
-              <div class="flex justify-between">
-                <label class="block text-sm font-medium text-white/80">Monthly investment percentage(%)</label>
-                <label class="block text-sm mr-32 font-medium text-white/80">Monthly investment Amount ($)</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly investment percentage (%)</label>
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly investment amount ($)</label>
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
@@ -1252,7 +1204,7 @@
               </p>
 
               <!-- Filled gradient button -->
-              <a href="index.html#contact-us" id="recommended-nav_cta" class="w-full px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
+              <a href="index.html#contact-us" id="recommended-nav_cta" class="w-full mb-6 px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
                 Talk to an expert
               </a>
             </div>
@@ -1263,7 +1215,7 @@
       <div id="deductions-disposable-section" class="rounded-3xl p-5 w-full lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box animate-slide-up z-40">
         <div id="deductions-nav" class="flex items-center justify-between px-6 py-2 font-medium bg-[#eef5f1] py-1 rounded-md">
           <button type="button" data-tab="taxes" class="deductions-tab flex-1 px-4 py-3 rounded-md bg-[#dbece6] text-slate-800 whitespace-nowrap text-[.8rem]">
-            Taxes
+            Deductions
           </button>
           <button type="button" data-tab="expenses" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem] mx-2">
             Expenses
@@ -1294,14 +1246,32 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              <span style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand tax deductions</span>
+              <span style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand deductions</span>
             </>
             </div>
           </div>
         </div>
 
+        <!-- Loading Overlay -->
+        <div id="capture-loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 flex items-center gap-3">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#168A53]"></div>
+            <span>Preparing your results...</span>
+          </div>
+        </div>
+
+        <!-- Success/Error Notifications -->
+        <div id="capture-notification" class="hidden fixed top-4 right-4 z-50">
+          <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span id="notification-text">Results captured successfully!</span>
+          </div>
+        </div>
+
         <div id="expenses-content" class="hidden mt-4">
-          <span class="text-[.9rem]">Progress bar shows how healthy your expense percentage is compared to your monthly take home pay.</span>
+          <span class="text-[.9rem]">Progress bar compares your expenses to your take home pay.</span>
           <style>
             .legend {
               list-style: none;
@@ -1355,14 +1325,10 @@
               overflow: hidden;
               background: linear-gradient(to right,
                   #21a34f 0%,
-                  #21a34f 64%,
-                  #38b165 69%,
-                  #b8cf42 72%,
-                  #f2c94c 75%,
-                  #f2c94c 83%,
-                  #ff9f1a 88%,
-                  #f05a49 92%,
-                  #eb5757 96%,
+                  #21a34f 62%,
+                  #f2c94c 70%,
+                  #f2c94c 78%,
+                  #eb5757 85%,
                   #eb5757 100%);
               box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.08);
             }
@@ -1385,18 +1351,17 @@
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#21a34f;"></span>
 
               <h2 class="text-[1rem] font-thin opacity-80" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Healthy (from 0% to 70%)</h2>
-
-              <span class="text-[.6rem]" aria-hidden="true" style="color:#000; font-weight:400;">&#9432;</span>
+              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending sits well below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle creep—avoid amber (cutting it close) and red (overspending).</span></span>
             </div>
             <div class="flex gap-2 items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#f2c94c;"></span>
               <h2 class="text-[1rem] opacity-80 font-thin" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Caution (from 70% to 85%)</h2>
-              <span class="text-[.6rem]" aria-hidden="true" style="color:#000; font-weight:400;">&#9432;</span>
+              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is close to your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you could slip into red.</span></span>
             </div>
             <div class="flex gap-2  items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#eb5757;"></span>
               <h2 class="text-[1rem] opacity-80 font-thin" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Critical (from 85% to 100%)</h2>
-              <span class="text-[.6rem]" aria-hidden="true" style="color:#000; font-weight:400;">&#9432;</span>
+              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is over 85% of your take-home, leaving little to no cashflow or savings—investing isn't feasible right now thus increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle priorities to move to amber, then green.</span></span>
             </div>
           </div>
 
@@ -1464,7 +1429,7 @@
         </div>
 
         <div id="save-invest-content" class="hidden mt-4">
-          <div class="space-y-6">
+          <div class="space-y-4">
               <!-- Toggle combined view -->
               <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-700">Show total of savings and investments</span>
@@ -1475,10 +1440,12 @@
               </div>
 
             <!-- Tabbed views -->
-            <div id="customChartsContainer" class="flex flex-col space-y-10">
-              <div id="customSavingsView" class="space-y-3">
-                <h3 class="text-xl font-bold text-gray-800 text-left mb-4">Savings</h3>
-                <p id="customSavingsTitle" class="text-sm text-gray-700"></p>
+            <div id="customChartsContainer" class="flex flex-col space-y-6">
+              <div id="customSavingsView" class="space-y-2">
+                <div class="flex items-center gap-2 mb-2">
+                  <h3 class="text-xl font-bold text-gray-800 text-left">Savings</h3>
+                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customSavingsTitle" class="text-xs text-gray-700"></p></span></span>
+                </div>
                 <div class="flex justify-center items-center">
                   <canvas id="customSavingsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
                 </div>
@@ -1486,9 +1453,11 @@
               </div>
 
               <!-- Investments view (visible by default) -->
-              <div id="customInvestmentsView" class="space-y-3">
-                <h3 class="text-xl font-bold text-gray-800 text-left mb-4">Investments</h3>
-                <p id="customInvestmentsTitle" class="text-sm text-gray-700"></p>
+              <div id="customInvestmentsView" class="space-y-2">
+                <div class="flex items-center gap-2 mb-2">
+                  <h3 class="text-xl font-bold text-gray-800 text-left">Investments</h3>
+                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customInvestmentsTitle" class="text-xs text-gray-700"></p></span></span>
+                </div>
                 <div class="flex justify-center items-center">
                   <canvas id="customInvestmentsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
                 </div>
@@ -1496,9 +1465,11 @@
               </div>
 
               <!-- Both (combined) view -->
-              <div id="customBothView" class="space-y-3 hidden">
-                <h3 class="text-xl font-bold text-gray-800 text-left mb-4">Both</h3>
-                <p id="customBothTitle" class="text-sm text-gray-700"></p>
+              <div id="customBothView" class="space-y-2 hidden">
+                <div class="flex items-center gap-2 mb-2">
+                  <h3 class="text-xl font-bold text-gray-800 text-left">Both</h3>
+                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customBothTitle" class="text-xs text-gray-700"></p></span></span>
+                </div>
                 <div class="flex justify-center items-center">
                   <canvas id="customBothPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
                 </div>

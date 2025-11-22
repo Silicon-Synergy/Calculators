@@ -14,6 +14,8 @@ const calculatorState = {
   // Track if user has entered custom savings/investment values
   hasCustomSavings: false,
   hasCustomInvestments: false,
+  // Track if any expense field has been touched
+  hasEnteredExpenses: false,
   // Track if custom savings/investments toggle is on
   customSavingsToggleEnabled: false,
   // Default values for compound interest calculation
@@ -539,9 +541,6 @@ const deductionInputsContainer = document.getElementById(
 //   "monthlyDisposableIncome"
 // );
 
-const integratedExpenseSummary = document.getElementById(
-  "integrated-expense-summary"
-);
 const currentTotalExpensesSpan = document.getElementById(
   "currentTotalExpenses"
 );
@@ -998,7 +997,7 @@ function handlePrimaryInputChange() {
  * Handles changes from any expense or allocation input. Triggers full budget recalculation and UI update.
  */
 function handleExpenseOrAllocationChange() {
-  if (calculatorState.monthlyDisposableIncome <= 0) return;
+  // Don't return early - let the function run to update UI even with no income
 
   console.log("=== HANDLE EXPENSE CHANGE START ===");
   console.log("Savings input value:", savingsPercentageInput.value);
@@ -1010,15 +1009,18 @@ function handleExpenseOrAllocationChange() {
   const expenseInputs = document.querySelectorAll(
     '#living-expenses-section input[type="number"]'
   );
-  expenseInputs.forEach((input) => {
-    const value = parseFloat(input.value) || 0;
-    // Use the id as the key (e.g., 'rent-mortgage')
-    const key = input.id;
-    currentExpenses[key] = value;
-    totalExpenses += value;
-  });
+  if (expenseInputs && expenseInputs.length > 0) {
+    expenseInputs.forEach((input) => {
+      const value = parseFloat(input.value) || 0;
+      // Use the id as the key (e.g., 'rent-mortgage')
+      const key = input.id;
+      currentExpenses[key] = value;
+      totalExpenses += value;
+    });
+  }
   calculatorState.totalMonthlyExpensesEntered = totalExpenses;
   calculatorState.livingExpenses = currentExpenses;
+  calculatorState.hasEnteredExpenses = totalExpenses > 0;
 
   // 2. Gather custom allocation percentages (these are now meant to be percentages of DISPOSABLE INCOME)
   const userSavingsPct = parseFloat(savingsPercentageInput.value);
@@ -1363,24 +1365,14 @@ function updateChartButtonStates(budget) {
 }
 
 function updateAllUI(budget) {
-  // Update Expense Summary Section
-  currentTotalExpensesSpan.textContent = formatCurrency(
-    budget.total_monthly_expenses
-  );
-  currentExpensesPercentageSpan.textContent = formatPercentage(
-    budget.expenses_percentage
-  );
-  currentBudgetZoneSpan.textContent = budget.budget_zone;
-  currentZoneMessageP.textContent = budget.status_message;
+  // Update category summary if it exists
+  updateExpenseCategorySummary(budget);
 
   // Update Progress Bar Indicator
   updateProgressBar(budget.expenses_percentage);
 
   // Update the new simple bar under the legend
   updateExpenseHealthBar(budget);
-
-  // Update category summary under progress bar
-  updateExpenseCategorySummary(budget);
 
   // Update Budget Zone coloring
   const zoneColors = {
@@ -1392,7 +1384,6 @@ function updateAllUI(budget) {
   const zoneColor = budget.budget_zone
     ? zoneColors[budget.budget_zone]
     : { bg: "", border: "" };
-  integratedExpenseSummary.className = `mt-8 glass-effect p-4 rounded-xl text-white animate-slide-up ${zoneColor.bg} ${zoneColor.border}`;
 
   // Enable/disable and configure the Savings & Investments section
   console.log(
@@ -1404,26 +1395,37 @@ function updateAllUI(budget) {
     typeof budget.total_monthly_expenses
   );
 
-  if (budget.total_monthly_expenses > 0) {
+  // Only unlock Savings & Investments once the user has typed at least one expense
+  const hasAnyExpense = budget.total_monthly_expenses > 0;
+  if (hasAnyExpense) {
     console.log("Debug: Removing opacity from savings section");
-    savingsInvestmentsSection.classList.remove(
-      "opacity-50",
-      "pointer-events-none"
-    );
-    savingsInvestmentsSection.classList.add("animate-fade-in");
+    console.log("savingsInvestmentsSection element:", savingsInvestmentsSection);
+    if (savingsInvestmentsSection) {
+      savingsInvestmentsSection.classList.remove(
+        "opacity-50",
+        "pointer-events-none"
+      );
+      savingsInvestmentsSection.classList.add("animate-fade-in");
+      console.log("Debug: Savings section classes after update:", savingsInvestmentsSection.className);
+    } else {
+      console.log("Debug: savingsInvestmentsSection element not found!");
+    }
   } else {
     console.log(
-      "Debug: Not removing opacity - total_monthly_expenses is",
-      budget.total_monthly_expenses
+      "Debug: Savings section stays locked – no expenses entered yet"
     );
   }
-  // Custom allocation inputs are enabled based on toggle state
-  const isCustomToggleEnabled = calculatorState.customSavingsToggleEnabled;
-  savingsPercentageInput.disabled = !isCustomToggleEnabled;
-  investmentsPercentageInput.disabled = !isCustomToggleEnabled;
-  customSavingsAmountInput.disabled = !isCustomToggleEnabled;
-  customInvestmentsAmountInput.disabled = !isCustomToggleEnabled;
+  // Enable inputs when section is active (remove disable attribute)
+  if (calculatorState.monthlyDisposableIncome > 0 && calculatorState.hasEnteredExpenses) {
+    savingsPercentageInput.disabled = false;
+    investmentsPercentageInput.disabled = false;
+    customSavingsAmountInput.disabled = false;
+    customInvestmentsAmountInput.disabled = false;
+  }
 
+  // Apply field appearance updates
+  const isCustomToggleEnabled =
+    calculatorState.customSavingsToggleEnabled || false;
   // Update field appearance based on enabled state
   const updateFieldAppearance = (input, enabled) => {
     if (enabled) {
@@ -1435,17 +1437,30 @@ function updateAllUI(budget) {
     }
   };
 
-  updateFieldAppearance(savingsPercentageInput, isCustomToggleEnabled);
-  updateFieldAppearance(investmentsPercentageInput, isCustomToggleEnabled);
-  updateFieldAppearance(customSavingsAmountInput, isCustomToggleEnabled);
-  updateFieldAppearance(customInvestmentsAmountInput, isCustomToggleEnabled);
+  // Apply field appearance updates
+  updateFieldAppearance(
+    savingsPercentageInput,
+    !savingsPercentageInput.disabled
+  );
+  updateFieldAppearance(
+    investmentsPercentageInput,
+    !investmentsPercentageInput.disabled
+  );
+  updateFieldAppearance(
+    customSavingsAmountInput,
+    !customSavingsAmountInput.disabled
+  );
+  updateFieldAppearance(
+    customInvestmentsAmountInput,
+    !customInvestmentsAmountInput.disabled
+  );
 
-  siGuidanceP.textContent =
-    budget.savings_allowed || budget.investments_allowed
-      ? calculatorState.customSavingsToggleEnabled
-        ? "You can now edit your custom savings and investments goals."
-        : "Set your custom goals below, or use our recommendations."
-      : "Savings and investments are not recommended at this time. Focus on cashflow.";
+  if (siGuidanceP) {
+    siGuidanceP.textContent =
+      budget.savings_allowed || budget.investments_allowed
+        ? "You can now edit your custom savings and investments allocations."
+        : "For sustainable wealth creation, view our recommended allocations below.";
+  }
 
   // Update Recommended Allocations Display (only update elements that exist)
   const recommendedSavingsAmountEl = document.getElementById(
@@ -1876,11 +1891,7 @@ function updateAllUI(budget) {
 
     if (cashflowPctToCheck < MIN_CASHFLOW_PCT) {
       // Caution message
-      ctaMessage.innerHTML = `<strong class="font-semibold">Your recommended cashflow is <span class="text-red-400">${formatPercentage(
-        cashflowPctToCheck
-      )}</span>, which is <span class="text-red-400">${formatCurrency(
-        cashflowToCheck
-      )}</span>. To learn how to manage and secure your finances, click the button below</strong>`;
+      ctaMessage.innerHTML = `<strong class="font-semibold">Great Job, lets walk you through a clear next step to build sustainable wealth</strong>`;
 
       // Remove any background colors; only use border for emphasis
       ctaSection.classList.remove("bg-white/5", "bg-red-900/30");
@@ -1888,11 +1899,7 @@ function updateAllUI(budget) {
       ctaSection.classList.add("border-red-500/50");
     } else {
       // Standard message
-      ctaMessage.innerHTML = `<strong class="font-semibold">Your recommended cashflow is <span class="text-green-400">${formatPercentage(
-        budget.recommended_cashflow_pct
-      )}</span>, which is <span class="text-green-400">${formatCurrency(
-        budget.recommended_allocations.monthly_cashflow
-      )}</span>. To learn how to manage and secure your finances, click the button below.</strong>`;
+      ctaMessage.innerHTML = `<strong class="font-semibold">Great Job, lets walk you through a clear next step to build sustainable wealth</strong>`;
 
       // Remove any background colors; only use border for normal state
       ctaSection.classList.remove("bg-white/5", "bg-red-900/30");
@@ -2109,7 +2116,18 @@ function setupEventListeners() {
     input.addEventListener("focus", switchToExpensesTab);
     input.addEventListener("input", () => {
       switchToExpensesTab();
-      // Use the new function that handles percentage/amount sync
+      if (calculatorState.customSavingsToggleEnabled) {
+        const customSavingsToggleEl = document.getElementById("customSavingsToggle");
+        const siToggleTextEl = document.getElementById("si-toggle-text");
+        if (customSavingsToggleEl) {
+          customSavingsToggleEl.checked = false;
+          calculatorState.customSavingsToggleEnabled = false;
+          if (siToggleTextEl) {
+            siToggleTextEl.textContent = "Set your custom allocations";
+          }
+          customSavingsToggleEl.dispatchEvent(new Event("change"));
+        }
+      }
       handleExpenseChangeWithChartSync();
     });
   });
@@ -2289,8 +2307,8 @@ function setupEventListeners() {
       // Update toggle text
       if (siToggleText) {
         siToggleText.textContent = customSavingsToggle.checked
-          ? "Turn off to revert back to recommended goals"
-          : "Turn on to set your custom goals";
+          ? "Switch to recommended allocations"
+          : "Set your custom allocations";
       }
 
       // Enable/disable input fields based on toggle state
@@ -2351,7 +2369,7 @@ function setupEventListeners() {
     customSavingsToggle.checked = false;
     calculatorState.customSavingsToggleEnabled = false;
     if (siToggleText) {
-      siToggleText.textContent = "Turn on to set your custom goals";
+      siToggleText.textContent = "Set your custom allocations";
     }
   }
 
@@ -3349,7 +3367,7 @@ function renderCustomProjection(chartType, canvasId, summaryId, titleId) {
         ${greenAmt(interestEarned)}
       </div>
       <div class="flex font-thin items-center">
-        <span class="font-thin">Ending balance</span>
+        <span class="font-semibold">Ending balance</span>
         <span class="flex-1 border-t border-dotted border-gray-300 mx-2"></span>
         <span class="">
         ${leader}
@@ -3950,10 +3968,48 @@ document.addEventListener("DOMContentLoaded", () => {
     if (resultsWrapper && resultsWrapper.classList.contains("hidden")) {
       resultsWrapper.classList.remove("hidden");
     }
-    if (taxesContent && taxesContent.classList.contains("hidden")) {
-      taxesContent.classList.remove("hidden");
+
+    const expensesContent = document.getElementById("expenses-content");
+    const saveInvestContent = document.getElementById("save-invest-content");
+
+    let activeTabKey = "taxes";
+    if (saveInvestContent && !saveInvestContent.classList.contains("hidden")) {
+      activeTabKey = "save";
+    } else if (expensesContent && !expensesContent.classList.contains("hidden")) {
+      activeTabKey = "expenses";
+    } else if (taxesContent && !taxesContent.classList.contains("hidden")) {
+      activeTabKey = "taxes";
     }
+
+    const initialStates = {
+      taxes: taxesContent ? !taxesContent.classList.contains("hidden") : false,
+      expenses: expensesContent ? !expensesContent.classList.contains("hidden") : false,
+      save: saveInvestContent ? !saveInvestContent.classList.contains("hidden") : false,
+    };
+
+    if (taxesContent) {
+      taxesContent.classList.toggle("hidden", activeTabKey !== "taxes");
+    }
+    if (expensesContent) {
+      expensesContent.classList.toggle("hidden", activeTabKey !== "expenses");
+    }
+    if (saveInvestContent) {
+      saveInvestContent.classList.toggle("hidden", activeTabKey !== "save");
+    }
+
     window.print();
+
+    setTimeout(() => {
+      if (taxesContent) {
+        taxesContent.classList.toggle("hidden", !initialStates.taxes);
+      }
+      if (expensesContent) {
+        expensesContent.classList.toggle("hidden", !initialStates.expenses);
+      }
+      if (saveInvestContent) {
+        saveInvestContent.classList.toggle("hidden", !initialStates.save);
+      }
+    }, 300);
   }
 
   function handleDirectDownloadPDF() {
@@ -4028,7 +4084,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (worker && typeof worker.then === "function") {
             worker
               .then(() => {
-                handlePrint();
+                // PDF saved successfully; no print needed
               })
               .catch((err) => {
                 console.error("PDF generation error:", err);
@@ -4067,8 +4123,8 @@ function applyDeductionsVisibility() {
   const btn = document.getElementById("toggle-deductions-btn");
   if (btn) {
     btn.querySelector("span").textContent = expanded
-      ? "Collapse tax deductions"
-      : "Expand tax deductions";
+      ? "Collapse deductions"
+      : "Expand deductions";
   }
 }
 const toggleDeductionsBtn = document.getElementById("toggle-deductions-btn");
