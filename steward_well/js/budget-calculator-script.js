@@ -4208,148 +4208,118 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleDirectDownloadPDF() {
-    // Ensure results wrapper is visible
     if (resultsWrapper && resultsWrapper.classList.contains("hidden")) {
       resultsWrapper.classList.remove("hidden");
     }
 
-    // Detect which tab is currently active by checking which content is visible
     const expensesContent = document.getElementById("expenses-content");
     const saveInvestContent = document.getElementById("save-invest-content");
 
-    let activeTabKey = "taxes"; // Default to taxes
+    let activeTabKey = "taxes";
+    let targetElement = taxesContent;
     if (saveInvestContent && !saveInvestContent.classList.contains("hidden")) {
       activeTabKey = "save";
+      targetElement = saveInvestContent;
     } else if (
       expensesContent &&
       !expensesContent.classList.contains("hidden")
     ) {
       activeTabKey = "expenses";
+      targetElement = expensesContent;
     } else if (taxesContent && !taxesContent.classList.contains("hidden")) {
       activeTabKey = "taxes";
+      targetElement = taxesContent;
     }
 
-    // Ensure the currently active tab content is visible
-    // Capture initial visibility states to restore after export
-    const initialTabStates = {
-      taxes: taxesContent ? !taxesContent.classList.contains("hidden") : false,
-      expenses: expensesContent
-        ? !expensesContent.classList.contains("hidden")
-        : false,
-      save: saveInvestContent
-        ? !saveInvestContent.classList.contains("hidden")
-        : false,
-    };
+    const capture = () => {
+      const scale = Math.max(2, window.devicePixelRatio || 1);
+      window
+        .html2canvas(targetElement, {
+          scale,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          scrollY: -window.scrollY,
+          windowWidth: document.documentElement.scrollWidth,
+          onclone: (clonedDoc) => {
+            const clonedTarget = clonedDoc.getElementById(targetElement.id);
+            if (clonedTarget) {
+              clonedTarget.style.padding = "32px";
+              clonedTarget.style.background = "#ffffff";
+              clonedTarget.style.boxSizing = "border-box";
+              clonedTarget.style.borderRadius = "16px";
+              clonedTarget.style.margin = "0 auto";
+              clonedTarget.style.maxWidth = "980px";
 
-    // Hide other tabs to ensure only the active one is captured
-    if (taxesContent) {
-      taxesContent.classList.toggle("hidden", activeTabKey !== "taxes");
-    }
-    if (expensesContent) {
-      expensesContent.classList.toggle("hidden", activeTabKey !== "expenses");
-    }
-    if (saveInvestContent) {
-      saveInvestContent.classList.toggle("hidden", activeTabKey !== "save");
-    }
+              // Hide overlays that can cover text
+              const toHide = clonedTarget.querySelectorAll(
+                ".info-tooltip, #toggle-deductions-btn"
+              );
+              toHide.forEach((el) => (el.style.display = "none"));
 
-    const target = document.body;
+              // Neutralize gradient text that html2canvas renders as boxes
+              // Note: h2-h5 have gradient styles in the CSS that html2canvas renders as boxes
+              const gradientTextEls = clonedTarget.querySelectorAll(
+                "h1, h2, h3, h4, h5, h6, .gradient-text, .expense-summary-amount, [style*='background-clip: text'], [style*='-webkit-text-fill-color']"
+              );
+              gradientTextEls.forEach((el) => {
+                // Check if it actually has gradient background (for headers that might not have it)
+                // We can't easily check computed style here for everything, but resetting it is safe
+                // as we want a clean PDF/PNG export.
+                el.style.backgroundImage = "none";
+                el.style.webkitBackgroundClip = "border-box";
+                el.style.backgroundClip = "border-box";
+                el.style.webkitTextFillColor = "initial";
+                el.style.color = "#0f172a"; // slate-900
+              });
 
-    const prevPosition = resultsWrapper ? resultsWrapper.style.position : "";
-    const prevTop = resultsWrapper ? resultsWrapper.style.top : "";
-    if (resultsWrapper) {
-      resultsWrapper.style.position = "static";
-      resultsWrapper.style.top = "auto";
-    }
-
-    setTimeout(() => {
-      if (activeTabKey === "save" && saveInvestContent) {
-        debouncedChartUpdate();
-      }
-      if (activeTabKey === "expenses") {
-        try {
-          handleExpenseOrAllocationChange();
-        } catch (e) {}
-      }
-
-      setTimeout(() => {
-        const opt = {
-          margin: 10,
-          filename: "Steward Well Capital - Budget Results.pdf",
-          image: { type: "jpeg", quality: 0.95 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            letterRendering: true,
-            allowTaint: false,
-            backgroundColor: "#ffffff",
-            scrollY: -window.scrollY,
-            windowWidth: document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight,
-          },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-          pagebreak: { mode: ["css", "legacy"] },
-        };
-
-        try {
-          const worker = html2pdf().set(opt).from(target).save();
-          if (worker && typeof worker.then === "function") {
-            worker
-              .then(() => {
-                if (resultsWrapper) {
-                  resultsWrapper.style.position = prevPosition || "";
-                  resultsWrapper.style.top = prevTop || "";
-                }
-                if (taxesContent) {
-                  taxesContent.classList.toggle(
-                    "hidden",
-                    !initialTabStates.taxes
-                  );
-                }
-                if (expensesContent) {
-                  expensesContent.classList.toggle(
-                    "hidden",
-                    !initialTabStates.expenses
-                  );
-                }
-                if (saveInvestContent) {
-                  saveInvestContent.classList.toggle(
-                    "hidden",
-                    !initialTabStates.save
-                  );
-                }
-              })
-              .catch((err) => {
-                console.error("PDF generation error:", err);
-                if (resultsWrapper) {
-                  resultsWrapper.style.position = prevPosition || "";
-                  resultsWrapper.style.top = prevTop || "";
-                }
-                saveElementAsPdf(target).then((ok) => {
-                  if (!ok) handlePrint();
+              // Neutralize gradient backgrounds
+              const gradientBgEls = clonedTarget.querySelectorAll(
+                "[class*='bg-gradient-to-'], [style*='background-image: linear-gradient'], [style*='linear-gradient']"
+              );
+              gradientBgEls.forEach((el) => {
+                el.style.backgroundImage = "none";
+                el.style.background = "#ffffff";
+                el.style.backgroundColor = "#ffffff";
+                // Remove all classes starting with bg-gradient-to-
+                const classes = [...el.classList];
+                classes.forEach((cls) => {
+                  if (cls.startsWith("bg-gradient-to-")) {
+                    el.classList.remove(cls);
+                  }
                 });
               });
-          } else {
-            setTimeout(() => {
-              if (resultsWrapper) {
-                resultsWrapper.style.position = prevPosition || "";
-                resultsWrapper.style.top = prevTop || "";
-              }
-              saveElementAsPdf(target).then((ok) => {
-                if (!ok) handlePrint();
-              });
-            }, 800);
-          }
-        } catch (e) {
-          console.error("PDF generation error:", e);
-          setTimeout(() => {
-            saveElementAsPdf(target).then((ok) => {
-              if (!ok) handlePrint();
-            });
-          }, 800);
-        }
-      }, 500); // Increased delay to ensure charts are fully rendered
-    }, 200);
+            }
+          },
+        })
+        .then((canvas) => {
+          const dataURL = canvas.toDataURL("image/png");
+          const ts = new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace(/[T:]/g, "-");
+          const map = {
+            taxes: "Deductions",
+            expenses: "Expenses",
+            save: "Savings-Investments",
+          };
+          const a = document.createElement("a");
+          a.href = dataURL;
+          a.download = `Steward Well Capital - ${map[activeTabKey]} - ${ts}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        })
+        .catch((err) => {
+          console.error("Screenshot generation error:", err);
+        });
+    };
+
+    if (activeTabKey === "save") {
+      debouncedChartUpdate();
+      setTimeout(capture, 400);
+    } else {
+      capture();
+    }
   }
 
   if (printDownloadBtn) {
