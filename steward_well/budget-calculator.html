@@ -640,12 +640,17 @@
       <div class="w-full lg:w-[60%]">
         <section id="annual-income-section" class="">
           <div class="rounded-tr-3xl rounded-tl-3xl p-8 bg-white border-white/10 hover:border-primary/30 transition-all duration-300">
-            <div class="flex items-center space-x-3 mb-6">
-              <img src="images/income.svg" alt="Income Icon" class="w-12 h-12 text-white" />
-              <h2 class="text-[1.8rem] font-medium text-white">Income</h2>
-            </div>
+            <button id="income-section-toggle" class="w-full flex items-center justify-between mb-6 focus:outline-none">
+              <div class="flex items-center space-x-3">
+                <img src="images/income.svg" alt="Income Icon" class="w-12 h-12 text-white" />
+                <h2 class="text-[1.8rem] font-medium text-white">Income</h2>
+              </div>
+              <svg id="income-section-arrow" class="w-5 h-5 transition-transform duration-300 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
 
-            <div class="relative">
+            <div id="income-section-content" class="relative transition-all duration-500 overflow-hidden" style="max-height: 3000px; opacity: 1;">
               <div class="input-group grid grid-cols-2 max-sm:grid-cols-1 w-full gap-x-8 gap-y-5">
                 <!-- Hidden real select -->
                 <select id="provinceSelect" class="hidden">
@@ -751,6 +756,9 @@
             </div>
           </div>
         </section>
+
+        <!-- Divider -->
+        <div class="w-full h-px bg-white/10"></div>
 
         <!-- Monthly Living Expenses Input -->
         <section id="living-expenses-section" class=" border-[1px] border-t-0 glass-effect opacity-50 pointer-events-none px-4 pt-0 pb-4 md:px-4 transition-colors duration-500 ease-in-out">
@@ -1103,8 +1111,8 @@
                     Our budget calculator recommends allocating your surplus
                     as follows:
                     <strong>10% to a cashflow buffer, 5–15% to savings, and 10–20%
-                      to investing</strong>
-                    and —a simple path to sustainable growth and long-term
+                      to investing.</strong>
+                    This is a simple path to sustainable growth and long-term
                     financial wellness.
                   </p>
                   <div class="bg-blue-50 p-4 rounded-lg mb-6">
@@ -1129,8 +1137,7 @@
                 </button>
               </div>
             </div>
-          </div>
-      
+          </div>      
 
           <p id="si-guidance" class="text-white/90 text-base mb-3 leading-relaxed">
            For sustainable wealth creation, view our recommended allocations below.
@@ -1155,13 +1162,13 @@
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
-                  <input type="number" id="savingsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" />
+                  <input type="number" id="savingsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
                 </div>
                 <div class="input-group">
-                  <input type="text" id="customSavingsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="$0.00" value="" />
+                  <input type="text" id="customSavingsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="$0.00" value="" disabled />
                 </div>
               </div>
-              <p id="savingsPercentageError" class="error-message text-sm text-red-400"></p>
+              <p id="savingsPercentageError" class="error-message text-sm text-red-400 hidden"></p>
             </div>
 
             <!-- Allocation Error Message -->
@@ -1177,13 +1184,13 @@
               </div>
               <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
-                  <input type="number" id="investmentsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" />
+                  <input type="number" id="investmentsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
                 </div>
                 <div class="input-group">
-                  <input type="text" id="customInvestmentsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="$0.00" value="" />
+                  <input type="text" id="customInvestmentsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="$0.00" value="" disabled />
                 </div>
               </div>
-              <p id="investmentsPercentageError" class="error-message text-sm text-red-400"></p>
+              <p id="investmentsPercentageError" class="error-message text-sm text-red-400 hidden"></p>
             </div>
 
             <!-- Cashflow (derived) -->
@@ -1247,7 +1254,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
               <span style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand deductions</span>
-            </>
+            
             </div>
           </div>
         </div>
@@ -1375,7 +1382,7 @@
               <div id="expenseHealthBar" class="expense-health-fill"></div>
             </div>
           </div>
-          <div class="expense-summary flex flex-col gap-4 mt-5" id="expense-category-summary ">
+          <div class="expense-summary flex flex-col gap-4 mt-5" id="expense-category-summary" style="break-inside: avoid;">
             <div class="expense-summary-row flex justify-between">
               <div class="">
                 <span class="expense-summary-name font-thin text-gray-500">Housing and utilities (<span id="summary-housing-pct">0%</span>)</span>
@@ -1409,7 +1416,7 @@
                 <span class="expense-summary-name font-thin text-gray-500">Children and education (<span id="summary-children-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
-              <span class="expense-summary-amount font-thin id=" summary-children-amt">$0.00</span>
+              <span class="expense-summary-amount font-thin" id="summary-children-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
@@ -1432,7 +1439,7 @@
           <div class="space-y-4">
               <!-- Toggle combined view -->
               <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-700">Show total of savings and investments</span>
+                <span id="showCombinedText" class="text-sm text-gray-700">Show total of savings and investments</span>
                 <label for="showCombinedToggle" class="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" id="showCombinedToggle" class="sr-only peer" />
                   <div class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5"></div>
@@ -1443,7 +1450,7 @@
             <div id="customChartsContainer" class="flex flex-col space-y-6">
               <div id="customSavingsView" class="space-y-2">
                 <div class="flex items-center gap-2 mb-2">
-                  <h3 class="text-xl font-bold text-gray-800 text-left">Savings</h3>
+                  <h3 class="text-xl font-bold text-gray-800 text-left">5yr Savings Projection</h3>
                   <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customSavingsTitle" class="text-xs text-gray-700"></p></span></span>
                 </div>
                 <div class="flex justify-center items-center">
@@ -1455,7 +1462,7 @@
               <!-- Investments view (visible by default) -->
               <div id="customInvestmentsView" class="space-y-2">
                 <div class="flex items-center gap-2 mb-2">
-                  <h3 class="text-xl font-bold text-gray-800 text-left">Investments</h3>
+                  <h3 class="text-xl font-bold text-gray-800 text-left">5yr Investments Projection</h3>
                   <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customInvestmentsTitle" class="text-xs text-gray-700"></p></span></span>
                 </div>
                 <div class="flex justify-center items-center">
@@ -1467,7 +1474,7 @@
               <!-- Both (combined) view -->
               <div id="customBothView" class="space-y-2 hidden">
                 <div class="flex items-center gap-2 mb-2">
-                  <h3 class="text-xl font-bold text-gray-800 text-left">Both</h3>
+                  <h3 class="text-xl font-bold text-gray-800 text-left">5yr Savings & Investments Projection</h3>
                   <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customBothTitle" class="text-xs text-gray-700"></p></span></span>
                 </div>
                 <div class="flex justify-center items-center">

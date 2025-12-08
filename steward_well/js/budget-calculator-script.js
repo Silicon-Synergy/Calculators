@@ -403,22 +403,33 @@ function calculateBudget(
       finalUserInvestmentsPct = 0;
     }
 
-    const customMonthlySavings =
-      (finalUserSavingsPct / 100) * monthlyDisposableIncome;
-    const customMonthlyInvestments =
-      (finalUserInvestmentsPct / 100) * monthlyDisposableIncome;
-
-    // Calculate custom monthly cashflow based on user's custom S&I and existing expenses
-    const customMonthlyCashflow =
-      monthlyDisposableIncome -
-      totalMonthlyExpenses -
-      customMonthlySavings -
-      customMonthlyInvestments;
+    let sAmt = (finalUserSavingsPct / 100) * monthlyDisposableIncome;
+    let iAmt = (finalUserInvestmentsPct / 100) * monthlyDisposableIncome;
+    const available = Math.max(
+      0,
+      monthlyDisposableIncome - totalMonthlyExpenses
+    );
+    let sum = sAmt + iAmt;
+    if (sum > available && sum > 0) {
+      const scale = available / sum;
+      sAmt = sAmt * scale;
+      iAmt = iAmt * scale;
+    }
+    sAmt = Math.floor(sAmt * 100) / 100;
+    iAmt = Math.floor(iAmt * 100) / 100;
+    let cflow = available - (sAmt + iAmt);
+    if (cflow < 0 && Math.abs(cflow) < 0.05) {
+      cflow = 0;
+    }
+    finalUserSavingsPct =
+      monthlyDisposableIncome > 0 ? (sAmt / monthlyDisposableIncome) * 100 : 0;
+    finalUserInvestmentsPct =
+      monthlyDisposableIncome > 0 ? (iAmt / monthlyDisposableIncome) * 100 : 0;
 
     customAllocations = {
-      monthly_savings: customMonthlySavings,
-      monthly_investments: customMonthlyInvestments,
-      monthly_cashflow: customMonthlyCashflow,
+      monthly_savings: sAmt,
+      monthly_investments: iAmt,
+      monthly_cashflow: cflow,
     };
   }
 
@@ -1399,14 +1410,20 @@ function updateAllUI(budget) {
   const hasAnyExpense = budget.total_monthly_expenses > 0;
   if (hasAnyExpense) {
     console.log("Debug: Removing opacity from savings section");
-    console.log("savingsInvestmentsSection element:", savingsInvestmentsSection);
+    console.log(
+      "savingsInvestmentsSection element:",
+      savingsInvestmentsSection
+    );
     if (savingsInvestmentsSection) {
       savingsInvestmentsSection.classList.remove(
         "opacity-50",
         "pointer-events-none"
       );
       savingsInvestmentsSection.classList.add("animate-fade-in");
-      console.log("Debug: Savings section classes after update:", savingsInvestmentsSection.className);
+      console.log(
+        "Debug: Savings section classes after update:",
+        savingsInvestmentsSection.className
+      );
     } else {
       console.log("Debug: savingsInvestmentsSection element not found!");
     }
@@ -1415,13 +1432,11 @@ function updateAllUI(budget) {
       "Debug: Savings section stays locked – no expenses entered yet"
     );
   }
-  // Enable inputs when section is active (remove disable attribute)
-  if (calculatorState.monthlyDisposableIncome > 0 && calculatorState.hasEnteredExpenses) {
-    savingsPercentageInput.disabled = false;
-    investmentsPercentageInput.disabled = false;
-    customSavingsAmountInput.disabled = false;
-    customInvestmentsAmountInput.disabled = false;
-  }
+  const isEnabledInputs = !!calculatorState.customSavingsToggleEnabled;
+  savingsPercentageInput.disabled = !isEnabledInputs;
+  investmentsPercentageInput.disabled = !isEnabledInputs;
+  customSavingsAmountInput.disabled = !isEnabledInputs;
+  customInvestmentsAmountInput.disabled = !isEnabledInputs;
 
   // Apply field appearance updates
   const isCustomToggleEnabled =
@@ -1457,9 +1472,7 @@ function updateAllUI(budget) {
 
   if (siGuidanceP) {
     siGuidanceP.textContent =
-      budget.savings_allowed || budget.investments_allowed
-        ? "You can now edit your custom savings and investments allocations."
-        : "For sustainable wealth creation, view our recommended allocations below.";
+      "For sustainable wealth creation, view our recommended allocations below.";
   }
 
   // Update Recommended Allocations Display (only update elements that exist)
@@ -2115,9 +2128,14 @@ function setupEventListeners() {
   expenseInputs.forEach((input) => {
     input.addEventListener("focus", switchToExpensesTab);
     input.addEventListener("input", () => {
+      if (input.value.length > 10) {
+        input.value = input.value.slice(0, 10);
+      }
       switchToExpensesTab();
       if (calculatorState.customSavingsToggleEnabled) {
-        const customSavingsToggleEl = document.getElementById("customSavingsToggle");
+        const customSavingsToggleEl = document.getElementById(
+          "customSavingsToggle"
+        );
         const siToggleTextEl = document.getElementById("si-toggle-text");
         if (customSavingsToggleEl) {
           customSavingsToggleEl.checked = false;
@@ -2176,6 +2194,32 @@ function setupEventListeners() {
     window.addEventListener("resize", maybeCollapseExpensesOnScroll);
   }
 
+  // Income section collapse logic
+  const incomeToggleBtn = document.getElementById("income-section-toggle");
+  if (incomeToggleBtn) {
+    incomeToggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleIncomeSection();
+    });
+  }
+
+  if (livingExpensesSection && annualIncomeSection) {
+    const maybeCollapseIncomeOnScroll = () => {
+      const livingRect = livingExpensesSection.getBoundingClientRect();
+      // Collapse income when scrolling down to expenses (living expenses near top of viewport)
+      const nearLiving = livingRect.top <= window.innerHeight * 0.5;
+
+      if (nearLiving) {
+        collapseIncomeSection();
+      }
+    };
+
+    window.addEventListener("scroll", maybeCollapseIncomeOnScroll, {
+      passive: true,
+    });
+    window.addEventListener("resize", maybeCollapseIncomeOnScroll);
+  }
+
   // Custom savings and investments inputs
   savingsPercentageInput.addEventListener("focus", switchToSaveTab);
   savingsPercentageInput.addEventListener("input", () => {
@@ -2191,6 +2235,29 @@ function setupEventListeners() {
       "Is input focused?",
       document.activeElement === savingsPercentageInput
     );
+
+    const budget = calculatorState.currentBudget;
+    if (budget && budget.monthly_disposable_income > 0) {
+      const mdi = budget.monthly_disposable_income;
+      const expenses = budget.total_monthly_expenses || 0;
+      const available = Math.max(0, mdi - expenses);
+      const maxPctTotal = (available / mdi) * 100;
+      const otherPct = parseFloat(investmentsPercentageInput.value) || 0;
+      let sPct = parseFloat(savingsPercentageInput.value) || 0;
+      if (sPct + otherPct > maxPctTotal) {
+        sPct = Math.max(0, maxPctTotal - otherPct);
+        savingsPercentageInput.value = sPct.toFixed(1);
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) {
+          allocErr.classList.remove("hidden");
+          allocErr.textContent =
+            "Total allocations cannot exceed remaining amount after expenses.";
+        }
+      } else {
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) allocErr.classList.add("hidden");
+      }
+    }
 
     // Only set custom flag if user enters a non-empty value
     if (savingsPercentageInput.value && savingsPercentageInput.value !== "0") {
@@ -2227,6 +2294,29 @@ function setupEventListeners() {
     console.log("=== INVESTMENTS INPUT DEBUG ===");
     console.log("Raw input value:", investmentsPercentageInput.value);
     console.log("Parsed value:", parseFloat(investmentsPercentageInput.value));
+
+    const budget = calculatorState.currentBudget;
+    if (budget && budget.monthly_disposable_income > 0) {
+      const mdi = budget.monthly_disposable_income;
+      const expenses = budget.total_monthly_expenses || 0;
+      const available = Math.max(0, mdi - expenses);
+      const maxPctTotal = (available / mdi) * 100;
+      const otherPct = parseFloat(savingsPercentageInput.value) || 0;
+      let iPct = parseFloat(investmentsPercentageInput.value) || 0;
+      if (iPct + otherPct > maxPctTotal) {
+        iPct = Math.max(0, maxPctTotal - otherPct);
+        investmentsPercentageInput.value = iPct.toFixed(1);
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) {
+          allocErr.classList.remove("hidden");
+          allocErr.textContent =
+            "Total allocations cannot exceed remaining amount after expenses.";
+        }
+      } else {
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) allocErr.classList.add("hidden");
+      }
+    }
 
     // Only set custom flag if user enters a non-empty value
     if (
@@ -2272,6 +2362,33 @@ function setupEventListeners() {
     } else {
       calculatorState.hasCustomSavings = false; // Field is cleared
     }
+    const budget = calculatorState.currentBudget;
+    if (budget && budget.monthly_disposable_income > 0) {
+      const mdi = budget.monthly_disposable_income;
+      const expenses = budget.total_monthly_expenses || 0;
+      const available = Math.max(0, mdi - expenses);
+      const otherAmt =
+        parseFloat(
+          (customInvestmentsAmountInput.value || "").replace(/[^0-9.]/g, "")
+        ) || 0;
+      let sAmt =
+        parseFloat(
+          (customSavingsAmountInput.value || "").replace(/[^0-9.]/g, "")
+        ) || 0;
+      if (sAmt + otherAmt > available) {
+        sAmt = Math.max(0, available - otherAmt);
+        customSavingsAmountInput.value = formatCurrency(sAmt);
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) {
+          allocErr.classList.remove("hidden");
+          allocErr.textContent =
+            "Total allocations cannot exceed remaining amount after expenses.";
+        }
+      } else {
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) allocErr.classList.add("hidden");
+      }
+    }
     handleCustomAmountChange(e);
 
     // Update charts immediately for real-time rendering (use debounced version)
@@ -2289,6 +2406,33 @@ function setupEventListeners() {
       calculatorState.hasCustomInvestments = true;
     } else {
       calculatorState.hasCustomInvestments = false; // Field is cleared
+    }
+    const budget2 = calculatorState.currentBudget;
+    if (budget2 && budget2.monthly_disposable_income > 0) {
+      const mdi = budget2.monthly_disposable_income;
+      const expenses = budget2.total_monthly_expenses || 0;
+      const available = Math.max(0, mdi - expenses);
+      const otherAmt =
+        parseFloat(
+          (customSavingsAmountInput.value || "").replace(/[^0-9.]/g, "")
+        ) || 0;
+      let iAmt =
+        parseFloat(
+          (customInvestmentsAmountInput.value || "").replace(/[^0-9.]/g, "")
+        ) || 0;
+      if (iAmt + otherAmt > available) {
+        iAmt = Math.max(0, available - otherAmt);
+        customInvestmentsAmountInput.value = formatCurrency(iAmt);
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) {
+          allocErr.classList.remove("hidden");
+          allocErr.textContent =
+            "Total allocations cannot exceed remaining amount after expenses.";
+        }
+      } else {
+        const allocErr = document.getElementById("allocationError");
+        if (allocErr) allocErr.classList.add("hidden");
+      }
     }
     handleCustomAmountChange(e);
 
@@ -2371,6 +2515,24 @@ function setupEventListeners() {
     if (siToggleText) {
       siToggleText.textContent = "Set your custom allocations";
     }
+    savingsPercentageInput.disabled = true;
+    investmentsPercentageInput.disabled = true;
+    customSavingsAmountInput.disabled = true;
+    customInvestmentsAmountInput.disabled = true;
+    savingsPercentageInput.classList.add("opacity-50", "cursor-not-allowed");
+    investmentsPercentageInput.classList.add(
+      "opacity-50",
+      "cursor-not-allowed"
+    );
+    customSavingsAmountInput.classList.add("opacity-50", "cursor-not-allowed");
+    customInvestmentsAmountInput.classList.add(
+      "opacity-50",
+      "cursor-not-allowed"
+    );
+    savingsPercentageInput.classList.remove("cursor-text");
+    investmentsPercentageInput.classList.remove("cursor-text");
+    customSavingsAmountInput.classList.remove("cursor-text");
+    customInvestmentsAmountInput.classList.remove("cursor-text");
   }
 
   // Chart projection buttons
@@ -2534,6 +2696,7 @@ function setupEventListeners() {
   // Toggle combined view for Save & Invest section
   const showCombinedToggle = document.getElementById("showCombinedToggle");
   if (showCombinedToggle) {
+    const showCombinedText = document.getElementById("showCombinedText");
     const savingsEl = document.getElementById("customSavingsView");
     const investmentsEl = document.getElementById("customInvestmentsView");
     const bothEl = document.getElementById("customBothView");
@@ -2551,6 +2714,10 @@ function setupEventListeners() {
         savingsEl.classList.add("hidden");
         investmentsEl.classList.add("hidden");
         bothEl.classList.remove("hidden");
+        if (showCombinedText) {
+          showCombinedText.textContent =
+            "Show total of savings and investments";
+        }
         const chartsContainer = document.getElementById(
           "customChartsContainer"
         );
@@ -2562,6 +2729,10 @@ function setupEventListeners() {
         savingsEl.classList.remove("hidden");
         investmentsEl.classList.remove("hidden");
         bothEl.classList.add("hidden");
+        if (showCombinedText) {
+          showCombinedText.textContent =
+            "Switch to savings & investments projections";
+        }
         const chartsContainer = document.getElementById(
           "customChartsContainer"
         );
@@ -2770,26 +2941,42 @@ function collapseAllExpenses() {
   if (label) label.textContent = "Expand all";
 }
 
-// Function to toggle deduction inputs expansion/collapse
+function collapseIncomeSection() {
+  const content = document.getElementById("income-section-content");
+  const arrow = document.getElementById("income-section-arrow");
+  if (content) {
+    content.style.maxHeight = "0px";
+    content.style.opacity = "0";
+  }
+  if (arrow) {
+    arrow.style.transform = "rotate(0deg)";
+  }
+}
 
-// function toggleDeductionInputs() {
-//   const deductionInputsContainer = document.getElementById(
-//     "deduction-inputs-container"
-//   );
-//   const arrow = deductonToggle.querySelector(".dropdown-arrow");
+function expandIncomeSection() {
+  const content = document.getElementById("income-section-content");
+  const arrow = document.getElementById("income-section-arrow");
+  if (content) {
+    content.style.maxHeight = "3000px";
+    content.style.opacity = "1";
+  }
+  if (arrow) {
+    arrow.style.transform = "rotate(180deg)";
+  }
+}
 
-//   const isExpanded =
-//     deductionInputsContainer.style.maxHeight &&
-//     deductionInputsContainer.style.maxHeight !== "0px";
+function toggleIncomeSection() {
+  const content = document.getElementById("income-section-content");
+  if (!content) return;
 
-//   if (isExpanded) {
-//     // deductionInputsContainer.style.maxHeight = "0px";
-//     // arrow.style.transform = "rotate(0deg)";
-//   } else {
-//     deductionInputsContainer.style.maxHeight = deductionInputsContainer.scrollHeight + "px";
-//     arrow.style.transform = "rotate(180deg)";
-//   }
-// }
+  const isCollapsed = content.style.maxHeight === "0px";
+
+  if (isCollapsed) {
+    expandIncomeSection();
+  } else {
+    collapseIncomeSection();
+  }
+}
 
 function toggleRetirementSection(isShown) {
   const retirementSection = document.getElementById(
@@ -3906,6 +4093,7 @@ function switchToTaxesTab() {
   if (!nav) return;
   const btn = nav.querySelector('.deductions-tab[data-tab="taxes"]');
   if (btn) btn.click();
+  expandIncomeSection();
 }
 
 function switchToSaveTab() {
@@ -3975,7 +4163,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let activeTabKey = "taxes";
     if (saveInvestContent && !saveInvestContent.classList.contains("hidden")) {
       activeTabKey = "save";
-    } else if (expensesContent && !expensesContent.classList.contains("hidden")) {
+    } else if (
+      expensesContent &&
+      !expensesContent.classList.contains("hidden")
+    ) {
       activeTabKey = "expenses";
     } else if (taxesContent && !taxesContent.classList.contains("hidden")) {
       activeTabKey = "taxes";
@@ -3983,33 +4174,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const initialStates = {
       taxes: taxesContent ? !taxesContent.classList.contains("hidden") : false,
-      expenses: expensesContent ? !expensesContent.classList.contains("hidden") : false,
-      save: saveInvestContent ? !saveInvestContent.classList.contains("hidden") : false,
+      expenses: expensesContent
+        ? !expensesContent.classList.contains("hidden")
+        : false,
+      save: saveInvestContent
+        ? !saveInvestContent.classList.contains("hidden")
+        : false,
     };
 
-    if (taxesContent) {
+    if (taxesContent)
       taxesContent.classList.toggle("hidden", activeTabKey !== "taxes");
-    }
-    if (expensesContent) {
+    if (expensesContent)
       expensesContent.classList.toggle("hidden", activeTabKey !== "expenses");
-    }
-    if (saveInvestContent) {
+    if (saveInvestContent)
       saveInvestContent.classList.toggle("hidden", activeTabKey !== "save");
+
+    const prevPosition = resultsWrapper ? resultsWrapper.style.position : "";
+    const prevTop = resultsWrapper ? resultsWrapper.style.top : "";
+    if (resultsWrapper) {
+      resultsWrapper.style.position = "static";
+      resultsWrapper.style.top = "auto";
     }
 
-    window.print();
+    const delay = activeTabKey === "save" ? 400 : 200;
+    if (activeTabKey === "save") {
+      debouncedChartUpdate();
+    }
+    if (activeTabKey === "expenses") {
+      try {
+        handleExpenseOrAllocationChange();
+      } catch (e) {}
+    }
+
+    const restore = () => {
+      if (resultsWrapper) {
+        resultsWrapper.style.position = prevPosition || "";
+        resultsWrapper.style.top = prevTop || "";
+      }
+      if (taxesContent)
+        taxesContent.classList.toggle("hidden", !initialStates.taxes);
+      if (expensesContent)
+        expensesContent.classList.toggle("hidden", !initialStates.expenses);
+      if (saveInvestContent)
+        saveInvestContent.classList.toggle("hidden", !initialStates.save);
+      window.removeEventListener("afterprint", restore);
+    };
+
+    window.addEventListener("beforeprint", () => {
+      if (activeTabKey === "save") debouncedChartUpdate();
+    });
+    window.addEventListener("afterprint", restore);
 
     setTimeout(() => {
-      if (taxesContent) {
-        taxesContent.classList.toggle("hidden", !initialStates.taxes);
-      }
-      if (expensesContent) {
-        expensesContent.classList.toggle("hidden", !initialStates.expenses);
-      }
-      if (saveInvestContent) {
-        saveInvestContent.classList.toggle("hidden", !initialStates.save);
-      }
-    }, 300);
+      window.print();
+    }, delay);
+
+    setTimeout(restore, delay + 800);
   }
 
   function handleDirectDownloadPDF() {
@@ -4035,6 +4255,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Ensure the currently active tab content is visible
+    // Capture initial visibility states to restore after export
+    const initialTabStates = {
+      taxes: taxesContent ? !taxesContent.classList.contains("hidden") : false,
+      expenses: expensesContent
+        ? !expensesContent.classList.contains("hidden")
+        : false,
+      save: saveInvestContent
+        ? !saveInvestContent.classList.contains("hidden")
+        : false,
+    };
+
     // Hide other tabs to ensure only the active one is captured
     if (taxesContent) {
       taxesContent.classList.toggle("hidden", activeTabKey !== "taxes");
@@ -4046,23 +4277,25 @@ document.addEventListener("DOMContentLoaded", () => {
       saveInvestContent.classList.toggle("hidden", activeTabKey !== "save");
     }
 
-    // Use the full results wrapper as target, not just one tab
-    // This captures the entire right panel including tab navigation and active tab content
-    const target = resultsWrapper || document.body;
+    const target = document.body;
 
-    // if (typeof html2pdf === "undefined") {
-    //   handlePrint();
-    //   return;
-    // }
+    const prevPosition = resultsWrapper ? resultsWrapper.style.position : "";
+    const prevTop = resultsWrapper ? resultsWrapper.style.top : "";
+    if (resultsWrapper) {
+      resultsWrapper.style.position = "static";
+      resultsWrapper.style.top = "auto";
+    }
 
-    // Wait for charts and dynamic content to render before generating PDF
     setTimeout(() => {
-      // Update charts if save-invest tab is currently active
       if (activeTabKey === "save" && saveInvestContent) {
         debouncedChartUpdate();
       }
+      if (activeTabKey === "expenses") {
+        try {
+          handleExpenseOrAllocationChange();
+        } catch (e) {}
+      }
 
-      // Additional delay to ensure all content (especially charts) is fully rendered
       setTimeout(() => {
         const opt = {
           margin: 10,
@@ -4075,8 +4308,12 @@ document.addEventListener("DOMContentLoaded", () => {
             letterRendering: true,
             allowTaint: false,
             backgroundColor: "#ffffff",
+            scrollY: -window.scrollY,
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight,
           },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["css", "legacy"] },
         };
 
         try {
@@ -4084,18 +4321,57 @@ document.addEventListener("DOMContentLoaded", () => {
           if (worker && typeof worker.then === "function") {
             worker
               .then(() => {
-                // PDF saved successfully; no print needed
+                if (resultsWrapper) {
+                  resultsWrapper.style.position = prevPosition || "";
+                  resultsWrapper.style.top = prevTop || "";
+                }
+                if (taxesContent) {
+                  taxesContent.classList.toggle(
+                    "hidden",
+                    !initialTabStates.taxes
+                  );
+                }
+                if (expensesContent) {
+                  expensesContent.classList.toggle(
+                    "hidden",
+                    !initialTabStates.expenses
+                  );
+                }
+                if (saveInvestContent) {
+                  saveInvestContent.classList.toggle(
+                    "hidden",
+                    !initialTabStates.save
+                  );
+                }
               })
               .catch((err) => {
                 console.error("PDF generation error:", err);
-                handlePrint();
+                if (resultsWrapper) {
+                  resultsWrapper.style.position = prevPosition || "";
+                  resultsWrapper.style.top = prevTop || "";
+                }
+                saveElementAsPdf(target).then((ok) => {
+                  if (!ok) handlePrint();
+                });
               });
           } else {
-            setTimeout(handlePrint, 800);
+            setTimeout(() => {
+              if (resultsWrapper) {
+                resultsWrapper.style.position = prevPosition || "";
+                resultsWrapper.style.top = prevTop || "";
+              }
+              saveElementAsPdf(target).then((ok) => {
+                if (!ok) handlePrint();
+              });
+            }, 800);
           }
         } catch (e) {
           console.error("PDF generation error:", e);
-          setTimeout(handlePrint, 800);
+          setTimeout(() => {
+            saveElementAsPdf(target).then((ok) => {
+              if (!ok) handlePrint();
+            });
+          }, 800);
         }
       }, 500); // Increased delay to ensure charts are fully rendered
     }, 200);
@@ -4108,6 +4384,65 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+function saveElementAsPdf(el) {
+  const lib = window.jspdf || {};
+  const PDF = lib.jsPDF;
+  if (!window.html2canvas || !PDF) return Promise.resolve(false);
+  const opts = {
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    letterRendering: true,
+    allowTaint: false,
+    backgroundColor: "#ffffff",
+    scrollY: -window.scrollY,
+    windowWidth: document.documentElement.scrollWidth,
+    windowHeight: document.documentElement.scrollHeight,
+  };
+  return window
+    .html2canvas(el, opts)
+    .then((canvas) => {
+      const doc = new PDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const imgWpx = canvas.width;
+      const imgHpx = canvas.height;
+      const pxPerMm = imgWpx / pageW;
+      const sliceHpx = Math.floor(pageH * pxPerMm);
+      let y = 0;
+      let page = 0;
+      while (y < imgHpx) {
+        const slice = document.createElement("canvas");
+        slice.width = imgWpx;
+        slice.height = Math.min(sliceHpx, imgHpx - y);
+        const ctx = slice.getContext("2d");
+        ctx.drawImage(
+          canvas,
+          0,
+          y,
+          imgWpx,
+          slice.height,
+          0,
+          0,
+          imgWpx,
+          slice.height
+        );
+        const imgData = slice.toDataURL("image/png", 0.95);
+        if (page > 0) doc.addPage();
+        doc.addImage(imgData, "PNG", 0, 0, pageW, slice.height / pxPerMm);
+        y += sliceHpx;
+        page += 1;
+      }
+      doc.save("Steward Well Capital - Budget Results.pdf");
+      return true;
+    })
+    .catch(() => false);
+}
 function applyDeductionsVisibility() {
   const container = document.getElementById("deduction-inputs-container");
   if (!container) return;
