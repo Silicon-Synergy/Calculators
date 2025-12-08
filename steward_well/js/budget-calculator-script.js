@@ -1545,12 +1545,10 @@ function updateAllUI(budget) {
     investmentsPercentageInput.value === "0";
   const isSavingsAmtEmpty =
     !customSavingsAmountInput.value ||
-    customSavingsAmountInput.value.trim() === "" ||
-    customSavingsAmountInput.value === "$0.00";
+    customSavingsAmountInput.value.trim() === "";
   const isInvestAmtEmpty =
     !customInvestmentsAmountInput.value ||
-    customInvestmentsAmountInput.value.trim() === "" ||
-    customInvestmentsAmountInput.value === "$0.00";
+    customInvestmentsAmountInput.value.trim() === "";
 
   console.log("Field empty states:");
   console.log(
@@ -1689,9 +1687,9 @@ function updateAllUI(budget) {
         "✅ Setting savings amount to:",
         budget.recommended_allocations.monthly_savings
       );
-      customSavingsAmountInput.value = formatCurrency(
+      customSavingsAmountInput.value = Number(
         budget.recommended_allocations.monthly_savings
-      );
+      ).toFixed(2);
     }
     if (
       isInvestAmtEmpty ||
@@ -1701,9 +1699,9 @@ function updateAllUI(budget) {
         "✅ Setting investments amount to:",
         budget.recommended_allocations.monthly_investments
       );
-      customInvestmentsAmountInput.value = formatCurrency(
+      customInvestmentsAmountInput.value = Number(
         budget.recommended_allocations.monthly_investments
-      );
+      ).toFixed(2);
     }
   } else {
     console.log("❌ Auto-population condition NOT MET");
@@ -1780,7 +1778,7 @@ function updateAllUI(budget) {
   ) {
     // If percentage is explicitly 0 or empty, show $0.00
     if (!customSavingsAmountInput.matches(":focus")) {
-      customSavingsAmountInput.value = formatCurrency(0);
+      customSavingsAmountInput.value = (0).toFixed(2);
     }
   } else if (
     !isNaN(userEnteredSavingsPct) &&
@@ -1789,18 +1787,18 @@ function updateAllUI(budget) {
   ) {
     // Only update the amount field if the user hasn't directly edited it
     if (!customSavingsAmountInput.matches(":focus")) {
-      customSavingsAmountInput.value = formatCurrency(
+      customSavingsAmountInput.value = Number(
         budget.custom_allocations
           ? budget.custom_allocations.monthly_savings
           : 0
-      );
+      ).toFixed(2);
     }
   } else {
     // If user hasn't provided a custom percentage, keep showing recommended amount
     if (!customSavingsAmountInput.matches(":focus")) {
-      customSavingsAmountInput.value = formatCurrency(
+      customSavingsAmountInput.value = Number(
         budget.recommended_allocations.monthly_savings || 0
-      );
+      ).toFixed(2);
     }
   }
 
@@ -1811,7 +1809,7 @@ function updateAllUI(budget) {
   ) {
     // If percentage is explicitly 0 or empty, show $0.00
     if (!customInvestmentsAmountInput.matches(":focus")) {
-      customInvestmentsAmountInput.value = formatCurrency(0);
+      customInvestmentsAmountInput.value = (0).toFixed(2);
     }
   } else if (
     !isNaN(userEnteredInvestmentsPct) &&
@@ -1820,18 +1818,18 @@ function updateAllUI(budget) {
   ) {
     // Only update the amount field if the user hasn't directly edited it
     if (!customInvestmentsAmountInput.matches(":focus")) {
-      customInvestmentsAmountInput.value = formatCurrency(
+      customInvestmentsAmountInput.value = Number(
         budget.custom_allocations
           ? budget.custom_allocations.monthly_investments
           : 0
-      );
+      ).toFixed(2);
     }
   } else {
     // If user hasn't provided a custom percentage, keep showing recommended amount
     if (!customInvestmentsAmountInput.matches(":focus")) {
-      customInvestmentsAmountInput.value = formatCurrency(
+      customInvestmentsAmountInput.value = Number(
         budget.recommended_allocations.monthly_investments || 0
-      );
+      ).toFixed(2);
     }
   }
 
@@ -1843,9 +1841,9 @@ function updateAllUI(budget) {
     if (!customSavingsAmountInput.matches(":focus")) {
       if (sPctVal > 0) {
         const sAmtVal = (sPctVal / 100) * budget.monthly_disposable_income;
-        customSavingsAmountInput.value = formatCurrency(sAmtVal);
+        customSavingsAmountInput.value = Number(sAmtVal).toFixed(2);
       } else {
-        customSavingsAmountInput.value = formatCurrency(0);
+        customSavingsAmountInput.value = (0).toFixed(2);
       }
     }
 
@@ -1853,9 +1851,9 @@ function updateAllUI(budget) {
     if (!customInvestmentsAmountInput.matches(":focus")) {
       if (iPctVal > 0) {
         const iAmtVal = (iPctVal / 100) * budget.monthly_disposable_income;
-        customInvestmentsAmountInput.value = formatCurrency(iAmtVal);
+        customInvestmentsAmountInput.value = Number(iAmtVal).toFixed(2);
       } else {
-        customInvestmentsAmountInput.value = formatCurrency(0);
+        customInvestmentsAmountInput.value = (0).toFixed(2);
       }
     }
   }
@@ -2356,7 +2354,7 @@ function setupEventListeners() {
     // Only set custom flag if user enters a non-empty value
     if (
       customSavingsAmountInput.value &&
-      customSavingsAmountInput.value !== "$0.00"
+      customSavingsAmountInput.value !== ""
     ) {
       calculatorState.hasCustomSavings = true;
     } else {
@@ -2368,16 +2366,11 @@ function setupEventListeners() {
       const expenses = budget.total_monthly_expenses || 0;
       const available = Math.max(0, mdi - expenses);
       const otherAmt =
-        parseFloat(
-          (customInvestmentsAmountInput.value || "").replace(/[^0-9.]/g, "")
-        ) || 0;
-      let sAmt =
-        parseFloat(
-          (customSavingsAmountInput.value || "").replace(/[^0-9.]/g, "")
-        ) || 0;
+        parseFloat(customInvestmentsAmountInput.value || "") || 0;
+      let sAmt = parseFloat(customSavingsAmountInput.value || "") || 0;
       if (sAmt + otherAmt > available) {
         sAmt = Math.max(0, available - otherAmt);
-        customSavingsAmountInput.value = formatCurrency(sAmt);
+        customSavingsAmountInput.value = Number(sAmt).toFixed(2);
         const allocErr = document.getElementById("allocationError");
         if (allocErr) {
           allocErr.classList.remove("hidden");
@@ -2401,7 +2394,7 @@ function setupEventListeners() {
     // Only set custom flag if user enters a non-empty value
     if (
       customInvestmentsAmountInput.value &&
-      customInvestmentsAmountInput.value !== "$0.00"
+      customInvestmentsAmountInput.value !== ""
     ) {
       calculatorState.hasCustomInvestments = true;
     } else {
@@ -2412,17 +2405,11 @@ function setupEventListeners() {
       const mdi = budget2.monthly_disposable_income;
       const expenses = budget2.total_monthly_expenses || 0;
       const available = Math.max(0, mdi - expenses);
-      const otherAmt =
-        parseFloat(
-          (customSavingsAmountInput.value || "").replace(/[^0-9.]/g, "")
-        ) || 0;
-      let iAmt =
-        parseFloat(
-          (customInvestmentsAmountInput.value || "").replace(/[^0-9.]/g, "")
-        ) || 0;
+      const otherAmt = parseFloat(customSavingsAmountInput.value || "") || 0;
+      let iAmt = parseFloat(customInvestmentsAmountInput.value || "") || 0;
       if (iAmt + otherAmt > available) {
         iAmt = Math.max(0, available - otherAmt);
-        customInvestmentsAmountInput.value = formatCurrency(iAmt);
+        customInvestmentsAmountInput.value = Number(iAmt).toFixed(2);
         const allocErr = document.getElementById("allocationError");
         if (allocErr) {
           allocErr.classList.remove("hidden");
@@ -2493,12 +2480,12 @@ function setupEventListeners() {
             budget.recommended_investments_pct.toFixed(1);
 
           // Set amount inputs to recommended monthly amounts
-          customSavingsAmountInput.value = formatCurrency(
+          customSavingsAmountInput.value = Number(
             budget.recommended_allocations.monthly_savings
-          );
-          customInvestmentsAmountInput.value = formatCurrency(
+          ).toFixed(2);
+          customInvestmentsAmountInput.value = Number(
             budget.recommended_allocations.monthly_investments
-          );
+          ).toFixed(2);
 
           // Recalculate with these values to update charts and cashflow
           handleExpenseOrAllocationChange();
@@ -3617,18 +3604,18 @@ function handleExpenseChangeWithChartSync() {
       (prevSavingsPct !== "0" && currentSavingsPct === "0") ||
       (prevInvestmentsPct !== "0" && currentInvestmentsPct === "0")
     ) {
-      // Force amount fields to $0.00
+      // Force amount fields to 0.00
       if (
         currentSavingsPct === "0" &&
         !customSavingsAmountInput.matches(":focus")
       ) {
-        customSavingsAmountInput.value = formatCurrency(0);
+        customSavingsAmountInput.value = (0).toFixed(2);
       }
       if (
         currentInvestmentsPct === "0" &&
         !customInvestmentsAmountInput.matches(":focus")
       ) {
-        customInvestmentsAmountInput.value = formatCurrency(0);
+        customInvestmentsAmountInput.value = (0).toFixed(2);
       }
 
       // Force chart refresh
@@ -3816,12 +3803,7 @@ function handleCustomAmountChange(event) {
   // Get the current input field and its value
   const input = event.target;
 
-  // Store cursor position before formatting
-  const cursorPosition = input.selectionStart;
-  const oldValue = input.value;
-
-  let value = input.value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters except decimal
-  value = parseFloat(value) || 0;
+  let value = parseFloat(input.value) || 0;
 
   // Calculate the percentage based on the amount
   const percentage = (value / calculatorState.monthlyDisposableIncome) * 100;
@@ -3833,14 +3815,7 @@ function handleCustomAmountChange(event) {
     investmentsPercentageInput.value = percentage.toFixed(1);
   }
 
-  // Format the amount with currency symbol
-  const newValue = formatCurrency(value);
-  input.value = newValue;
-
-  // Restore cursor position, accounting for added characters
-  const lengthDifference = newValue.length - oldValue.length;
-  const newCursorPosition = Math.max(1, cursorPosition + lengthDifference); // Ensure cursor is after '$'
-  input.setSelectionRange(newCursorPosition, newCursorPosition);
+  // Keep raw numeric value during typing; no currency formatting here
 
   // Trigger budget recalculation
   handleExpenseOrAllocationChange();
