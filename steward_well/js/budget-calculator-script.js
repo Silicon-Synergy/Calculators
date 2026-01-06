@@ -4212,26 +4212,132 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsWrapper.classList.remove("hidden");
     }
 
+    // Identify container and sections
+    const targetElement = document.getElementById(
+      "deductions-disposable-section"
+    );
+    const taxesContent = document.getElementById("taxes-content");
     const expensesContent = document.getElementById("expenses-content");
     const saveInvestContent = document.getElementById("save-invest-content");
+    const navElement = document.getElementById("deductions-nav");
 
-    let activeTabKey = "taxes";
-    let targetElement = taxesContent;
-    if (saveInvestContent && !saveInvestContent.classList.contains("hidden")) {
-      activeTabKey = "save";
-      targetElement = saveInvestContent;
-    } else if (
-      expensesContent &&
-      !expensesContent.classList.contains("hidden")
-    ) {
-      activeTabKey = "expenses";
-      targetElement = expensesContent;
-    } else if (taxesContent && !taxesContent.classList.contains("hidden")) {
-      activeTabKey = "taxes";
-      targetElement = taxesContent;
+    // Store original visibility states
+    const originalStates = {
+      taxes: taxesContent && !taxesContent.classList.contains("hidden"),
+      expenses:
+        expensesContent && !expensesContent.classList.contains("hidden"),
+      save:
+        saveInvestContent && !saveInvestContent.classList.contains("hidden"),
+      nav: navElement && !navElement.classList.contains("hidden"),
+    };
+
+    // Determine what needs to be shown based on conditions
+    // Condition 1: Income filled -> Show Taxes and Save & Invest
+    const incomeFilled = calculatorState.annualIncome > 0;
+    // Condition 2: Expenses entered -> Show Expenses
+    const expensesFilled = calculatorState.hasEnteredExpenses;
+
+    // Show loading overlay
+    const loadingOverlay = document.createElement("div");
+    loadingOverlay.id = "capture-loading-overlay";
+    loadingOverlay.style.position = "fixed";
+    loadingOverlay.style.top = "0";
+    loadingOverlay.style.left = "0";
+    loadingOverlay.style.width = "100%";
+    loadingOverlay.style.height = "100%";
+    loadingOverlay.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+    loadingOverlay.style.zIndex = "9999";
+    loadingOverlay.style.display = "flex";
+    loadingOverlay.style.justifyContent = "center";
+    loadingOverlay.style.alignItems = "center";
+    loadingOverlay.innerHTML =
+      '<div style="font-size: 1.5rem; color: #374151; font-weight: 600;">Generating Report...</div>';
+    document.body.appendChild(loadingOverlay);
+
+    // Apply visibility for capture
+    if (taxesContent) {
+      if (incomeFilled) taxesContent.classList.remove("hidden");
     }
 
-    const capture = () => {
+    if (expensesContent) {
+      if (expensesFilled) {
+        expensesContent.classList.remove("hidden");
+      } else {
+        expensesContent.classList.add("hidden");
+      }
+    }
+
+    if (saveInvestContent) {
+      if (incomeFilled) {
+        saveInvestContent.classList.remove("hidden");
+      } else {
+        saveInvestContent.classList.add("hidden");
+      }
+    }
+
+    // Hide nav temporarily so it doesn't take up space or show in capture
+    if (navElement) navElement.classList.add("hidden");
+
+    // Prepare Chart Views for Capture
+    const showCombinedToggle = document.getElementById("showCombinedToggle");
+    const toggleContainer = showCombinedToggle
+      ? showCombinedToggle.closest(".flex")
+      : null;
+    const originalToggleDisplay = toggleContainer
+      ? toggleContainer.style.display
+      : "";
+
+    if (incomeFilled && saveInvestContent) {
+      // Force show all views that have data
+      const budget = calculatorState.currentBudget;
+      const hasSavingsData =
+        budget &&
+        (budget.recommended_savings_pct > 0 ||
+          (budget.custom_savings_pct && budget.custom_savings_pct > 0));
+      const hasInvestmentsData =
+        budget &&
+        (budget.recommended_investments_pct > 0 ||
+          (budget.custom_investments_pct && budget.custom_investments_pct > 0));
+
+      const savingsView = document.getElementById("customSavingsView");
+      const investmentsView = document.getElementById("customInvestmentsView");
+      const bothView = document.getElementById("customBothView");
+
+      if (savingsView && hasSavingsData) savingsView.classList.remove("hidden");
+      if (investmentsView && hasInvestmentsData)
+        investmentsView.classList.remove("hidden");
+      if (bothView && (hasSavingsData || hasInvestmentsData))
+        bothView.classList.remove("hidden");
+
+      if (toggleContainer) toggleContainer.style.display = "none";
+
+      if (typeof renderCustomProjection === "function") {
+        if (hasSavingsData)
+          renderCustomProjection(
+            "savings",
+            "customSavingsPieChart",
+            "customSavingsProjectionSummary",
+            "customSavingsTitle"
+          );
+        if (hasInvestmentsData)
+          renderCustomProjection(
+            "investments",
+            "customInvestmentsPieChart",
+            "customInvestmentsProjectionSummary",
+            "customInvestmentsTitle"
+          );
+        if (hasSavingsData || hasInvestmentsData)
+          renderCustomProjection(
+            "both",
+            "customBothPieChart",
+            "customBothProjectionSummary",
+            "customBothTitle"
+          );
+      }
+    }
+
+    // Wait for charts to render
+    setTimeout(() => {
       const scale = Math.max(2, window.devicePixelRatio || 1);
       window
         .html2canvas(targetElement, {
@@ -4241,14 +4347,86 @@ document.addEventListener("DOMContentLoaded", () => {
           scrollY: -window.scrollY,
           windowWidth: document.documentElement.scrollWidth,
           onclone: (clonedDoc) => {
+            // Hide the loading overlay in the clone to prevent white wash effect
+            const clonedOverlay = clonedDoc.getElementById(
+              "capture-loading-overlay"
+            );
+            if (clonedOverlay) clonedOverlay.style.display = "none";
+
             const clonedTarget = clonedDoc.getElementById(targetElement.id);
             if (clonedTarget) {
+              clonedTarget.style.opacity = "1"; // Force full opacity
               clonedTarget.style.padding = "32px";
               clonedTarget.style.background = "#ffffff";
               clonedTarget.style.boxSizing = "border-box";
               clonedTarget.style.borderRadius = "16px";
               clonedTarget.style.margin = "0 auto";
               clonedTarget.style.maxWidth = "980px";
+
+              // Ensure nav is hidden in clone
+              const clonedNav = clonedDoc.getElementById("deductions-nav");
+              if (clonedNav) clonedNav.style.display = "none";
+
+              // Get sections in clone
+              const clonedTaxes = clonedDoc.getElementById("taxes-content");
+              const clonedExpenses =
+                clonedDoc.getElementById("expenses-content");
+              const clonedSaveInvest = clonedDoc.getElementById(
+                "save-invest-content"
+              );
+
+              // Helper to create divider
+              const createDivider = () => {
+                const div = clonedDoc.createElement("div");
+                div.style.height = "1px";
+                div.style.backgroundColor = "#e2e8f0"; // slate-200
+                div.style.margin = "32px 0";
+                div.style.width = "100%";
+                return div;
+              };
+
+              // Insert dividers
+              // 1. After Taxes if (Expenses OR SaveInvest) is visible
+              if (clonedTaxes && !clonedTaxes.classList.contains("hidden")) {
+                const expensesVisible =
+                  clonedExpenses &&
+                  !clonedExpenses.classList.contains("hidden");
+                const saveVisible =
+                  clonedSaveInvest &&
+                  !clonedSaveInvest.classList.contains("hidden");
+
+                if (expensesVisible || saveVisible) {
+                  if (clonedTaxes.nextSibling) {
+                    clonedTaxes.parentNode.insertBefore(
+                      createDivider(),
+                      clonedTaxes.nextSibling
+                    );
+                  } else {
+                    clonedTaxes.parentNode.appendChild(createDivider());
+                  }
+                }
+              }
+
+              // 2. After Expenses if SaveInvest is visible
+              if (
+                clonedExpenses &&
+                !clonedExpenses.classList.contains("hidden")
+              ) {
+                const saveVisible =
+                  clonedSaveInvest &&
+                  !clonedSaveInvest.classList.contains("hidden");
+
+                if (saveVisible) {
+                  if (clonedExpenses.nextSibling) {
+                    clonedExpenses.parentNode.insertBefore(
+                      createDivider(),
+                      clonedExpenses.nextSibling
+                    );
+                  } else {
+                    clonedExpenses.parentNode.appendChild(createDivider());
+                  }
+                }
+              }
 
               // Hide overlays that can cover text
               const toHide = clonedTarget.querySelectorAll(
@@ -4257,14 +4435,10 @@ document.addEventListener("DOMContentLoaded", () => {
               toHide.forEach((el) => (el.style.display = "none"));
 
               // Neutralize gradient text that html2canvas renders as boxes
-              // Note: h2-h5 have gradient styles in the CSS that html2canvas renders as boxes
               const gradientTextEls = clonedTarget.querySelectorAll(
                 "h1, h2, h3, h4, h5, h6, .gradient-text, .expense-summary-amount, [style*='background-clip: text'], [style*='-webkit-text-fill-color']"
               );
               gradientTextEls.forEach((el) => {
-                // Check if it actually has gradient background (for headers that might not have it)
-                // We can't easily check computed style here for everything, but resetting it is safe
-                // as we want a clean PDF/PNG export.
                 el.style.backgroundImage = "none";
                 el.style.webkitBackgroundClip = "border-box";
                 el.style.backgroundClip = "border-box";
@@ -4297,35 +4471,148 @@ document.addEventListener("DOMContentLoaded", () => {
             .toISOString()
             .slice(0, 19)
             .replace(/[T:]/g, "-");
-          const map = {
-            taxes: "Deductions",
-            expenses: "Expenses",
-            save: "Savings-Investments",
-          };
+
           const a = document.createElement("a");
           a.href = dataURL;
-          a.download = `Steward Well Capital - ${map[activeTabKey]} - ${ts}.png`;
+          a.download = `Steward Well Capital - Budget Report - ${ts}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
         })
         .catch((err) => {
           console.error("Screenshot generation error:", err);
-        });
-    };
+        })
+        .finally(() => {
+          // Restore toggle and charts
+          if (toggleContainer)
+            toggleContainer.style.display = originalToggleDisplay;
+          if (typeof updateAllCustomProjectionCharts === "function") {
+            updateAllCustomProjectionCharts();
+          }
+          if (loadingOverlay && loadingOverlay.parentNode) {
+            loadingOverlay.parentNode.removeChild(loadingOverlay);
+          }
 
-    if (activeTabKey === "save") {
-      debouncedChartUpdate();
-      setTimeout(capture, 400);
-    } else {
-      capture();
-    }
+          // Restore original states
+          if (taxesContent) {
+            if (originalStates.taxes) taxesContent.classList.remove("hidden");
+            else taxesContent.classList.add("hidden");
+          }
+          if (expensesContent) {
+            if (originalStates.expenses)
+              expensesContent.classList.remove("hidden");
+            else expensesContent.classList.add("hidden");
+          }
+          if (saveInvestContent) {
+            if (originalStates.save)
+              saveInvestContent.classList.remove("hidden");
+            else saveInvestContent.classList.add("hidden");
+          }
+          if (navElement) {
+            if (originalStates.nav) navElement.classList.remove("hidden");
+            else navElement.classList.add("hidden");
+          }
+
+          // Remove overlay
+          if (document.body.contains(loadingOverlay)) {
+            document.body.removeChild(loadingOverlay);
+          }
+        });
+    }, 1200);
   }
+
+  // Email Collection Logic
+  const emailModal = document.getElementById("email-modal");
+  const emailModalBackdrop = document.getElementById("email-modal-backdrop");
+  const userEmailInput = document.getElementById("user-email-input");
+  const emailErrorMsg = document.getElementById("email-error-msg");
+  const submitEmailBtn = document.getElementById("submit-email-btn");
+  const cancelEmailBtn = document.getElementById("cancel-email-btn");
+
+  const showEmailModal = () => {
+    if (emailModal) {
+      emailModal.classList.remove("hidden");
+      if (userEmailInput) {
+        userEmailInput.value = ""; // Clear previous input
+        userEmailInput.focus();
+      }
+    }
+  };
+
+  const hideEmailModal = () => {
+    if (emailModal) emailModal.classList.add("hidden");
+    if (emailErrorMsg) emailErrorMsg.classList.add("hidden");
+  };
 
   if (printDownloadBtn) {
     printDownloadBtn.addEventListener("click", (evt) => {
       evt.preventDefault();
-      handleDirectDownloadPDF();
+      showEmailModal();
+    });
+  }
+
+  if (cancelEmailBtn) {
+    cancelEmailBtn.addEventListener("click", hideEmailModal);
+  }
+
+  if (emailModalBackdrop) {
+    emailModalBackdrop.addEventListener("click", hideEmailModal);
+  }
+
+  if (submitEmailBtn) {
+    submitEmailBtn.addEventListener("click", () => {
+      if (!userEmailInput) return;
+      const email = userEmailInput.value.trim();
+      // Basic validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email || !emailRegex.test(email)) {
+        if (emailErrorMsg) {
+          emailErrorMsg.classList.remove("hidden");
+          emailErrorMsg.textContent = "Please enter a valid email address.";
+        }
+        return;
+      }
+
+      if (emailErrorMsg) emailErrorMsg.classList.add("hidden");
+
+      // Update button state
+      const originalText = submitEmailBtn.textContent;
+      submitEmailBtn.textContent = "Sending...";
+      submitEmailBtn.disabled = true;
+
+      // Send to Formsubmit.co via AJAX
+      fetch("https://formsubmit.co/ajax/info@stewardwellcapital.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          subject: "New Budget Calculator Lead",
+          message: `New user email collected: ${email}`,
+          _template: "table",
+        }),
+      })
+        .then((response) => {
+          console.log("Email sent successfully", response);
+        })
+        .catch((error) => {
+          console.error("Error sending email", error);
+          // We still proceed to download even if email fails (don't block user)
+        })
+        .finally(() => {
+          // Restore button
+          submitEmailBtn.textContent = originalText;
+          submitEmailBtn.disabled = false;
+
+          // Hide modal
+          hideEmailModal();
+
+          // Trigger download
+          handleDirectDownloadPDF();
+        });
     });
   }
 });

@@ -436,7 +436,6 @@ a,
                   >
                   <!-- Updated Calculator Dropdown -->
                   <div
-                    
                     class="calculator-dropdown"
                     style="display: inline-block"
                   >
@@ -1347,55 +1346,6 @@ a,
                     >
                       <div>Thank you! We've received your message!</div>
                     </div>
-                    <div class="contact_success w-form-done">
-                      <script>
-                        document
-                          .getElementById("email-form")
-                          .addEventListener("submit", function (e) {
-                            e.preventDefault(); // Stop the default form redirect
-
-                            // Hide any existing messages
-                            document.querySelector(
-                              ".contact_success"
-                            ).style.display = "none";
-                            document.querySelector(
-                              ".contact_error"
-                            ).style.display = "none";
-
-                            // Gather form data
-                            const formData = new FormData(this);
-
-                            // Send data to your PHP script
-                            fetch("process-form.php", {
-                              method: "POST",
-                              body: formData,
-                            })
-                              .then((response) => response.text())
-                              .then((data) => {
-                                // Check the response text from process-form.php
-                                if (data.includes("Thank you!")) {
-                                  // Show success message
-                                  document.querySelector(
-                                    ".contact_success"
-                                  ).style.display = "block";
-                                  this.reset();
-                                } else {
-                                  // Show error message
-                                  document.querySelector(
-                                    ".contact_error"
-                                  ).style.display = "block";
-                                }
-                              })
-                              .catch((error) => {
-                                // Show error message if fetch fails
-                                document.querySelector(
-                                  ".contact_error"
-                                ).style.display = "block";
-                                console.error("Error:", error);
-                              });
-                          });
-                      </script>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1799,6 +1749,49 @@ a,
           // Prevent clicks inside the dropdown from closing it
           calculatorDropdown.addEventListener("click", function (event) {
             event.stopPropagation();
+          });
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("email-form");
+        if (form) {
+          form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            // Get form values
+            const name = document.getElementById("Full-name").value;
+            const email = document.getElementById("Contact-email").value;
+            const message = document.getElementById("More-info").value;
+
+            // Construct mailto link
+            const subject = `Enquiry from ${name}`;
+            const body = `${message}`;
+
+            const mailtoLink = `mailto:info@stewardwellcapital.com?subject=${encodeURIComponent(
+              subject
+            )}&body=${encodeURIComponent(body)}`;
+
+            // Open email client
+            window.location.href = mailtoLink;
+
+            // Handle UI feedback
+            const successMsg = document.querySelector(".contact_success");
+            const errorMsg = document.querySelector(".contact_error");
+
+            if (errorMsg) errorMsg.style.display = "none";
+
+            if (successMsg) {
+              successMsg.style.display = "block";
+              successMsg.innerHTML = "<div>Opening your email client...</div>";
+            }
+
+            // Hide the form to mimic successful submission UI
+            form.style.display = "none";
+
+            form.reset();
           });
         }
       });
