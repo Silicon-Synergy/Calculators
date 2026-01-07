@@ -36,28 +36,47 @@ function toggleCategory(categoryName) {
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // PART 1: Networth Calculator (Accordion)
+    // PART 1: NETWORTH CALCULATOR (Accordion)
     // ==========================================
 
     const expandAllBtn = document.getElementById('toggle-all-expenses');
     const expandAllText = document.getElementById('toggle-all-expenses-text');
     const categoryToggles = document.querySelectorAll('.category-toggle');
 
-    // State to track if "Expand All" is active
+    // Track state of "Expand All"
     let isAllExpanded = false;
 
-    // 1. Handle Individual Category Toggles
+    // 1. Handle Individual Category Toggles (Exclusive Mode)
     categoryToggles.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            // Find the specific content div associated with this button
-            // The HTML structure shows the content is the next sibling
-            const content = btn.nextElementSibling;
-            const arrow = btn.querySelector('.category-arrow');
+            e.stopPropagation(); // Stop bubbling
 
-            toggleSingleCategory(content, arrow);
+            const currentContent = btn.nextElementSibling;
+            const currentArrow = btn.querySelector('.category-arrow');
 
-            // Update "Expand All" button state check
-            checkAllStatus();
+            // Check if the clicked section is currently open
+            const isCurrentlyOpen = currentContent.style.maxHeight && currentContent.style.maxHeight !== '0px';
+
+            // -- STEP A: Close ALL sections first (Mutually Exclusive) --
+            // This ensures only one stays open at a time
+            document.querySelectorAll('.category-content').forEach(c => {
+                c.style.maxHeight = '0';
+                c.style.opacity = '0';
+            });
+            document.querySelectorAll('.category-arrow').forEach(a => {
+                a.style.transform = 'rotate(0deg)';
+            });
+
+            // -- STEP B: If it wasn't open before, open it now --
+            if (!isCurrentlyOpen) {
+                currentContent.style.maxHeight = currentContent.scrollHeight + "px";
+                currentContent.style.opacity = '1';
+                if(currentArrow) currentArrow.style.transform = 'rotate(180deg)';
+            }
+
+            // Reset "Expand All" state because user manually interacted
+            isAllExpanded = false;
+            updateExpandButtonUI(false);
         });
     });
 
@@ -65,11 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (expandAllBtn) {
         expandAllBtn.addEventListener('click', () => {
             isAllExpanded = !isAllExpanded;
-
-            // Update the Expand All Button Text and Icon
-            expandAllText.textContent = isAllExpanded ? "Collapse all" : "Expand all";
-            const chevronContainer = expandAllBtn.querySelector('span:last-child');
-            chevronContainer.style.transform = isAllExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+            updateExpandButtonUI(isAllExpanded);
 
             // Loop through all categories and force them to match the state
             categoryToggles.forEach(btn => {
@@ -77,150 +92,177 @@ document.addEventListener('DOMContentLoaded', () => {
                 const arrow = btn.querySelector('.category-arrow');
 
                 if (isAllExpanded) {
-                    openCategory(content, arrow);
+                    // Open everything
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    content.style.opacity = '1';
+                    if(arrow) arrow.style.transform = 'rotate(180deg)';
                 } else {
-                    closeCategory(content, arrow);
+                    // Close everything
+                    content.style.maxHeight = '0';
+                    content.style.opacity = '0';
+                    if(arrow) arrow.style.transform = 'rotate(0deg)';
                 }
             });
         });
     }
 
-    // --- Helper Functions for Networth ---
-    function toggleSingleCategory(content, arrow) {
-        // Check if currently open by looking at max-height
-        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-            closeCategory(content, arrow);
-        } else {
-            openCategory(content, arrow);
+    function updateExpandButtonUI(expanded) {
+        if (!expandAllText) return;
+
+        expandAllText.textContent = expanded ? "Collapse all" : "Expand all";
+
+        // Update the double chevron icon rotation
+        const chevronContainer = expandAllBtn.querySelector('span:last-child');
+        if(chevronContainer) {
+            chevronContainer.style.transform = expanded ? 'rotate(180deg)' : 'rotate(0deg)';
+            chevronContainer.style.transition = 'transform 0.3s ease';
         }
     }
 
-    function openCategory(content, arrow) {
-        content.style.maxHeight = content.scrollHeight + "px";
-        content.style.opacity = "1";
-        if(arrow) arrow.style.transform = "rotate(180deg)";
-    }
-
-    function closeCategory(content, arrow) {
-        content.style.maxHeight = "0";
-        content.style.opacity = "0";
-        if(arrow) arrow.style.transform = "rotate(0deg)";
-    }
-
-    // Check if all are opened manually to update the main button text
-    function checkAllStatus() {
-        const allContents = document.querySelectorAll('.category-content');
-        const allOpen = Array.from(allContents).every(c => c.style.maxHeight && c.style.maxHeight !== '0px');
-
-        if (allOpen) {
-            isAllExpanded = true;
-            expandAllText.textContent = "Collapse all";
-        }
-    }
-
-
-    // ==========================================
-    // PART 2: Investment Calculator (Dropdowns)
+// ==========================================
+    // PART 2: INVESTMENT CALCULATOR (UI Logic)
     // ==========================================
 
-    // Since your HTML <ul> tags are empty, let's define data to populate them
     const dropdownData = {
-        type: ['End amount', 'Starting amount', 'Return rate', 'Investment length'],
-        years: ['1 Year', '5 Years', '10 Years', '15 Years', '20 Years', '25 Years'],
+        type: ['End amount', 'Additional contribution', 'Return rate', 'Starting amount', 'Investment length'],
+        years: ['1 Year', '3 Years', '5 Years', '10 Years', '15 Years', '20 Years', '30 Years'],
         compound: ['Monthly', 'Quarterly', 'Semi-Annually', 'Annually'],
-        calcTime: ['Beginning of period', 'End of period']
+        calcTime: ['Beginning of period', 'End of period'],
+        frequency: ['Month', 'Year'] // New field data
     };
 
-    // Configuration for the 4 dropdowns in your HTML
     const dropdownConfigs = [
-        {
-            btnId: 'typeDropdownBtn',
-            listId: 'customTypeOptions',
-            displayId: 'typeDropdownSelected',
-            data: dropdownData.type
-        },
-        {
-            btnId: 'yearsDropdownBtn',
-            listId: 'customYearsOptions',
-            displayId: 'yearsDropdownSelected',
-            data: dropdownData.years
-        },
-        {
-            btnId: 'compoundDropdownBtn',
-            listId: 'customCompoundOptions',
-            displayId: 'compoundDropdownSelected',
-            data: dropdownData.compound
-        },
-        {
-            btnId: 'calculateDropdownBtn',
-            listId: 'customCalculationTimeOptions',
-            displayId: 'calculateDropdownSelected',
-            data: dropdownData.calcTime
-        }
+        { btnId: 'typeDropdownBtn', listId: 'customTypeOptions', displayId: 'typeDropdownSelected', data: dropdownData.type, onChange: updateCalculatorUI },
+        { btnId: 'yearsDropdownBtn', listId: 'customYearsOptions', displayId: 'yearsDropdownSelected', data: dropdownData.years },
+        { btnId: 'compoundDropdownBtn', listId: 'customCompoundOptions', displayId: 'compoundDropdownSelected', data: dropdownData.compound },
+        { btnId: 'calculateDropdownBtn', listId: 'customCalculationTimeOptions', displayId: 'calculateDropdownSelected', data: dropdownData.calcTime },
+        { btnId: 'frequencyDropdownBtn', listId: 'customFrequencyOptions', displayId: 'frequencyDropdownSelected', data: dropdownData.frequency } // New config
     ];
 
-    // Initialize all dropdowns
+    // Initialize Dropdowns
     dropdownConfigs.forEach(config => {
         const btn = document.getElementById(config.btnId);
         const list = document.getElementById(config.listId);
         const display = document.getElementById(config.displayId);
 
-        if (!btn || !list) return; // Skip if element not found
+        if (!btn || !list) return;
 
-        // 1. Populate the empty <ul> with <li> items
         config.data.forEach(item => {
             const li = document.createElement('li');
             li.textContent = item;
-            li.className = "px-4 py-2 hover:bg-white/20 cursor-pointer rounded-lg transition-colors !text-gray-900";
-
-            // Click on an option
+            li.className = "px-4 py-2 hover:bg-white/20 cursor-pointer rounded-lg transition-colors text-slate-800 font-medium text-sm";
             li.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent bubbling
+                e.stopPropagation();
                 display.textContent = item;
-                display.style.color = "#111827"; // Make text white when selected
+                display.style.color = "#111827";
                 closeList(list);
+                if (config.onChange) config.onChange(item);
             });
             list.appendChild(li);
         });
 
-        // 2. Toggle Dropdown on Button Click
         btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent closing immediately due to document click
-
-            // Close all other dropdowns first (exclusive accordian style)
+            e.stopPropagation();
             dropdownConfigs.forEach(other => {
-                if (other.listId !== config.listId) {
-                    closeList(document.getElementById(other.listId));
-                }
+                if (other.listId !== config.listId) closeList(document.getElementById(other.listId));
             });
-
             toggleList(list);
         });
     });
 
-    // --- Helper Functions for Dropdowns ---
-
+    // Dropdown Helpers
     function toggleList(list) {
-        if (list.style.maxHeight && list.style.maxHeight !== "0px") {
-            closeList(list);
-        } else {
-            list.style.maxHeight = "300px"; // Large enough to fit content
+        if (!list) return;
+        if (list.style.maxHeight && list.style.maxHeight !== "0px") closeList(list);
+        else {
+            list.style.maxHeight = "300px";
             list.style.opacity = "1";
         }
     }
-
     function closeList(list) {
+        if (!list) return;
         list.style.maxHeight = "0";
         list.style.opacity = "0";
     }
-
-    // Close all dropdowns if clicking outside
     document.addEventListener('click', () => {
-        dropdownConfigs.forEach(config => {
-            const list = document.getElementById(config.listId);
-            if(list) closeList(list);
-        });
+        dropdownConfigs.forEach(c => closeList(document.getElementById(c.listId)));
     });
+
+    // --- LOGIC TO SHOW/HIDE FIELDS ---
+
+    const fields = {
+        target: document.getElementById('field-target'),
+        starting: document.getElementById('field-starting'),
+        years: document.getElementById('field-years'),
+        returnRate: document.getElementById('field-return-rate'),
+        compound: document.getElementById('field-compound'),
+        contribution: document.getElementById('field-contribution'),
+        contributeAt: document.getElementById('field-contribute-at'),
+        frequency: document.getElementById('field-frequency') // "of each (month, year)"
+    };
+
+    function updateCalculatorUI(selectedType) {
+        // Helper to show a list of specific fields and hide others
+        const showFields = (fieldKeys) => {
+            Object.keys(fields).forEach(key => {
+                if (fields[key]) {
+                    if (fieldKeys.includes(key)) {
+                        fields[key].classList.remove('hidden');
+                    } else {
+                        fields[key].classList.add('hidden');
+                    }
+                }
+            });
+        };
+
+        switch (selectedType) {
+            case 'End amount':
+                // starting amount, after, return rate, compound, additional contribution, contribute at, frequency
+                showFields(['starting', 'years', 'returnRate', 'compound', 'contribution', 'contributeAt', 'frequency']);
+                break;
+
+            case 'Additional contribution':
+                // Your target, starting amount, after, return rate, compound, contribute at, frequency
+                showFields(['target', 'starting', 'years', 'returnRate', 'compound', 'contributeAt', 'frequency']);
+                break;
+
+            case 'Return rate':
+                // Your target, starting amount, after, additional contribution, contribute at, frequency
+                // Note: "compound" is hidden here based on your description
+                showFields(['target', 'starting', 'years', 'contribution', 'contributeAt', 'frequency']);
+                break;
+
+            case 'Starting amount':
+                // Your target, after, return rate, compound, additional contribution, contribute at, frequency
+                showFields(['target', 'years', 'returnRate', 'compound', 'contribution', 'contributeAt', 'frequency']);
+                break;
+
+            case 'Investment length':
+                // Your target, starting amount, return rate, compound, additional contribution, contribute at, frequency
+                showFields(['target', 'starting', 'returnRate', 'compound', 'contribution', 'contributeAt', 'frequency']);
+                break;
+        }
+    }
+
+    // Initialize Default View
+    updateCalculatorUI('End amount');
+
+    // ==========================================
+    // PART 3: NETWORTH GROWTH TOGGLE (Checkbox)
+    // ==========================================
+    const growthToggleInput = document.getElementById('view-projections-toggle');
+    const growthLabels = document.querySelectorAll('.yearly-growth-label');
+
+    function applyGrowthVisibility(isEnabled) {
+        growthLabels.forEach(label => {
+            isEnabled ? label.classList.remove('hidden') : label.classList.add('hidden');
+        });
+    }
+
+    if (growthToggleInput) {
+        applyGrowthVisibility(growthToggleInput.checked);
+        growthToggleInput.addEventListener('change', (e) => applyGrowthVisibility(e.target.checked));
+    }
 });
 
 // Global Chart Instance
@@ -291,15 +333,36 @@ function switchResultTab(tabName) {
 }
 
 // 2. Chart Toggle Logic (Pie vs Bar)
-function toggleChartType() {
-  const isChecked = document.getElementById('view-projections-toggle').checked;
+function toggleChartType(element) {
+  const checkbox = element || document.getElementById('view-projections-toggle');
+
+  if (!checkbox) return;
+
+  const isChecked = checkbox.checked;
+  const summaryText = document.getElementById('yearly-growth-text-disabled');
+  const projectionText = document.getElementById('yearly-growth-text');
 
   if (isChecked) {
-    renderBarChart();
+    if(projectionText) projectionText.classList.remove('hidden');
+    if(summaryText) summaryText.classList.add('hidden');
   } else {
-    renderPieChart();
+    if(projectionText) projectionText.classList.add('hidden');
+    if(summaryText) summaryText.classList.remove('hidden');
   }
+
+  setTimeout(() => {
+    try {
+      if (isChecked) {
+        if (typeof renderBarChart === 'function') renderBarChart();
+      } else {
+        if (typeof renderPieChart === 'function') renderPieChart();
+      }
+    } catch (error) {
+      console.error("Error rendering chart:", error);
+    }
+  }, 0);
 }
+
 
 // 3. Render Pie Chart (Snapshot)
 function renderPieChart() {
