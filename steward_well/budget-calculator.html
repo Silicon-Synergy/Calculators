@@ -220,7 +220,7 @@
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    
+
     /* Active button styling */
     button.active {
       box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
@@ -575,7 +575,7 @@
                       </div>
                     </div>
                   </a>
-                  <a href="#" class="dropdown-item">
+                  <!-- <a href="#" class="dropdown-item">
                     <div>
                       <div style="font-weight: 600; margin-bottom: 2px">
                         Debt & Credit Management Calculator
@@ -594,7 +594,7 @@
                         Plan for insurance and estate needs
                       </div>
                     </div>
-                  </a>
+                  </a> -->
                 </div>
               </div>
 
@@ -624,10 +624,10 @@
   <div id="main-calculator-card" class="max-w-[90rem] flex flex-col relative mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Hero Section -->
     <div class="text-left mt-24 mb-12 animate-fade-in">
-      <h2 class="text-4xl md:text-7xl w-[55%] font-medium text-white ">
+      <h2 class="text-4xl md:text-7xl w-full lg:w-[55%] font-medium text-white ">
         Budget and<br>Cashflow Calculator
       </h2>
-      <div class="opacity-50 mt-2 text-[1.2rem] w-[55%]">
+      <div class="opacity-50 lg:mt-2 mt-4 text-base lg:text-[1.2rem] w-full lg:w-[55%]">
         This tool helps you see your cashflow clearly, set purposeful
         allocations,<br>and view projections—simple budgeting that highlights
         trends, flags<br>overspending, and shows progress toward your goals.
@@ -643,7 +643,7 @@
             <button id="income-section-toggle" class="w-full flex items-center justify-between mb-6 focus:outline-none">
               <div class="flex items-center space-x-3">
                 <img src="images/income.svg" alt="Income Icon" class="w-12 h-12 text-white" />
-                <h2 class="text-[1.8rem] font-medium text-white">Income</h2>
+                <h2 class="text-xl lg:text-[1.8rem] font-medium text-white">Income</h2>
               </div>
               <svg id="income-section-arrow" class="w-5 h-5 transition-transform duration-300 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -768,7 +768,7 @@
               <div class="relative flex items-center">
                 <div class="flex flex-col">
                   <div class="flex items-center ">
-                    <h2 class="text-[1.8rem] font-medium text-white">
+                    <h2 class="text-xl lg:text-[1.8rem] font-medium text-white">
                       Monthly Expenditure
                     </h2>
                   </div>
@@ -798,7 +798,7 @@
             <div class="expense-category border-[1px] glass-effect border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white border border-transparent transition-all duration-300 rounded-2xl" onclick="toggleCategory('housing')">
                 <div class="flex items-center gap-3">
-                  <h2 class="font-medium text-[1.5rem]">Housing and Utilities</h2>
+                  <h2 class="font-medium text-lg lg:text-[1.5rem]">Housing and Utilities</h2>
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -840,7 +840,7 @@
             <div class="expense-category border-[1px] glass-effect border-b-gray-200 pb-2">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white border transition-all duration-300 rounded-2xl" onclick="toggleCategory('living')">
                 <div class="flex items-center gap-3">
-                  <h2 class="font-medium text-[1.5rem]">Everyday Spending</h2>
+                  <h2 class="font-medium text-lg lg:text-[1.5rem]">Everyday Spending</h2>
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -888,7 +888,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                 </svg>
               </div> -->
-                  <h2 class="font-medium text-[1.5rem]">Transportation</h2>
+                  <h2 class="font-medium text-lg lg:text-[1.5rem]">Transportation</h2>
 
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -939,7 +939,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
               </div> -->
-                  <h2 class="font-medium text-[1.5rem]">Loans and Insurance</h2>
+                  <h2 class="font-medium text-lg lg:text-[1.5rem]">Loans and Insurance</h2>
 
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -991,7 +991,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253z"></path>
                 </svg>
               </div> -->
-                  <h2 class="font-medium text-[1.5rem]">Children and Education</h2>
+                  <h2 class="font-medium text-lg lg:text-[1.5rem]">Children and Education</h2>
 
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1037,7 +1037,7 @@
             <div class="expense-category glass-effect">
               <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('miscellaneous')">
                 <div class="flex items-center gap-3">
-                  <h2 class="font-medium text-[1.5rem]">Miscellaneous Expenses</h2>
+                  <h2 class="font-medium text-lg lg:text-[1.5rem]">Miscellaneous Expenses</h2>
 
                 </div>
                 <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1085,7 +1085,7 @@
 
         <!-- Savings & Investments Input - Updated Layout -->
         <section id="savings-investments-section" class="opacity-50 border-[1px] border-t-border-t-gray-300 pointer-events-none px-8 pt-8 pb-0 rounded-b-3xl text-white transition-all duration-300 backdrop-blur-sm shadow-lg bg-white">
-          <h2 class="text-[1.8rem] md:text-3xl font-medium text-white mb-6 pb-4 border-gray-300 flex items-center gap-2">
+          <h2 class="text-xl lg:text-[1.8rem] font-medium text-white mb-6 pb-4 border-gray-300 flex items-center gap-2">
             <img src="images/savings.svg" alt="Savings Icon" class="w-12 h-12 text-white" />
             <span class="text-white"></span> Savings and Investments
 
@@ -1137,7 +1137,7 @@
                 </button>
               </div>
             </div>
-          </div>      
+          </div>
 
           <p id="si-guidance" class="text-white/90 text-base mb-3 leading-relaxed">
            For sustainable wealth creation, view our recommended allocations below.
@@ -1155,15 +1155,15 @@
           <!-- Unified Savings & Investments Form -->
           <div id="unifiedAllocations" class="space-y-6 flex flex-col w-[100%] mt-4">
             <!-- Savings -->
-            <div class="space-y-3">
-              <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="input-group">
                 <label class="block text-sm font-medium text-white/80 text-left">Monthly savings percentage (%)</label>
-                <label class="block text-sm font-medium text-white/80 text-left">Monthly savings amount ($)</label>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
                 <div class="input-group">
                   <input type="number" id="savingsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
                 </div>
+              </div>
+              <div class="input-group">
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly savings amount ($)</label>
                 <div class="input-group">
                   <input type="number" step="0.01" min="0" id="customSavingsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0.00" value="" disabled />
                 </div>
@@ -1177,18 +1177,14 @@
             </div>
 
             <!-- Investments -->
-            <div class="space-y-3">
-              <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="input-group">
                 <label class="block text-sm font-medium text-white/80 text-left">Monthly investment percentage (%)</label>
-                <label class="block text-sm font-medium text-white/80 text-left">Monthly investment amount ($)</label>
+                <input type="number" id="investmentsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="input-group">
-                  <input type="number" id="investmentsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
-                </div>
-                <div class="input-group">
-                  <input type="number" step="0.01" min="0" id="customInvestmentsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0.00" value="" disabled />
-                </div>
+              <div class="input-group">
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly investment amount ($)</label>
+                <input type="number" step="0.01" min="0" id="customInvestmentsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0.00" value="" disabled />
               </div>
               <p id="investmentsPercentageError" class="error-message text-sm text-red-400 hidden"></p>
             </div>
@@ -1254,7 +1250,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
               <span style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand deductions</span>
-            
+
             </div>
           </div>
         </div>
@@ -1560,7 +1556,7 @@
       }
     );
   </script>
-  
+
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const calculatorToggle = document.getElementById("calculatorToggle");
