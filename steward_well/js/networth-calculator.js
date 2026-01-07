@@ -1,3 +1,414 @@
+// Function to toggle category expansion/collapse
+function toggleCategory(categoryName) {
+  const allCategoryContents = document.querySelectorAll(
+    ".expense-category .category-content"
+  );
+  const allCategoryArrows = document.querySelectorAll(
+    ".expense-category .category-arrow"
+  );
+  const allCategoryButtons = document.querySelectorAll(
+    ".expense-category .category-toggle"
+  );
+
+  const currentButton = document.querySelector(
+    `[onclick="toggleCategory('${categoryName}')"]`
+  );
+  const currentContent = currentButton.nextElementSibling;
+  const currentArrow = currentButton.querySelector(".category-arrow");
+  const isExpanded =
+    currentContent.style.maxHeight && currentContent.style.maxHeight !== "0px";
+
+  // First, close all categories
+  allCategoryContents.forEach((content, index) => {
+    content.style.maxHeight = "0px";
+    allCategoryArrows[index].style.transform = "rotate(0deg)";
+  });
+
+  // If the clicked category was not already expanded, open it
+  if (!isExpanded) {
+    currentContent.style.maxHeight = currentContent.scrollHeight + "px";
+    currentArrow.style.transform = "rotate(180deg)";
+  }
+  // If it was expanded, the above loop already closed it.
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ==========================================
+    // PART 1: Networth Calculator (Accordion)
+    // ==========================================
+
+    const expandAllBtn = document.getElementById('toggle-all-expenses');
+    const expandAllText = document.getElementById('toggle-all-expenses-text');
+    const categoryToggles = document.querySelectorAll('.category-toggle');
+
+    // State to track if "Expand All" is active
+    let isAllExpanded = false;
+
+    // 1. Handle Individual Category Toggles
+    categoryToggles.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Find the specific content div associated with this button
+            // The HTML structure shows the content is the next sibling
+            const content = btn.nextElementSibling;
+            const arrow = btn.querySelector('.category-arrow');
+
+            toggleSingleCategory(content, arrow);
+
+            // Update "Expand All" button state check
+            checkAllStatus();
+        });
+    });
+
+    // 2. Handle "Expand/Collapse All" Button
+    if (expandAllBtn) {
+        expandAllBtn.addEventListener('click', () => {
+            isAllExpanded = !isAllExpanded;
+
+            // Update the Expand All Button Text and Icon
+            expandAllText.textContent = isAllExpanded ? "Collapse all" : "Expand all";
+            const chevronContainer = expandAllBtn.querySelector('span:last-child');
+            chevronContainer.style.transform = isAllExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+
+            // Loop through all categories and force them to match the state
+            categoryToggles.forEach(btn => {
+                const content = btn.nextElementSibling;
+                const arrow = btn.querySelector('.category-arrow');
+
+                if (isAllExpanded) {
+                    openCategory(content, arrow);
+                } else {
+                    closeCategory(content, arrow);
+                }
+            });
+        });
+    }
+
+    // --- Helper Functions for Networth ---
+    function toggleSingleCategory(content, arrow) {
+        // Check if currently open by looking at max-height
+        if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+            closeCategory(content, arrow);
+        } else {
+            openCategory(content, arrow);
+        }
+    }
+
+    function openCategory(content, arrow) {
+        content.style.maxHeight = content.scrollHeight + "px";
+        content.style.opacity = "1";
+        if(arrow) arrow.style.transform = "rotate(180deg)";
+    }
+
+    function closeCategory(content, arrow) {
+        content.style.maxHeight = "0";
+        content.style.opacity = "0";
+        if(arrow) arrow.style.transform = "rotate(0deg)";
+    }
+
+    // Check if all are opened manually to update the main button text
+    function checkAllStatus() {
+        const allContents = document.querySelectorAll('.category-content');
+        const allOpen = Array.from(allContents).every(c => c.style.maxHeight && c.style.maxHeight !== '0px');
+
+        if (allOpen) {
+            isAllExpanded = true;
+            expandAllText.textContent = "Collapse all";
+        }
+    }
+
+
+    // ==========================================
+    // PART 2: Investment Calculator (Dropdowns)
+    // ==========================================
+
+    // Since your HTML <ul> tags are empty, let's define data to populate them
+    const dropdownData = {
+        type: ['End amount', 'Starting amount', 'Return rate', 'Investment length'],
+        years: ['1 Year', '5 Years', '10 Years', '15 Years', '20 Years', '25 Years'],
+        compound: ['Monthly', 'Quarterly', 'Semi-Annually', 'Annually'],
+        calcTime: ['Beginning of period', 'End of period']
+    };
+
+    // Configuration for the 4 dropdowns in your HTML
+    const dropdownConfigs = [
+        {
+            btnId: 'typeDropdownBtn',
+            listId: 'customTypeOptions',
+            displayId: 'typeDropdownSelected',
+            data: dropdownData.type
+        },
+        {
+            btnId: 'yearsDropdownBtn',
+            listId: 'customYearsOptions',
+            displayId: 'yearsDropdownSelected',
+            data: dropdownData.years
+        },
+        {
+            btnId: 'compoundDropdownBtn',
+            listId: 'customCompoundOptions',
+            displayId: 'compoundDropdownSelected',
+            data: dropdownData.compound
+        },
+        {
+            btnId: 'calculateDropdownBtn',
+            listId: 'customCalculationTimeOptions',
+            displayId: 'calculateDropdownSelected',
+            data: dropdownData.calcTime
+        }
+    ];
+
+    // Initialize all dropdowns
+    dropdownConfigs.forEach(config => {
+        const btn = document.getElementById(config.btnId);
+        const list = document.getElementById(config.listId);
+        const display = document.getElementById(config.displayId);
+
+        if (!btn || !list) return; // Skip if element not found
+
+        // 1. Populate the empty <ul> with <li> items
+        config.data.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            li.className = "px-4 py-2 hover:bg-white/20 cursor-pointer rounded-lg transition-colors !text-gray-900";
+
+            // Click on an option
+            li.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent bubbling
+                display.textContent = item;
+                display.style.color = "#111827"; // Make text white when selected
+                closeList(list);
+            });
+            list.appendChild(li);
+        });
+
+        // 2. Toggle Dropdown on Button Click
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent closing immediately due to document click
+
+            // Close all other dropdowns first (exclusive accordian style)
+            dropdownConfigs.forEach(other => {
+                if (other.listId !== config.listId) {
+                    closeList(document.getElementById(other.listId));
+                }
+            });
+
+            toggleList(list);
+        });
+    });
+
+    // --- Helper Functions for Dropdowns ---
+
+    function toggleList(list) {
+        if (list.style.maxHeight && list.style.maxHeight !== "0px") {
+            closeList(list);
+        } else {
+            list.style.maxHeight = "300px"; // Large enough to fit content
+            list.style.opacity = "1";
+        }
+    }
+
+    function closeList(list) {
+        list.style.maxHeight = "0";
+        list.style.opacity = "0";
+    }
+
+    // Close all dropdowns if clicking outside
+    document.addEventListener('click', () => {
+        dropdownConfigs.forEach(config => {
+            const list = document.getElementById(config.listId);
+            if(list) closeList(list);
+        });
+    });
+});
+
+// Global Chart Instance
+let investmentChartInstance = null;
+
+// Configuration Data (Colors match your screenshots)
+const CHART_COLORS = {
+  starting: '#2563EB',   // Dark Blue
+  interest: '#60A5FA',   // Light Blue
+  contrib: '#86EFAC'     // Green
+};
+
+// Mock Data (Replace this with your actual calculator variables)
+const chartData = {
+  startAmount: 127633.63,
+  totalContrib: 9884.61,
+  totalInterest: 9884.61,
+  // For the Bar Chart (Yearly projection)
+  yearlyData: {
+    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], // Years
+    starting: Array(10).fill(127633.63), // Starting amount stays constant usually
+    interest: [1000, 2500, 4500, 7000, 9884, 12000, 15000, 19000, 24000, 30000], // Cumulative Interest
+    contrib: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000] // Cumulative Contributions
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize with Pie Chart (Investment Tab Default)
+  renderPieChart();
+});
+
+// 1. Tab Switching Logic (Networth vs Investment)
+function switchResultTab(tabName) {
+  const btnNetworth = document.getElementById('tab-networth');
+  const btnInvestment = document.getElementById('tab-investment');
+  const contentNetworth = document.getElementById('content-networth');
+  const contentInvestment = document.getElementById('content-investment');
+  const projectionToggle = document.getElementById('projection-toggle-container');
+
+  if (tabName === 'networth') {
+    // Style Buttons
+    btnNetworth.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-[#DFECE6] text-gray-900 shadow-sm transition-all duration-200";
+    btnInvestment.className = "flex-1 py-2 text-sm font-medium rounded-lg text-gray-600 transition-all duration-200 hover:text-gray-900";
+
+    // Show Content
+    contentNetworth.classList.remove('hidden');
+    contentInvestment.classList.add('hidden');
+
+    // Hide Toggle (Networth summary doesn't have chart toggle)
+    projectionToggle.classList.add('invisible');
+  } else {
+    // Style Buttons
+    btnInvestment.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-[#DFECE6] text-gray-900 shadow-sm transition-all duration-200";
+    btnNetworth.className = "flex-1 py-2 text-sm font-medium rounded-lg text-gray-600 transition-all duration-200 hover:text-gray-900";
+
+    // Show Content
+    contentInvestment.classList.remove('hidden');
+    contentNetworth.classList.add('hidden');
+
+    // Show Toggle
+    projectionToggle.classList.remove('invisible');
+
+    // Refresh chart to ensure it renders correctly after being hidden
+    if(investmentChartInstance) {
+        investmentChartInstance.resize();
+    }
+  }
+}
+
+// 2. Chart Toggle Logic (Pie vs Bar)
+function toggleChartType() {
+  const isChecked = document.getElementById('view-projections-toggle').checked;
+
+  if (isChecked) {
+    renderBarChart();
+  } else {
+    renderPieChart();
+  }
+}
+
+// 3. Render Pie Chart (Snapshot)
+function renderPieChart() {
+  const ctx = document.getElementById('investmentChart').getContext('2d');
+
+  if (investmentChartInstance) {
+    investmentChartInstance.destroy();
+  }
+
+  investmentChartInstance = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Starting amount', 'Interest earned', 'Total contributions'],
+      datasets: [{
+        data: [chartData.startAmount, chartData.totalInterest, chartData.totalContrib],
+        backgroundColor: [CHART_COLORS.starting, CHART_COLORS.interest, CHART_COLORS.contrib],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }, // We built a custom legend in HTML
+        tooltip: {
+            callbacks: {
+                label: function(context) {
+                    let label = context.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed !== null) {
+                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed);
+                    }
+                    return label;
+                }
+            }
+        }
+      }
+    }
+  });
+}
+
+// 4. Render Bar Chart (Timeline)
+function renderBarChart() {
+  const ctx = document.getElementById('investmentChart').getContext('2d');
+
+  if (investmentChartInstance) {
+    investmentChartInstance.destroy();
+  }
+
+  investmentChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartData.yearlyData.labels,
+      datasets: [
+        {
+          label: 'Starting amount',
+          data: chartData.yearlyData.starting,
+          backgroundColor: CHART_COLORS.starting,
+          stack: 'Stack 0'
+        },
+        {
+          label: 'Interest earned',
+          data: chartData.yearlyData.interest,
+          backgroundColor: CHART_COLORS.interest,
+          stack: 'Stack 0'
+        },
+        {
+          label: 'Total contributions',
+          data: chartData.yearlyData.contrib,
+          backgroundColor: CHART_COLORS.contrib,
+          stack: 'Stack 0',
+          borderRadius: { topLeft: 4, topRight: 4 } // Rounded tops on the highest bar
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          grid: { display: false },
+          title: { display: true, text: 'Investment timeline', font: { size: 10 } }
+        },
+        y: {
+          border: { display: false },
+          grid: { color: '#f3f4f6' },
+          ticks: {
+            callback: function(value) {
+                if(value >= 1000) return '$' + value/1000 + 'k';
+                return '$' + value;
+            },
+            font: { size: 10 }
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }, // Custom legend used
+        tooltip: {
+            mode: 'index',
+            intersect: false
+        }
+      }
+    }
+  });
+}
+
 // Networth Calculator JavaScript
 document.addEventListener("DOMContentLoaded", function () {
   // Networth calculator state
