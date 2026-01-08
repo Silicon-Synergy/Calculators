@@ -1,37 +1,46 @@
-// Function to toggle category expansion/collapse
+window.addEventListener("resize", () => {
+  document.querySelectorAll(".category-content").forEach(content => {
+    if (content.style.maxHeight && content.style.maxHeight !== "0px") {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
+});
+
+// The toggle function
 function toggleCategory(categoryName) {
-  const allCategoryContents = document.querySelectorAll(
-    ".expense-category .category-content"
-  );
-  const allCategoryArrows = document.querySelectorAll(
-    ".expense-category .category-arrow"
-  );
-  const allCategoryButtons = document.querySelectorAll(
-    ".expense-category .category-toggle"
-  );
+  const allCategories = document.querySelectorAll(".expense-category");
+  let currentCategory = null;
 
-  const currentButton = document.querySelector(
-    `[onclick="toggleCategory('${categoryName}')"]`
-  );
-  const currentContent = currentButton.nextElementSibling;
-  const currentArrow = currentButton.querySelector(".category-arrow");
-  const isExpanded =
-    currentContent.style.maxHeight && currentContent.style.maxHeight !== "0px";
-
-  // First, close all categories
-  allCategoryContents.forEach((content, index) => {
-    content.style.maxHeight = "0px";
-    allCategoryArrows[index].style.transform = "rotate(0deg)";
+  allCategories.forEach(category => {
+    const button = category.querySelector(".category-toggle");
+    if (button && button.getAttribute("onclick") && button.getAttribute("onclick").includes(categoryName)) {
+      currentCategory = category;
+    }
   });
 
-  // If the clicked category was not already expanded, open it
-  if (!isExpanded) {
-    currentContent.style.maxHeight = currentContent.scrollHeight + "px";
-    currentArrow.style.transform = "rotate(180deg)";
-  }
-  // If it was expanded, the above loop already closed it.
-}
+  if (!currentCategory) return;
 
+  const currentContent = currentCategory.querySelector(".category-content");
+  const currentArrow = currentCategory.querySelector(".category-arrow");
+
+  // Check if it is currently open
+  const wasOpen = currentContent.style.maxHeight && currentContent.style.maxHeight !== "0px";
+
+  // Close all first (Accordion style)
+  allCategories.forEach(category => {
+    const content = category.querySelector(".category-content");
+    const arrow = category.querySelector(".category-arrow");
+
+    if (content) content.style.maxHeight = "0px";
+    if (arrow) arrow.style.transform = "rotate(0deg)";
+  });
+
+  // Open ONLY if it was previously closed
+  if (!wasOpen) {
+    currentContent.style.maxHeight = currentContent.scrollHeight + "px";
+    if (currentArrow) currentArrow.style.transform = "rotate(180deg)";
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -127,8 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
         type: ['End amount', 'Additional contribution', 'Return rate', 'Starting amount', 'Investment length'],
         years: ['1 Year', '3 Years', '5 Years', '10 Years', '15 Years', '20 Years', '30 Years'],
         compound: ['Monthly', 'Quarterly', 'Semi-Annually', 'Annually'],
-        calcTime: ['Beginning of period', 'End of period'],
-        frequency: ['Month', 'Year'] // New field data
+        calcTime: ['Beginning of each month', 'End of each month', 'Beginning of each year', 'End of each year'],
+        frequency: ['Month', 'Year']
     };
 
     const dropdownConfigs = [
