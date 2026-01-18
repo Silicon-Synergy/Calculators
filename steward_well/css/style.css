@@ -794,9 +794,10 @@ input::-webkit-inner-spin-button {
   }
 
   /* Show mobile results */
-  #annual-income-section #taxes-content,
+  /* Show mobile results - Rely on JS toggling .hidden class */
+  /* #annual-income-section #taxes-content,
   #living-expenses-section #expenses-content,
   #savings-investments-section #save-invest-content {
-    display: block !important;
-  }
+     display: block !important;
+  } */
 }

@@ -4115,7 +4115,6 @@ function switchToTaxesTab() {
   if (!nav) return;
   const btn = nav.querySelector('.deductions-tab[data-tab="taxes"]');
   if (btn) btn.click();
-  expandIncomeSection();
 }
 
 function switchToSaveTab() {
