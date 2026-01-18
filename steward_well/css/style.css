@@ -3,11 +3,13 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
 }
@@ -15,14 +17,17 @@
 h2 {
   letter-spacing: normal;
 }
+
 .glass-effect {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
 .input-glow:focus {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 }
+
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -31,17 +36,17 @@ h2 {
   padding: 1rem;
   box-sizing: border-box;
 }
+
 .sidebar {
   grid-column: span 3;
   grid-row: span 3;
 }
+
 .nav_cta {
   background-color: #000;
-  background-image: linear-gradient(
-    135deg,
-    var(--base-color-brand--brand-green),
-    #16418a
-  );
+  background-image: linear-gradient(135deg,
+      var(--base-color-brand--brand-green),
+      #16418a);
   color: var(--text-color--text-alternate);
   text-align: center;
   text-transform: uppercase;
@@ -52,51 +57,68 @@ h2 {
   text-decoration: none;
   transition: background-color 0.5s;
 }
+
 .income-card {
   grid-column: span 3;
 }
+
 .expenses-card {
   grid-column: span 6;
 }
+
 .deductions-card {
   grid-column: span 3;
 }
+
 .status-card {
   grid-column: span 3;
 }
+
 .chart-card {
   grid-column: span 6;
-  min-height: 0; /* Add this to prevent height expansion */
+  min-height: 0;
+  /* Add this to prevent height expansion */
 }
+
 .allocations-card {
   grid-column: span 3;
 }
+
 .scrollable {
   overflow-y: auto;
   max-height: 100%;
 }
+
 .scrollable::-webkit-scrollbar {
   width: 6px;
 }
+
 .scrollable::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
+
 .chart-container {
   position: relative;
   height: 100%;
-  min-height: 300px; /* Set a minimum height */
-  max-height: 100%; /* Prevent infinite growth */
+  min-height: 300px;
+  /* Set a minimum height */
+  max-height: 100%;
+  /* Prevent infinite growth */
 }
+
 .no-arrows {
-  -moz-appearance: textfield; /* Firefox */
+  -moz-appearance: textfield;
+  /* Firefox */
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none; /* Chrome, Safari, Edge */
+  -webkit-appearance: none;
+  /* Chrome, Safari, Edge */
   margin: 0;
 }
+
 .category-content {
   max-height: 0;
   overflow: hidden;
@@ -159,10 +181,23 @@ input::-webkit-inner-spin-button {
   transform: translateX(-50%);
 }
 
-.progress-label.left { left: 0%; transform: translateX(0); }
-.progress-label.center { left: 70%; }
-.progress-label.right { left: 85%; }
-.progress-label.far-right { left: 100%; transform: translateX(-100%); }
+.progress-label.left {
+  left: 0%;
+  transform: translateX(0);
+}
+
+.progress-label.center {
+  left: 70%;
+}
+
+.progress-label.right {
+  left: 85%;
+}
+
+.progress-label.far-right {
+  left: 100%;
+  transform: translateX(-100%);
+}
 
 .budget-progress-bar {
   position: relative;
@@ -171,17 +206,17 @@ input::-webkit-inner-spin-button {
   border-radius: 16px;
   overflow: hidden;
   background: linear-gradient(to right,
-    #21a34f 0%,
-    #21a34f 64%,
-    #38b165 69%,
-    #b8cf42 70%,
-    #b8cf42 72%,
-    #f2c94c 75%,
-    #f2c94c 83%,
-    #ff9f1a 88%,
-    #f05a49 92%,
-    #eb5757 96%,
-    #eb5757 100%);
+      #21a34f 0%,
+      #21a34f 64%,
+      #38b165 69%,
+      #b8cf42 70%,
+      #b8cf42 72%,
+      #f2c94c 75%,
+      #f2c94c 83%,
+      #ff9f1a 88%,
+      #f05a49 92%,
+      #eb5757 96%,
+      #eb5757 100%);
   border: 2px solid rgba(255, 255, 255, 0.15);
   box-shadow:
     inset 0 3px 6px rgba(0, 0, 0, 0.2),
@@ -199,43 +234,57 @@ input::-webkit-inner-spin-button {
   border-right: none;
   overflow: hidden;
   background: transparent;
-  pointer-events: none; /* zones no longer block gradient visuals */
+  pointer-events: none;
+  /* zones no longer block gradient visuals */
 }
 
 .budget-zone:last-child {
   border-right: none;
 }
 
-.zone-gradient { display: none; }
+.zone-gradient {
+  display: none;
+}
 
-.green-zone { left: 0%; width: 70%; }
+.green-zone {
+  left: 0%;
+  width: 70%;
+}
 
 .green-zone .zone-gradient {
   background: linear-gradient(135deg,
-    #10b981 0%,
-    #059669 50%,
-    #047857 100%);
+      #10b981 0%,
+      #059669 50%,
+      #047857 100%);
 }
 
-.amber-zone { left: 70%; width: 15%; }
+.amber-zone {
+  left: 70%;
+  width: 15%;
+}
 
 .amber-zone .zone-gradient {
   background: linear-gradient(135deg,
-    #f59e0b 0%,
-    #d97706 50%,
-    #b45309 100%);
+      #f59e0b 0%,
+      #d97706 50%,
+      #b45309 100%);
 }
 
-.red-zone { left: 85%; width: 15%; }
+.red-zone {
+  left: 85%;
+  width: 15%;
+}
 
 .red-zone .zone-gradient {
   background: linear-gradient(135deg,
-    #ef4444 0%,
-    #dc2626 50%,
-    #b91c1c 100%);
+      #ef4444 0%,
+      #dc2626 50%,
+      #b91c1c 100%);
 }
 
-.budget-zone:hover { transform: none; }
+.budget-zone:hover {
+  transform: none;
+}
 
 .budget-zone:hover .zone-gradient {
   background-size: 110% 110%;
@@ -267,12 +316,15 @@ input::-webkit-inner-spin-button {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow:
       0 0 0 3px rgba(255, 255, 255, 0.4),
       0 6px 16px rgba(0, 0, 0, 0.5),
       0 0 25px rgba(255, 255, 255, 0.3);
   }
+
   50% {
     box-shadow:
       0 0 0 5px rgba(255, 255, 255, 0.6),
@@ -285,9 +337,9 @@ input::-webkit-inner-spin-button {
   width: 3px;
   height: 24px;
   background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.7) 50%,
-    rgba(255, 255, 255, 0.4) 100%);
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(255, 255, 255, 0.4) 100%);
   margin: 0 auto;
   border-radius: 2px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
@@ -421,19 +473,19 @@ input::-webkit-inner-spin-button {
 }
 
 /* Hover interactions between progress bar and legend */
-.budget-zone:hover ~ .budget-legend .legend-item[data-zone="healthy"],
+.budget-zone:hover~.budget-legend .legend-item[data-zone="healthy"],
 .legend-item[data-zone="healthy"]:hover {
   background: rgba(16, 185, 129, 0.1);
   border-color: rgba(16, 185, 129, 0.3);
 }
 
-.budget-zone.amber-zone:hover ~ .budget-legend .legend-item[data-zone="caution"],
+.budget-zone.amber-zone:hover~.budget-legend .legend-item[data-zone="caution"],
 .legend-item[data-zone="caution"]:hover {
   background: rgba(245, 158, 11, 0.1);
   border-color: rgba(245, 158, 11, 0.3);
 }
 
-.budget-zone.red-zone:hover ~ .budget-legend .legend-item[data-zone="critical"],
+.budget-zone.red-zone:hover~.budget-legend .legend-item[data-zone="critical"],
 .legend-item[data-zone="critical"]:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
@@ -515,6 +567,7 @@ input::-webkit-inner-spin-button {
     font-size: 0.7rem;
   }
 }
+
 /* Tooltip Boxes Styles */
 .tooltip-boxes {
   display: flex;
@@ -523,75 +576,75 @@ input::-webkit-inner-spin-button {
   margin-top: 1.5rem;
   padding: 0 0 1rem;
 }
+
 .tooltip-box {
   position: relative;
-  flex: 0.8; /* Reduced from 1 to make boxes smaller */
+  flex: 0.8;
+  /* Reduced from 1 to make boxes smaller */
   display: flex;
   flex-direction: column;
   align-items: center;
-  ; /* Reduced padding */
-  border-radius: 8px; /* Smaller border radius */
+  ;
+  /* Reduced padding */
+  border-radius: 8px;
+  /* Smaller border radius */
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid transparent; /* Thinner border */
+  border: 1px solid transparent;
+  /* Thinner border */
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  max-width: 120px; /* Added max-width to constrain size */
+  max-width: 120px;
+  /* Added max-width to constrain size */
 }
+
 .tooltip-box:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .healthy-box {
-  border-color: rgba(22, 138, 83, 0.3); /* #168A53 */
-  background: linear-gradient(
-    135deg,
-    rgba(22, 138, 83, 0.10),
-    rgba(22, 138, 83, 0.15)
-  );
+  border-color: rgba(22, 138, 83, 0.3);
+  /* #168A53 */
+  background: linear-gradient(135deg,
+      rgba(22, 138, 83, 0.10),
+      rgba(22, 138, 83, 0.15));
 }
+
 .healthy-box:hover {
-  border-color: rgba(22, 138, 83, 0.6); /* #168A53 */
-  background: linear-gradient(
-    135deg,
-    rgba(22, 138, 83, 0.15),
-    rgba(22, 138, 83, 0.25)
-  );
+  border-color: rgba(22, 138, 83, 0.6);
+  /* #168A53 */
+  background: linear-gradient(135deg,
+      rgba(22, 138, 83, 0.15),
+      rgba(22, 138, 83, 0.25));
 }
 
 .caution-box {
   border-color: rgba(245, 158, 11, 0.3);
-  background: linear-gradient(
-    135deg,
-    rgba(245, 158, 11, 0.1),
-    rgba(245, 158, 11, 0.15)
-  );
+  background: linear-gradient(135deg,
+      rgba(245, 158, 11, 0.1),
+      rgba(245, 158, 11, 0.15));
 }
+
 .caution-box:hover {
   border-color: rgba(245, 158, 11, 0.6);
-  background: linear-gradient(
-    135deg,
-    rgba(245, 158, 11, 0.15),
-    rgba(245, 158, 11, 0.25)
-  );
+  background: linear-gradient(135deg,
+      rgba(245, 158, 11, 0.15),
+      rgba(245, 158, 11, 0.25));
 }
 
 .critical-box {
   border-color: rgba(239, 68, 68, 0.3);
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.1),
-    rgba(239, 68, 68, 0.15)
-  );
+  background: linear-gradient(135deg,
+      rgba(239, 68, 68, 0.1),
+      rgba(239, 68, 68, 0.15));
 }
+
 .critical-box:hover {
   border-color: rgba(239, 68, 68, 0.6);
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.15),
-    rgba(239, 68, 68, 0.25)
-  );
+  background: linear-gradient(135deg,
+      rgba(239, 68, 68, 0.15),
+      rgba(239, 68, 68, 0.25));
 }
 
 .box-icon {
@@ -718,4 +771,32 @@ input::-webkit-inner-spin-button {
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+}
+
+@media (min-width: 1024px) {
+  #deductions-disposable-section {
+    display: block !important;
+  }
+
+  /* Hide mobile-only results */
+  #annual-income-section #taxes-content,
+  #living-expenses-section #expenses-content,
+  #savings-investments-section #save-invest-content {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1023px) {
+
+  /* Hide desktop sidebar on mobile */
+  #deductions-disposable-section {
+    display: none !important;
+  }
+
+  /* Show mobile results */
+  #annual-income-section #taxes-content,
+  #living-expenses-section #expenses-content,
+  #savings-investments-section #save-invest-content {
+    display: block !important;
+  }
 }

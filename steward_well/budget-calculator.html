@@ -420,9 +420,49 @@
       color: #0f172a;
       /* dark color */
     }
-    .info-tooltip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 9999px; border: 2px solid rgba(71,85,105,0.7); color: #81998E; font-weight: 700; font-size: 11px; line-height: 1; }
-    .info-tooltip .tooltip-panel { position: absolute; display: block; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #dbece6; color: #000 !important; border-radius: 10px; padding: 8px 10px; font-size: 12px; font-family: 'General Sans', sans-serif; font-weight: 400; line-height: 1.4; box-shadow: 0 10px 20px rgba(0,0,0,0.15); text-align: left; width: 280px; z-index: 999; opacity: 0; visibility: hidden; pointer-events: none; }
-    .info-tooltip:hover .tooltip-panel { opacity: 1; visibility: visible; }
+
+    .info-tooltip {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 9999px;
+      border: 2px solid rgba(71, 85, 105, 0.7);
+      color: #81998E;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .info-tooltip .tooltip-panel {
+      position: absolute;
+      display: block;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #dbece6;
+      color: #000 !important;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: 'General Sans', sans-serif;
+      font-weight: 400;
+      line-height: 1.4;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      text-align: left;
+      width: 280px;
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .info-tooltip:hover .tooltip-panel {
+      opacity: 1;
+      visibility: visible;
+    }
 
     /* Mobile responsive for dropdown */
     @media (max-width: 768px) {
@@ -517,10 +557,12 @@
 
 <body class="min-h-screen bg-[#F1F5F3]" style="font-family: 'General Sans', sans-serif;">
   <div class="nav_fixed">
-    <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" role="banner" class="nav_component w-nav">
+    <div data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease"
+      role="banner" class="nav_component w-nav">
       <div class="padding-global">
         <div class="nav_container">
-          <a href="index.html" aria-current="page" class="nav_brand w-nav-brand w--current"><img src="images/Logo.svg" loading="lazy" alt="Steward Well Capital Logo" class="nav_logo" /></a>
+          <a href="index.html" aria-current="page" class="nav_brand w-nav-brand w--current"><img src="images/Logo.svg"
+              loading="lazy" alt="Steward Well Capital Logo" class="nav_logo" /></a>
           <nav role="navigation" class="nav_menu w-nav-menu">
             <div class="menu_links-wrapper">
               <div class="lite-header" style="display: none">Menu</div>
@@ -529,11 +571,13 @@
               <a href="./index.html#testimonials" class="nav_menu_link w-nav-link">Testimonials</a>
 
               <div class="calculator-dropdown" style="display: inline-block">
-                <a href="#" class="nav_menu_link w-nav-link" id="calculatorToggle" style="display: inline-flex; align-items: center">
+                <a href="#" class="nav_menu_link w-nav-link" id="calculatorToggle"
+                  style="display: inline-flex; align-items: center">
                   Calculators
                   <span class="dropdown-arrow">
                     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
                     </svg>
                   </span>
                 </a>
@@ -604,10 +648,17 @@
             <div class="menu_socials hide-desktop">
               <div class="lite-header">Follow us</div>
               <div class="menu_socials_content">
-                <a href="https://www.instagram.com/stewardwellcapital?igsh=MW11eG1panppNXF0Mg%3D%3D&amp;utm_source=qr" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/IG_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                <a href="https://x.com/stewardwellcap?s=11" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/X_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                <a href="#" class="social-link-wrapper hide w-inline-block"><img src="images/FB_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
-                <a href="https://www.linkedin.com/company/stewardwell-capital/" target="_blank" class="social-link-wrapper w-inline-block"><img src="images/LI_1.svg" loading="lazy" alt="" class="menu_socials_icons" /></a>
+                <a href="https://www.instagram.com/stewardwellcapital?igsh=MW11eG1panppNXF0Mg%3D%3D&amp;utm_source=qr"
+                  target="_blank" class="social-link-wrapper w-inline-block"><img src="images/IG_1.svg" loading="lazy"
+                    alt="" class="menu_socials_icons" /></a>
+                <a href="https://x.com/stewardwellcap?s=11" target="_blank"
+                  class="social-link-wrapper w-inline-block"><img src="images/X_1.svg" loading="lazy" alt=""
+                    class="menu_socials_icons" /></a>
+                <a href="#" class="social-link-wrapper hide w-inline-block"><img src="images/FB_1.svg" loading="lazy"
+                    alt="" class="menu_socials_icons" /></a>
+                <a href="https://www.linkedin.com/company/stewardwell-capital/" target="_blank"
+                  class="social-link-wrapper w-inline-block"><img src="images/LI_1.svg" loading="lazy" alt=""
+                    class="menu_socials_icons" /></a>
               </div>
             </div>
           </nav>
@@ -639,18 +690,21 @@
       <!-- Annual Income Input -->
       <div class="w-full lg:w-[60%]">
         <section id="annual-income-section" class="">
-          <div class="rounded-tr-3xl rounded-tl-3xl p-8 bg-white border-white/10 hover:border-primary/30 transition-all duration-300">
+          <div
+            class="rounded-tr-3xl rounded-tl-3xl p-8 bg-white border-white/10 hover:border-primary/30 transition-all duration-300">
             <button id="income-section-toggle" class="w-full flex items-center justify-between mb-6 focus:outline-none">
               <div class="flex items-center space-x-3">
                 <img src="images/income.svg" alt="Income Icon" class="w-12 h-12 text-white" />
                 <h2 class="text-xl lg:text-[1.8rem] font-medium text-white">Income</h2>
               </div>
-              <svg id="income-section-arrow" class="w-5 h-5 transition-transform duration-300 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              <svg id="income-section-arrow" class="w-5 h-5 transition-transform duration-300 transform rotate-180"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
 
-            <div id="income-section-content" class="relative transition-all duration-500 overflow-hidden" style="max-height: 3000px; opacity: 1;">
+            <div id="income-section-content" class="relative transition-all duration-500 overflow-hidden"
+              style="max-height: 3000px; opacity: 1;">
               <div class="input-group grid grid-cols-2 max-sm:grid-cols-1 w-full gap-x-8 gap-y-5">
                 <!-- Hidden real select -->
                 <select id="provinceSelect" class="hidden">
@@ -660,7 +714,8 @@
                 <!-- Custom dropdown UI -->
                 <div class="relative w-full">
                   <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Province</label>
-                  <button id="dropdownBtn" type="button" class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] opacity-70 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
+                  <button id="dropdownBtn" type="button"
+                    class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] opacity-70 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
                     <span id="dropdownSelected" style="color: #81998E;">Choose Province</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -668,7 +723,8 @@
                   </button>
                   <p id="provinceError" class="error-message text-red-500 text-sm mt-2"></p>
 
-                  <ul id="customProvinceOptions" class="glass-effect p-2 t w-full text-white rounded-2xl mt-2 z-50 max-h-60 overflow-y-auto" style="
+                  <ul id="customProvinceOptions"
+                    class="glass-effect p-2 t w-full text-white rounded-2xl mt-2 z-50 max-h-60 overflow-y-auto" style="
                         max-height: 0;
                         overflow: hidden;
                         opacity: 0;
@@ -681,7 +737,8 @@
 
                 <div class="relative w-full">
                   <label for="ageRange" class="block text-sm font-medium text-gray-300 mb-2">Age</label>
-                  <button id="ageDropdownBtn" type="button" class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] opacity-70 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
+                  <button id="ageDropdownBtn" type="button"
+                    class="w-[100%] pl-8 pr-4 flex justify-between py-4 border bg-[#dfece6] opacity-70 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200">
                     <span id="ageDropdownSelected">Choose Age Range</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -689,7 +746,8 @@
                   </button>
                   <p id="ageRangeError" class="error-message text-red-500 text-sm mt-2"></p>
 
-                  <ul id="customAgeOptions" class="glass-effect p-2 w-full text-white rounded-2xl mt-2 z-50 overflow-y-auto" style="
+                  <ul id="customAgeOptions"
+                    class="glass-effect p-2 w-full text-white rounded-2xl mt-2 z-50 overflow-y-auto" style="
                         max-height: 0;
                         overflow: hidden;
                         opacity: 0;
@@ -715,9 +773,12 @@
                 </div>
 
                 <div class="w-full">
-                  <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Annual Gross Income (Before Tax)</label>
+                  <label for="annualIncome" class="block text-sm font-medium text-gray-300 mb-2">Annual Gross Income
+                    (Before Tax)</label>
                   <div class="relative">
-                    <input type="number" id="annualIncome" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200" placeholder="Enter income amount" min="0" />
+                    <input type="number" id="annualIncome"
+                      class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f1f5f3] transition-all duration-200"
+                      placeholder="Enter income amount" min="0" />
                   </div>
                   <p id="annualIncomeError" class="error-message text-red-500 text-sm mt-2"></p>
                 </div>
@@ -725,13 +786,17 @@
                   <label class="block text-sm font-medium text-gray-300 mb-2">Workplace retirement plan?</label>
                   <div class="flex items-center gap-3 text-sm">
                     <div class="w-[50%]">
-                      <input id="includeRetirement" type="radio" name="retirementOption" value="yes" class="sr-only peer" />
-                      <label for="includeRetirement" class="p-5 text-center rounded-xl  text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100 bg-[#DFECE6]">Yes</label>
+                      <input id="includeRetirement" type="radio" name="retirementOption" value="yes"
+                        class="sr-only peer" />
+                      <label for="includeRetirement"
+                        class="p-5 text-center rounded-xl  text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100 bg-[#DFECE6]">Yes</label>
                     </div>
 
                     <div class="w-[50%]">
-                      <input id="excludeRetirement" type="radio" name="retirementOption" value="no" class="sr-only peer" checked />
-                      <label for="excludeRetirement" class="p-5 text-center rounded-xl bg-[#DFECE6] text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100">No</label>
+                      <input id="excludeRetirement" type="radio" name="retirementOption" value="no" class="sr-only peer"
+                        checked />
+                      <label for="excludeRetirement"
+                        class="p-5 text-center rounded-xl bg-[#DFECE6] text-gray-700 opacity-60 cursor-pointer shadow-sm transition peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] peer-checked:!text-white peer-checked:opacity-100">No</label>
                     </div>
                   </div>
                 </div>
@@ -745,10 +810,49 @@
                       transition: max-height 0.5s ease-in-out,
                         opacity 0.5s ease-in-out;
                     ">
-                  <label for="retirementPercentage" class="text-white text-sm flex items-center gap-2">Annual Retirement Contribution Percentage (0-10%)<span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Enter percentage of gross income (maximum 10%)</span></span></label>
+                  <label for="retirementPercentage" class="text-white text-sm flex items-center gap-2">Annual Retirement
+                    Contribution Percentage (0-10%)<span class="info-tooltip text-[#81998E]">i<span
+                        class="tooltip-panel">Enter percentage of gross income (maximum 10%)</span></span></label>
                   <div>
-                    <input type="number" min="0" max="10" step="0.1" id="retirementPercentage" class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border border-white/20 rounded-xl mt-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="E.g. 5 for 5%" />
+                    <input type="number" min="0" max="10" step="0.1" id="retirementPercentage"
+                      class="input-field w-full pl-8 pr-4 py-4 bg-[#dfece6] border border-white/20 rounded-xl mt-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                      placeholder="E.g. 5 for 5%" />
                     <p id="retirementPercentageError" class="error-message text-red-500 text-sm mt-2"></p>
+
+                  </div>
+                </div>
+              </div>
+              <!-- Result for mobile -->
+              <div id="taxes-content" class="hidden mt-4">
+                <span class="text-[.9rem]">Tax percentages shown are estimates based on current rates from
+                  the CRA website.</span>
+                <div id="taxes-progress" class="mb-6 mt-5">
+                  <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                    <div id="taxes-bar-segments" class="flex h-full"></div>
+                  </div>
+                </div>
+                <div id="deduction-inputs-container"
+                  class="flex flex-col gap-x-6 gap-y-4 text-white transition-all duration-500 ease-in-out"></div>
+                <div
+                  class="mt-3 mb-4 border-1 p-[1px] hover:opacity-70 rounded-[12px] bg-gradient-to-r from-[#168A53] to-[#16418A]">
+                  <div id="toggle-deductions-btn"
+                    class="w-full flex items-center justify-center bg-white gap-2 px-5 py-3 rounded-[12px] border text-[#168A53] cursor-pointer transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" style="stroke:url(#grad1);">
+                      <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" style="stop-color:#168A53;stop-opacity:1" />
+                          <stop offset="100%" style="stop-color:#16418A;stop-opacity:1" />
+                        </linearGradient>
+                      </defs>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span
+                      style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand
+                      deductions</span>
 
                   </div>
                 </div>
@@ -761,7 +865,8 @@
         <div class="w-full h-px bg-white/10"></div>
 
         <!-- Monthly Living Expenses Input -->
-        <section id="living-expenses-section" class=" border-[1px] border-t-0 glass-effect opacity-50 pointer-events-none px-4 pt-0 pb-4 md:px-4 transition-colors duration-500 ease-in-out">
+        <section id="living-expenses-section"
+          class=" border-[1px] border-t-0 glass-effect opacity-50 pointer-events-none px-4 pt-0 pb-4 md:px-4 transition-colors duration-500 ease-in-out">
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center space-x-3 mt-6 ml-4">
               <img src="images/expenditure.svg" alt="Income Icon" class="w-12 h-12 text-white" />
@@ -779,7 +884,8 @@
                 </div>
               </div>
             </div>
-            <button id="toggle-all-expenses" class="flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors duration-200 focus:outline-none">
+            <button id="toggle-all-expenses"
+              class="flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors duration-200 focus:outline-none">
               <span id="toggle-all-expenses-text lg:block hidden">Expand all</span>
               <span class="flex flex-col items-center leading-none " aria-hidden="true">
                 <!-- top chevron up -->
@@ -796,11 +902,14 @@
 
           <div class="space-y-4">
             <div class="expense-category border-[1px] glass-effect border-b-gray-200 pb-2">
-              <button class="category-toggle w-full flex items-center justify-between p-3 text-white border border-transparent transition-all duration-300 rounded-2xl" onclick="toggleCategory('housing')">
+              <button
+                class="category-toggle w-full flex items-center justify-between p-3 text-white border border-transparent transition-all duration-300 rounded-2xl"
+                onclick="toggleCategory('housing')">
                 <div class="flex items-center gap-3">
                   <h2 class="font-medium text-lg lg:text-[1.5rem]">Housing and Utilities</h2>
                 </div>
-                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -810,27 +919,39 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Rent/Mortgage</label>
-                      <input type="number" id="rent-mortgage" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="rent-mortgage"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Electricity</label>
-                      <input type="number" id="electricity" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="electricity"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Water </label>
-                      <input type="number" id="water" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="water"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Gas/Heating</label>
-                      <input type="number" id="gas-heating" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="gas-heating"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Home Insurance</label>
-                      <input type="number" id="home-insurance" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="home-insurance"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others</label>
-                      <input type="number" id="housing-others" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="housing-others"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                   </div>
                 </div>
@@ -838,11 +959,14 @@
             </div>
 
             <div class="expense-category border-[1px] glass-effect border-b-gray-200 pb-2">
-              <button class="category-toggle w-full flex items-center justify-between p-3 text-white border transition-all duration-300 rounded-2xl" onclick="toggleCategory('living')">
+              <button
+                class="category-toggle w-full flex items-center justify-between p-3 text-white border transition-all duration-300 rounded-2xl"
+                onclick="toggleCategory('living')">
                 <div class="flex items-center gap-3">
                   <h2 class="font-medium text-lg lg:text-[1.5rem]">Everyday Spending</h2>
                 </div>
-                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -852,28 +976,40 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Groceries</label>
-                      <input type="number" id="groceries" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="groceries"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Subscriptions
                       </label>
-                      <input type="number" id="subscriptions" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="subscriptions"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Phone Bills</label>
-                      <input type="number" id="phone-bills" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="phone-bills"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Internet</label>
-                      <input type="number" id="internet" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="internet"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Clothing</label>
-                      <input type="number" id="clothing" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="clothing"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others</label>
-                      <input type="number" id="living-others" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="living-others"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                   </div>
                 </div>
@@ -881,7 +1017,9 @@
             </div>
 
             <div class="expense-category glass-effect select-none border-[1px] border-b-gray-200 pb-2">
-              <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('transportation')">
+              <button
+                class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl"
+                onclick="toggleCategory('transportation')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-green-600 rounded-lg flex items-center justify-center">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -891,7 +1029,8 @@
                   <h2 class="font-medium text-lg lg:text-[1.5rem]">Transportation</h2>
 
                 </div>
-                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -901,30 +1040,42 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Car Payment</label>
-                      <input type="number" id="car-payment" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="car-payment"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Gas/Fuel</label>
-                      <input type="number" id="gas-fuel" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="gas-fuel"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Car Insurance
                       </label>
-                      <input type="number" id="car-insurance" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="car-insurance"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Public Transit
                       </label>
-                      <input type="number" id="public-transit" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="public-transit"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Car Maintenance
                       </label>
-                      <input type="number" id="car-maintenance" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="car-maintenance"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others</label>
-                      <input type="number" id="transport-others" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="transport-others"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                   </div>
                 </div>
@@ -932,7 +1083,9 @@
             </div>
 
             <div class="expense-category glass-effect border-[1px] border-b-gray-200 pb-2">
-              <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('loans')">
+              <button
+                class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl"
+                onclick="toggleCategory('loans')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-red-400 to-red-600 rounded-lg flex items-center justify-center">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -942,7 +1095,8 @@
                   <h2 class="font-medium text-lg lg:text-[1.5rem]">Loans and Insurance</h2>
 
                 </div>
-                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -952,30 +1106,42 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Student Loan
-                        <input type="number" id="student-loans" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                        <input type="number" id="student-loans"
+                          class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                          placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Credit Card</label>
-                      <input type="number" id="credit-cards" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="credit-cards"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Personal Loan
                       </label>
-                      <input type="number" id="personal-loans" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="personal-loans"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Life Insurance
                       </label>
-                      <input type="number" id="life-insurance" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="life-insurance"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Line of Credit
                       </label>
-                      <input type="number" id="line-of-credit" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="line-of-credit"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others</label>
-                      <input type="number" id="loan-others" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="loan-others"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                   </div>
                 </div>
@@ -984,7 +1150,9 @@
 
             <div class="expense-category glass-effect border-[1px] border-b-gray-200 pb-2">
               <!-- border border-transparent bg-gradient-to-r from-green-200 to-emerald-200 -->
-              <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('children')">
+              <button
+                class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl"
+                onclick="toggleCategory('children')">
                 <div class="flex items-center gap-3">
                   <!-- <div class="w-8 h-8 bg-gradient-to-r from-pink-400 to-pink-600 rounded-lg flex items-center justify-center">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -994,7 +1162,8 @@
                   <h2 class="font-medium text-lg lg:text-[1.5rem]">Children and Education</h2>
 
                 </div>
-                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -1004,30 +1173,42 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Tuition</label>
-                      <input type="number" id="school-tuition" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="school-tuition"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Childcare</label>
-                      <input type="number" id="childcare" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="childcare"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">School Supplies
                       </label>
-                      <input type="number" id="school-supplies" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="school-supplies"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Kids Activities
                       </label>
-                      <input type="number" id="kids-activities" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="kids-activities"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Education Savings
                       </label>
-                      <input type="number" id="education-savings" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="education-savings"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others </label>
-                      <input type="number" id="children-others" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="children-others"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                   </div>
                 </div>
@@ -1035,12 +1216,15 @@
             </div>
 
             <div class="expense-category glass-effect">
-              <button class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl" onclick="toggleCategory('miscellaneous')">
+              <button
+                class="category-toggle w-full flex items-center justify-between p-3 text-white transition-all duration-300 rounded-2xl"
+                onclick="toggleCategory('miscellaneous')">
                 <div class="flex items-center gap-3">
                   <h2 class="font-medium text-lg lg:text-[1.5rem]">Miscellaneous Expenses</h2>
 
                 </div>
-                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 category-arrow transition-transform duration-300" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </button>
@@ -1051,57 +1235,256 @@
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Health/Fitness
                       </label>
-                      <input type="number" id="healthcare" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="healthcare"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Entertainment
                       </label>
-                      <input type="number" id="entertainment" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="entertainment"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Dining Out </label>
-                      <input type="number" id="dining-out" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="dining-out"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
 
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Pets </label>
-                      <input type="number" id="pets" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="pets"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Gifts & Donations
                       </label>
-                      <input type="number" id="gifts-donations" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="gifts-donations"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                     <div class="input-group">
                       <label class="block text-sm font-medium text-gray-300 mb-2">Others </label>
-                      <input type="number" id="misc-others" class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="Enter amount" min="0" />
+                      <input type="number" id="misc-others"
+                        class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                        placeholder="Enter amount" min="0" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <!-- Result for mobile -->
+          <div id="expenses-content" class="hidden mt-4">
+            <span class="text-[.9rem]">Progress bar compares your expenses to your take home pay.</span>
+            <style>
+              .legend {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+              }
+
+              .legend-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 6px 0;
+              }
+
+              .legend-color {
+                width: 10px;
+                height: 10px;
+                border-radius: 2px;
+                display: inline-block;
+              }
+
+              .legend-text {
+                margin: 0;
+                font-size: 14px;
+                font-weight: 100;
+              }
+
+              .legend-info {
+                margin-left: 6px;
+                color: #333434;
+              }
+
+              /* Progress bar styles with full-zone gradient */
+              .expense-health-progress {
+                margin-top: 8px;
+              }
+
+              .expense-health-labels {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                font-size: 14px;
+                color: #1f2937;
+              }
+
+              .expense-health-bar {
+                position: relative;
+                width: 100%;
+                height: 20px;
+                border-radius: 9999px;
+                overflow: hidden;
+                background: linear-gradient(to right,
+                    #21a34f 0%,
+                    #21a34f 62%,
+                    #f2c94c 70%,
+                    #f2c94c 78%,
+                    #eb5757 85%,
+                    #eb5757 100%);
+                box-shadow: inset 0 0 0.5px rgba(0, 0, 0, 0.08);
+              }
+
+              /* Overlay for unused area (right side) */
+              .expense-health-fill {
+                position: absolute;
+                right: 0;
+                top: 0;
+                height: 100%;
+                width: 0%;
+                background: rgba(229, 231, 235, 0.9);
+                border-radius: 9999px;
+                transition: width 350ms ease;
+              }
+            </style>
+
+            <div class="flex flex-col py-4 gap-3">
+              <div class="flex gap-2 items-center">
+                <span class="w-[12px] h-[12px] rounded-sm" style="background:#21a34f;"></span>
+
+                <h2 class="text-[1rem] font-thin opacity-80"
+                  style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Healthy (from 0% to 70%)</h2>
+                <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending sits well
+                    below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest
+                    consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle
+                    creep—avoid amber (cutting it close) and red (overspending).</span></span>
+              </div>
+              <div class="flex gap-2 items-center">
+                <span class="w-[12px] h-[12px] rounded-sm" style="background:#f2c94c;"></span>
+                <h2 class="text-[1rem] opacity-80 font-thin"
+                  style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Caution (from 70% to 85%)
+                </h2>
+                <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is close
+                    to
+                    your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle
+                    choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you
+                    could slip into red.</span></span>
+              </div>
+              <div class="flex gap-2  items-center">
+                <span class="w-[12px] h-[12px] rounded-sm" style="background:#eb5757;"></span>
+                <h2 class="text-[1rem] opacity-80 font-thin"
+                  style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Critical (from 85% to 100%)
+                </h2>
+                <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is over
+                    85%
+                    of your take-home, leaving little to no cashflow or savings—investing isn't feasible right now thus
+                    increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle
+                    priorities to move to amber, then green.</span></span>
+              </div>
+            </div>
+
+            <!-- Progress bar with zone gradient; grey overlay covers unused -->
+            <div class="expense-health-progress" aria-label="Expense health progress">
+              <div class="expense-health-labels">
+                <span id="expenseUsedText" class="gradient-text"><span id="expenseUsedValue"
+                    class="text-[1.8rem] font-medium">0%</span> <span class="text-[1rem]">used</span></span>
+                <span id="expenseLeftText" class="gradient-text text-[1rem] font-medium">$0.00 left of $0.00</span>
+              </div>
+              <div class="expense-health-bar">
+                <div id="expenseHealthBar" class="expense-health-fill"></div>
+              </div>
+            </div>
+            <div class="expense-summary flex flex-col gap-4 mt-5" id="expense-category-summary"
+              style="break-inside: avoid;">
+              <div class="expense-summary-row flex justify-between">
+                <div class="">
+                  <span class="expense-summary-name font-thin text-gray-500">Housing and utilities (<span
+                      id="summary-housing-pct">0%</span>)</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-housing-amt">$0.00</span>
+              </div>
+              <div class="expense-summary-row flex justify-between">
+                <div>
+                  <span class="expense-summary-name font-thin text-gray-500">Everyday spending (<span
+                      id="summary-living-pct">0%</span>)</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-living-amt">$0.00</span>
+              </div>
+              <div class="expense-summary-row flex justify-between">
+                <div>
+                  <span class="expense-summary-name font-thin text-gray-500">Transportation (<span
+                      id="summary-transportation-pct">0%</span>)</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-transportation-amt">$0.00</span>
+              </div>
+              <div class="expense-summary-row flex justify-between">
+                <div>
+                  <span class="expense-summary-name font-thin text-gray-500">Loans and insurance (<span
+                      id="summary-loans-pct">0%</span>)</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-loans-amt">$0.00</span>
+              </div>
+              <div class="expense-summary-row flex justify-between">
+                <div>
+                  <span class="expense-summary-name font-thin text-gray-500">Children and education (<span
+                      id="summary-children-pct">0%</span>)</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-children-amt">$0.00</span>
+              </div>
+              <div class="expense-summary-row flex justify-between">
+                <div>
+                  <span class="expense-summary-name font-thin text-gray-500">Miscellaneous (<span
+                      id="summary-miscellaneous-pct">0%</span>)</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-miscellaneous-amt">$0.00</span>
+              </div>
+              <div class="expense-summary-row flex justify-between">
+                <div>
+                  <span class="expense-summary-name font-thin text-gray-500">Total Monthly Expenses</span>
+                  <span class="expense-summary-line"></span>
+                </div>
+                <span class="expense-summary-amount font-thin" id="summary-total-expenses">$0.00</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- Savings & Investments Input - Updated Layout -->
-        <section id="savings-investments-section" class="opacity-50 border-[1px] border-t-border-t-gray-300 pointer-events-none px-8 pt-8 pb-0 rounded-b-3xl text-white transition-all duration-300 backdrop-blur-sm shadow-lg bg-white">
+        <section id="savings-investments-section"
+          class="opacity-50 border-[1px] border-t-border-t-gray-300 pointer-events-none px-8 pt-8 pb-0 rounded-b-3xl text-white transition-all duration-300 backdrop-blur-sm shadow-lg bg-white">
           <h2 class="text-xl lg:text-[1.8rem] font-medium text-white mb-6 pb-4 border-gray-300 flex items-center gap-2">
             <img src="images/savings.svg" alt="Savings Icon" class="w-12 h-12 text-white" />
             <span class="text-white"></span> Savings and Investments
 
-            <div id="infoButton" class="focus:outline-none pointer-events-auto" onclick="document.getElementById('infoPopup').classList.remove('hidden')">
+            <div id="infoButton" class="focus:outline-none pointer-events-auto"
+              onclick="document.getElementById('infoPopup').classList.remove('hidden')">
               <span class="text-[1rem]" aria-hidden="true" style="color:#000; font-weight:400;">ⓘ</span>
             </div>
           </h2>
 
           <!-- Popup Overlay -->
           <div id="infoPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
+            <div
+              class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
               <div class="text-center">
                 <div class="mb-4">
                   <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                      <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clip-rule="evenodd" />
                     </svg>
                   </div>
                   <h3 class="text-xl font-bold text-gray-900 mb-2">
@@ -1132,7 +1515,8 @@
                     </p>
                   </div>
                 </div>
-                <button id="closePopup" class="w-full bg-blue-600 hover:bg-blue-700 !text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200">
+                <button id="closePopup"
+                  class="w-full bg-blue-600 hover:bg-blue-700 !text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200">
                   Got it, thanks!
                 </button>
               </div>
@@ -1140,7 +1524,7 @@
           </div>
 
           <p id="si-guidance" class="text-white/90 text-base mb-3 leading-relaxed">
-           For sustainable wealth creation, view our recommended allocations below.
+            For sustainable wealth creation, view our recommended allocations below.
           </p>
 
           <!-- Custom Goals Toggle -->
@@ -1148,7 +1532,9 @@
             <span id="si-toggle-text" class="text-sm text-gray-700">Set your custom allocations</span>
             <label for="customSavingsToggle" class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" id="customSavingsToggle" class="sr-only peer" />
-              <div class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5"></div>
+              <div
+                class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5">
+              </div>
             </label>
           </div>
 
@@ -1159,32 +1545,42 @@
               <div class="input-group">
                 <label class="block text-sm font-medium text-white/80 text-left">Monthly savings percentage (%)</label>
                 <div class="input-group">
-                  <input type="number" id="savingsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
+                  <input type="number" id="savingsPercentage"
+                    class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                    placeholder="0" min="0" value="" disabled />
                 </div>
               </div>
               <div class="input-group">
                 <label class="block text-sm font-medium text-white/80 text-left">Monthly savings amount ($)</label>
                 <div class="input-group">
-                  <input type="number" step="0.01" min="0" id="customSavingsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0.00" value="" disabled />
+                  <input type="number" step="0.01" min="0" id="customSavingsAmount"
+                    class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                    placeholder="0.00" value="" disabled />
                 </div>
               </div>
               <p id="savingsPercentageError" class="error-message text-sm text-red-400 hidden"></p>
             </div>
 
             <!-- Allocation Error Message -->
-            <div id="allocationError" class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50">
+            <div id="allocationError"
+              class="hidden text-red-400 text-sm p-3 bg-red-900/30 rounded-lg border border-red-500/50">
               <!-- Error message will be inserted here by JavaScript -->
             </div>
 
             <!-- Investments -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="input-group">
-                <label class="block text-sm font-medium text-white/80 text-left">Monthly investment percentage (%)</label>
-                <input type="number" id="investmentsPercentage" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0" min="0" value="" disabled />
+                <label class="block text-sm font-medium text-white/80 text-left">Monthly investment percentage
+                  (%)</label>
+                <input type="number" id="investmentsPercentage"
+                  class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                  placeholder="0" min="0" value="" disabled />
               </div>
               <div class="input-group">
                 <label class="block text-sm font-medium text-white/80 text-left">Monthly investment amount ($)</label>
-                <input type="number" step="0.01" min="0" id="customInvestmentsAmount" class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200" placeholder="0.00" value="" disabled />
+                <input type="number" step="0.01" min="0" id="customInvestmentsAmount"
+                  class="input-field opacity-70 w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200"
+                  placeholder="0.00" value="" disabled />
               </div>
               <p id="investmentsPercentageError" class="error-message text-sm text-red-400 hidden"></p>
             </div>
@@ -1192,9 +1588,116 @@
             <!-- Cashflow (derived) -->
             <div class="space-y-3">
               <label class="block text-sm font-medium text-white/80">Your calculated Monthly Cashflow</label>
-              <div class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
+              <div
+                class="input-field w-full pl-4 pr-4 py-3 border border-transparent hover:border-[#57f2a9] bg-[#dfece6] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary input-glow transition-all duration-200">
                 <span id="customCashflowAmount" class="text-white">$0.00</span>
                 <span id="customCashflowPercentage" class="text-red">(0.0%)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result for mobile -->
+          <div id="save-invest-content" class="hidden mt-4">
+            <div class="space-y-4">
+              <!-- Toggle combined view -->
+              <div class="flex items-center justify-between">
+                <span id="showCombinedText" class="text-sm text-gray-700">Show total of savings and investments</span>
+                <label for="showCombinedToggle" class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="showCombinedToggle" class="sr-only peer" />
+                  <div
+                    class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5">
+                  </div>
+                </label>
+              </div>
+
+              <!-- Tabbed views -->
+              <div id="customChartsContainer" class="flex flex-col space-y-6">
+                <div id="customSavingsView" class="space-y-2">
+                  <div class="flex items-center gap-2 mb-2">
+                    <h3 class="text-xl font-bold text-gray-800 text-left">5yr Savings Projection</h3>
+                    <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">
+                        <p id="customSavingsTitle" class="text-xs text-gray-700"></p>
+                      </span></span>
+                  </div>
+                  <div class="flex justify-center items-center">
+                    <canvas id="customSavingsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
+                  </div>
+                  <div id="customSavingsProjectionSummary" class="p-0"></div>
+                </div>
+
+                <!-- Investments view (visible by default) -->
+                <div id="customInvestmentsView" class="space-y-2">
+                  <div class="flex items-center gap-2 mb-2">
+                    <h3 class="text-xl font-bold text-gray-800 text-left">5yr Investments Projection</h3>
+                    <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">
+                        <p id="customInvestmentsTitle" class="text-xs text-gray-700"></p>
+                      </span></span>
+                  </div>
+                  <div class="flex justify-center items-center">
+                    <canvas id="customInvestmentsPieChart" class="!w-[150px] !h-[150px]" width="160"
+                      height="160"></canvas>
+                  </div>
+                  <div id="customInvestmentsProjectionSummary" class="p-0"></div>
+                </div>
+
+                <!-- Both (combined) view -->
+                <div id="customBothView" class="space-y-2 hidden">
+                  <div class="flex items-center gap-2 mb-2">
+                    <h3 class="text-xl font-bold text-gray-800 text-left">5yr Savings & Investments Projection</h3>
+                    <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">
+                        <p id="customBothTitle" class="text-xs text-gray-700"></p>
+                      </span></span>
+                  </div>
+                  <div class="flex justify-center items-center">
+                    <canvas id="customBothPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
+                  </div>
+                  <div id="customBothProjectionSummary" class="p-0"></div>
+                </div>
+              </div>
+
+              <div id="infoPopup2"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                <div
+                  class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
+                  <div class="text-center">
+                    <div class="mb-4">
+                      <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <h3 class="text-xl font-bold text-gray-900 mb-2">
+                        Custom Allocation
+                      </h3>
+                      <p class="text-gray-700 leading-relaxed mb-6">
+                        Personalise your allocations and adjust the mix to
+                        explore different end goals.
+                      </p>
+                      <p>
+                        Monthly Savings
+                        <br />
+                        Monthly Investment
+                        <br />
+                        Monthly Cashflow
+                      </p>
+                      <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                        <p class="text-sm text-blue-800">
+                          <strong>Custom Projection</strong> - 5-year view
+                          on your personalised projection using
+                          <strong>3% for Savings</strong>,
+                          <strong>10% for Investing </strong> and
+                          <strong>6.5% for both</strong>.
+                        </p>
+                      </div>
+                    </div>
+                    <button id="closePopup2"
+                      class="w-full bg-blue-600 hover:bg-blue-700 !text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200">
+                      Got it, thanks!
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1207,7 +1710,8 @@
               </p>
 
               <!-- Filled gradient button -->
-              <a href="index.html#contact-us" id="recommended-nav_cta" class="w-full mb-6 px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
+              <a href="index.html#contact-us" id="recommended-nav_cta"
+                class="w-full mb-6 px-6 text-center py-3 rounded-xl font-medium !text-white bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md">
                 Talk to an expert
               </a>
             </div>
@@ -1215,15 +1719,20 @@
         </section>
       </div>
       <!-- right side -->
-      <div id="deductions-disposable-section" class="rounded-3xl p-5 w-full lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box animate-slide-up z-40">
-        <div id="deductions-nav" class="flex items-center justify-between px-6 py-2 font-medium bg-[#eef5f1] py-1 rounded-md">
-          <button type="button" data-tab="taxes" class="deductions-tab flex-1 px-4 py-3 rounded-md bg-[#dbece6] text-slate-800 whitespace-nowrap text-[.8rem]">
+      <div id="deductions-disposable-section"
+        class="rounded-3xl p-5 hidden w-full lg:block lg:w-[40%] lg:sticky lg:top-24 self-start bg-white border border-white/10 hover:border-primary/30 transition-all duration-300 result-box animate-slide-up z-40">
+        <div id="deductions-nav"
+          class="flex items-center justify-between px-6 py-2 font-medium bg-[#eef5f1] py-1 rounded-md">
+          <button type="button" data-tab="taxes"
+            class="deductions-tab flex-1 px-4 py-3 rounded-md bg-[#dbece6] text-slate-800 whitespace-nowrap text-[.8rem]">
             Deductions
           </button>
-          <button type="button" data-tab="expenses" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem] mx-2">
+          <button type="button" data-tab="expenses"
+            class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem] mx-2">
             Expenses
           </button>
-          <button type="button" data-tab="save" class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem]">
+          <button type="button" data-tab="save"
+            class="deductions-tab flex-1 px-4 py-3 rounded-md text-slate-800 hover:bg-gray-100 whitespace-nowrap text-[.8rem]">
             Save & Invest
           </button>
         </div>
@@ -1236,27 +1745,36 @@
               <div id="taxes-bar-segments" class="flex h-full"></div>
             </div>
           </div>
-          <div id="deduction-inputs-container" class="flex flex-col gap-x-6 gap-y-4 text-white transition-all duration-500 ease-in-out"></div>
-          <div class="mt-3 mb-4 border-1 p-[1px] hover:opacity-70 rounded-[12px] bg-gradient-to-r from-[#168A53] to-[#16418A]">
-            <div id="toggle-deductions-btn" class="w-full flex items-center justify-center bg-white gap-2 px-5 py-3 rounded-[12px] border text-[#168A53] cursor-pointer transition">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="stroke:url(#grad1);">
+          <div id="deduction-inputs-container"
+            class="flex flex-col gap-x-6 gap-y-4 text-white transition-all duration-500 ease-in-out"></div>
+          <div
+            class="mt-3 mb-4 border-1 p-[1px] hover:opacity-70 rounded-[12px] bg-gradient-to-r from-[#168A53] to-[#16418A]">
+            <div id="toggle-deductions-btn"
+              class="w-full flex items-center justify-center bg-white gap-2 px-5 py-3 rounded-[12px] border text-[#168A53] cursor-pointer transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" style="stroke:url(#grad1);">
                 <defs>
                   <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" style="stop-color:#168A53;stop-opacity:1" />
                     <stop offset="100%" style="stop-color:#16418A;stop-opacity:1" />
                   </linearGradient>
                 </defs>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              <span style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand deductions</span>
+              <span
+                style="background:linear-gradient(to right, #168A53, #16418A); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Expand
+                deductions</span>
 
             </div>
           </div>
         </div>
 
         <!-- Loading Overlay -->
-        <div id="capture-loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div id="capture-loading"
+          class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div class="bg-white rounded-lg p-6 flex items-center gap-3">
             <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#168A53]"></div>
             <span>Preparing your results...</span>
@@ -1266,7 +1784,8 @@
         <!-- Success/Error Notifications -->
         <div id="capture-notification" class="hidden fixed top-4 right-4 z-50">
           <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
             <span id="notification-text">Results captured successfully!</span>
@@ -1353,70 +1872,91 @@
             <div class="flex gap-2 items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#21a34f;"></span>
 
-              <h2 class="text-[1rem] font-thin opacity-80" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Healthy (from 0% to 70%)</h2>
-              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending sits well below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle creep—avoid amber (cutting it close) and red (overspending).</span></span>
+              <h2 class="text-[1rem] font-thin opacity-80"
+                style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Healthy (from 0% to 70%)</h2>
+              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending sits well
+                  below your take-home pay, a healthy gap that keeps cashflow positive. You can save and invest
+                  consistently while staying flexible for surprises. Keep habits steady and watch for lifestyle
+                  creep—avoid amber (cutting it close) and red (overspending).</span></span>
             </div>
             <div class="flex gap-2 items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#f2c94c;"></span>
-              <h2 class="text-[1rem] opacity-80 font-thin" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Caution (from 70% to 85%)</h2>
-              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is close to your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you could slip into red.</span></span>
+              <h2 class="text-[1rem] opacity-80 font-thin"
+                style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Caution (from 70% to 85%)</h2>
+              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is close to
+                  your take-home, leaving little room to save and making investing difficult. Tighten a few lifestyle
+                  choices—Spend less on wants and cut back on extras—to move into green. If lifestyle costs rise, you
+                  could slip into red.</span></span>
             </div>
             <div class="flex gap-2  items-center">
               <span class="w-[12px] h-[12px] rounded-sm" style="background:#eb5757;"></span>
-              <h2 class="text-[1rem] opacity-80 font-thin" style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Critical (from 85% to 100%)</h2>
-              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is over 85% of your take-home, leaving little to no cashflow or savings—investing isn't feasible right now thus increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle priorities to move to amber, then green.</span></span>
+              <h2 class="text-[1rem] opacity-80 font-thin"
+                style="color:#2b2a2a; -webkit-text-fill-color:#2b2a2a; font-weight:100;">Critical (from 85% to 100%)
+              </h2>
+              <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">Your lifestyle spending is over 85%
+                  of your take-home, leaving little to no cashflow or savings—investing isn't feasible right now thus
+                  increasing the risk of relying on debt. Cut non-essentials, lower big bills, and reset lifestyle
+                  priorities to move to amber, then green.</span></span>
             </div>
           </div>
 
           <!-- Progress bar with zone gradient; grey overlay covers unused -->
           <div class="expense-health-progress" aria-label="Expense health progress">
             <div class="expense-health-labels">
-              <span id="expenseUsedText" class="gradient-text"><span id="expenseUsedValue" class="text-[1.8rem] font-medium">0%</span> <span class="text-[1rem]">used</span></span>
+              <span id="expenseUsedText" class="gradient-text"><span id="expenseUsedValue"
+                  class="text-[1.8rem] font-medium">0%</span> <span class="text-[1rem]">used</span></span>
               <span id="expenseLeftText" class="gradient-text text-[1rem] font-medium">$0.00 left of $0.00</span>
             </div>
             <div class="expense-health-bar">
               <div id="expenseHealthBar" class="expense-health-fill"></div>
             </div>
           </div>
-          <div class="expense-summary flex flex-col gap-4 mt-5" id="expense-category-summary" style="break-inside: avoid;">
+          <div class="expense-summary flex flex-col gap-4 mt-5" id="expense-category-summary"
+            style="break-inside: avoid;">
             <div class="expense-summary-row flex justify-between">
               <div class="">
-                <span class="expense-summary-name font-thin text-gray-500">Housing and utilities (<span id="summary-housing-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Housing and utilities (<span
+                    id="summary-housing-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
               <span class="expense-summary-amount font-thin" id="summary-housing-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name font-thin text-gray-500">Everyday spending (<span id="summary-living-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Everyday spending (<span
+                    id="summary-living-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
               <span class="expense-summary-amount font-thin" id="summary-living-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name font-thin text-gray-500">Transportation (<span id="summary-transportation-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Transportation (<span
+                    id="summary-transportation-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
               <span class="expense-summary-amount font-thin" id="summary-transportation-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name font-thin text-gray-500">Loans and insurance (<span id="summary-loans-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Loans and insurance (<span
+                    id="summary-loans-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
               <span class="expense-summary-amount font-thin" id="summary-loans-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name font-thin text-gray-500">Children and education (<span id="summary-children-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Children and education (<span
+                    id="summary-children-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
               <span class="expense-summary-amount font-thin" id="summary-children-amt">$0.00</span>
             </div>
             <div class="expense-summary-row flex justify-between">
               <div>
-                <span class="expense-summary-name font-thin text-gray-500">Miscellaneous (<span id="summary-miscellaneous-pct">0%</span>)</span>
+                <span class="expense-summary-name font-thin text-gray-500">Miscellaneous (<span
+                    id="summary-miscellaneous-pct">0%</span>)</span>
                 <span class="expense-summary-line"></span>
               </div>
               <span class="expense-summary-amount font-thin" id="summary-miscellaneous-amt">$0.00</span>
@@ -1433,21 +1973,25 @@
 
         <div id="save-invest-content" class="hidden mt-4">
           <div class="space-y-4">
-              <!-- Toggle combined view -->
-              <div class="flex items-center justify-between">
-                <span id="showCombinedText" class="text-sm text-gray-700">Show total of savings and investments</span>
-                <label for="showCombinedToggle" class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" id="showCombinedToggle" class="sr-only peer" />
-                  <div class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5"></div>
-                </label>
-              </div>
+            <!-- Toggle combined view -->
+            <div class="flex items-center justify-between">
+              <span id="showCombinedText" class="text-sm text-gray-700">Show total of savings and investments</span>
+              <label for="showCombinedToggle" class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="showCombinedToggle" class="sr-only peer" />
+                <div
+                  class="w-11 h-6 bg-gray-200 rounded-full transition-all peer-checked:bg-[linear-gradient(to_right,#177F5B,#154D80)] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:h-5 after:w-5 after:rounded-full after:shadow after:transition-all peer-checked:after:translate-x-5">
+                </div>
+              </label>
+            </div>
 
             <!-- Tabbed views -->
             <div id="customChartsContainer" class="flex flex-col space-y-6">
               <div id="customSavingsView" class="space-y-2">
                 <div class="flex items-center gap-2 mb-2">
                   <h3 class="text-xl font-bold text-gray-800 text-left">5yr Savings Projection</h3>
-                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customSavingsTitle" class="text-xs text-gray-700"></p></span></span>
+                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">
+                      <p id="customSavingsTitle" class="text-xs text-gray-700"></p>
+                    </span></span>
                 </div>
                 <div class="flex justify-center items-center">
                   <canvas id="customSavingsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
@@ -1459,10 +2003,13 @@
               <div id="customInvestmentsView" class="space-y-2">
                 <div class="flex items-center gap-2 mb-2">
                   <h3 class="text-xl font-bold text-gray-800 text-left">5yr Investments Projection</h3>
-                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customInvestmentsTitle" class="text-xs text-gray-700"></p></span></span>
+                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">
+                      <p id="customInvestmentsTitle" class="text-xs text-gray-700"></p>
+                    </span></span>
                 </div>
                 <div class="flex justify-center items-center">
-                  <canvas id="customInvestmentsPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
+                  <canvas id="customInvestmentsPieChart" class="!w-[150px] !h-[150px]" width="160"
+                    height="160"></canvas>
                 </div>
                 <div id="customInvestmentsProjectionSummary" class="p-0"></div>
               </div>
@@ -1471,7 +2018,9 @@
               <div id="customBothView" class="space-y-2 hidden">
                 <div class="flex items-center gap-2 mb-2">
                   <h3 class="text-xl font-bold text-gray-800 text-left">5yr Savings & Investments Projection</h3>
-                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel"><p id="customBothTitle" class="text-xs text-gray-700"></p></span></span>
+                  <span class="info-tooltip text-[#81998E]">i<span class="tooltip-panel">
+                      <p id="customBothTitle" class="text-xs text-gray-700"></p>
+                    </span></span>
                 </div>
                 <div class="flex justify-center items-center">
                   <canvas id="customBothPieChart" class="!w-[150px] !h-[150px]" width="160" height="160"></canvas>
@@ -1480,13 +2029,17 @@
               </div>
             </div>
 
-            <div id="infoPopup2" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-              <div class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
+            <div id="infoPopup2"
+              class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+              <div
+                class="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
                 <div class="text-center">
                   <div class="mb-4">
                     <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                          clip-rule="evenodd" />
                       </svg>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">
@@ -1513,7 +2066,8 @@
                       </p>
                     </div>
                   </div>
-                  <button id="closePopup2" class="w-full bg-blue-600 hover:bg-blue-700 !text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200">
+                  <button id="closePopup2"
+                    class="w-full bg-blue-600 hover:bg-blue-700 !text-white font-medium py-3 px-6 rounded-xl transition-colors duration-200">
                     Got it, thanks!
                   </button>
                 </div>
@@ -1523,11 +2077,15 @@
         </div>
         <!-- Print/Download button -->
         <div class="mt-6">
-          <button id="print-download-btn" class="w-full flex items-center justify-center gap-3 px-6 py-3 rounded-2xl bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8V6a2 2 0 00-2-2H10a2 2 0 00-2 2v2M6 12H5a2 2 0 00-2 2v3a2 2 0 002 2h1m12-7h1a2 2 0 012 2v3a2 2 0 01-2 2h-1M6 19h12v-7H6v7z" />
+          <button id="print-download-btn"
+            class="w-full flex items-center justify-center gap-3 px-6 py-3 rounded-2xl bg-[linear-gradient(to_right,#177F5B,#154D80)] hover:opacity-90 transition shadow-md text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 8V6a2 2 0 00-2-2H10a2 2 0 00-2 2v2M6 12H5a2 2 0 00-2 2v3a2 2 0 002 2h1m12-7h1a2 2 0 012 2v3a2 2 0 01-2 2h-1M6 19h12v-7H6v7z" />
             </svg>
-            <span style="color:#fff !important; -webkit-text-fill-color:#fff !important;">Print or download results</span>
+            <span style="color:#fff !important; -webkit-text-fill-color:#fff !important;">Print or download
+              results</span>
           </button>
         </div>
       </div>
@@ -1542,7 +2100,7 @@
   <script src="js/webflow.js" type="text/javascript"></script>
   <script>
     //Stop body from scrolling when menu button is clicked
-    $(".nav_button").on("click", function() {
+    $(".nav_button").on("click", function () {
       $("body").toggleClass("no-scroll");
     });
   </script>
@@ -1550,7 +2108,7 @@
     // Ensure the navbar closes and icon reverts when a menu link is clicked
     $(".nav_menu_link:not(#calculatorToggle), .nav_cta").on(
       "click",
-      function() {
+      function () {
         // Simulate a click on the nav_button to trigger Webflow's built-in close animation
         $(".nav_button").click();
       }
@@ -1558,21 +2116,21 @@
   </script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
       const calculatorToggle = document.getElementById("calculatorToggle");
       const calculatorDropdown =
         document.getElementById("calculatorDropdown");
       const navMenu = document.querySelector(".nav_menu"); // Assuming this is your main navigation menu
 
       if (calculatorToggle && calculatorDropdown && navMenu) {
-        calculatorToggle.addEventListener("click", function(event) {
+        calculatorToggle.addEventListener("click", function (event) {
           event.preventDefault();
           event.stopPropagation(); // Prevent this click from immediately closing the dropdown via the window listener
           calculatorDropdown.classList.toggle("show");
         });
 
         // Close the dropdown if the user clicks outside of it, but not if clicking inside the nav menu itself
-        window.addEventListener("click", function(event) {
+        window.addEventListener("click", function (event) {
           if (
             !calculatorToggle.contains(event.target) &&
             !calculatorDropdown.contains(event.target) &&
@@ -1583,24 +2141,30 @@
         });
 
         // Prevent clicks inside the dropdown from closing it
-        calculatorDropdown.addEventListener("click", function(event) {
+        calculatorDropdown.addEventListener("click", function (event) {
           event.stopPropagation();
         });
       }
     });
   </script>
   <!-- Email Collection Modal -->
-  <div id="email-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div id="email-modal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" id="email-modal-backdrop"></div>
+      <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"
+        id="email-modal-backdrop"></div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-      <div class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div
+        class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="sm:flex sm:items-start">
-            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-[#E8F5F1] sm:mx-0 sm:h-10 sm:w-10">
+            <div
+              class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-[#E8F5F1] sm:mx-0 sm:h-10 sm:w-10">
               <!-- Icon -->
-              <svg class="h-6 w-6 text-[#177F5B]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              <svg class="h-6 w-6 text-[#177F5B]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
             </div>
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
@@ -1613,18 +2177,23 @@
                 </p>
                 <div class="mt-4">
                   <label for="user-email-input" class="sr-only">Email address</label>
-                  <input type="email" name="email" id="user-email-input" class="shadow-sm focus:ring-[#177F5B] focus:border-[#177F5B] block w-full sm:text-sm border-gray-300 rounded-md p-3 border" placeholder="you@example.com" required>
-                  <p id="email-error-msg" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address.</p>
+                  <input type="email" name="email" id="user-email-input"
+                    class="shadow-sm focus:ring-[#177F5B] focus:border-[#177F5B] block w-full sm:text-sm border-gray-300 rounded-md p-3 border"
+                    placeholder="you@example.com" required>
+                  <p id="email-error-msg" class="text-red-500 text-xs mt-1 hidden">Please enter a valid email address.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button type="button" id="submit-email-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[linear-gradient(to_right,#177F5B,#154D80)] text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#177F5B] sm:ml-3 sm:w-auto sm:text-sm">
+          <button type="button" id="submit-email-btn"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[linear-gradient(to_right,#177F5B,#154D80)] text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#177F5B] sm:ml-3 sm:w-auto sm:text-sm">
             Download Report
           </button>
-          <button type="button" id="cancel-email-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#177F5B] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+          <button type="button" id="cancel-email-btn"
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#177F5B] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
             Cancel
           </button>
         </div>
