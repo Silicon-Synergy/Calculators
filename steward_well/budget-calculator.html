@@ -552,6 +552,53 @@
       font-size: 1 rem;
       /* Size similar to screenshot */
     }
+
+    .budget-hero-section {
+      color: #fff;
+      background-color: #07341d;
+      background-image: linear-gradient(#07341d40, #07341dbf),
+        url("images/Office-Conversation-p-1080.jpeg");
+      background-position: 0 0, 50% 30%;
+      background-repeat: repeat, no-repeat;
+      background-size: auto, cover;
+      min-height: clamp(260px, 22vw, 420px);
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+      z-index: 0;
+      padding-bottom: clamp(20px, 4vw, 80px);
+    }
+
+    #main-calculator-card {
+      position: relative;
+      z-index: 2;
+      margin-top: calc(clamp(20px, 4vw, 80px) * -1);
+    }
+
+    @media (max-width: 640px) {
+      .budget-hero-section {
+        min-height: 240px;
+        background-position: 0 0, 50% 20%;
+      }
+
+      #main-calculator-card {
+        margin-top: -24px;
+      }
+    }
+
+    @media (prefers-contrast: more) {
+      .budget-hero-section {
+        background-image: linear-gradient(#07341d80, #07341df2),
+          url("images/Office-Conversation-p-1080.jpeg");
+      }
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+      .budget-hero-section {
+        background-image: linear-gradient(#07341da6, #07341df2),
+          url("images/Office-Conversation-p-1080.jpeg");
+      }
+    }
   </style>
 </head>
 
@@ -672,18 +719,22 @@
     </div>
   </div>
 
-  <div id="main-calculator-card" class="max-w-[90rem] flex flex-col relative mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Hero Section -->
-    <div class="text-left mt-24 mb-12 animate-fade-in">
-      <h2 class="text-4xl md:text-7xl w-full lg:w-[55%] font-medium text-white ">
-        Budget and<br>Cashflow Calculator
-      </h2>
-      <div class="opacity-50 lg:mt-2 mt-4 text-base lg:text-[1.2rem] w-full lg:w-[55%]">
-        This tool helps you see your cashflow clearly, set purposeful
-        allocations,<br>and view projections—simple budgeting that highlights
-        trends, flags<br>overspending, and shows progress toward your goals.
+  <section class="budget-hero-section" aria-label="Budget calculator overview">
+    <div class="max-w-[90rem] w-full mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-left pt-40 pb-12 animate-fade-in">
+        <h2 class="text-4xl md:text-7xl w-full lg:w-[55%] font-medium text-white">
+          Budget and<br />Cashflow Calculator
+        </h2>
+        <div class="opacity-70 lg:mt-3 mt-4 text-base lg:text-[1.2rem] w-full lg:w-[55%] text-white">
+          This tool helps you see your cashflow clearly, set purposeful
+          allocations,<br />and view projections—simple budgeting that highlights
+          trends, flags<br />overspending, and shows progress toward your goals.
+        </div>
       </div>
     </div>
+  </section>
+
+  <div id="main-calculator-card" class="max-w-[90rem] flex flex-col relative mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     <div class="flex flex-col lg:flex-row gap-4 justify-center">
       <!-- ÷first place i need to fix -->
