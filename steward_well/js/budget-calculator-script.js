@@ -50,14 +50,22 @@ function isPrintDownloadReady() {
 }
 
 function updatePrintDownloadButtonState() {
-  const btn = document.getElementById("print-download-btn");
-  if (!btn) return;
+  const btns = getAllElements("print-download-btn").length
+    ? getAllElements("print-download-btn")
+    : document.querySelectorAll(
+        "#print-download-btn, #print-download-btn-mobile",
+      );
+
+  if (!btns.length) return;
   const ready = isPrintDownloadReady();
-  btn.classList.toggle("opacity-50", !ready);
-  btn.classList.toggle("cursor-not-allowed", !ready);
-  btn.setAttribute("aria-disabled", ready ? "false" : "true");
-  btn.style.opacity = ready ? "" : "0.5";
-  btn.style.cursor = ready ? "" : "not-allowed";
+
+  btns.forEach((btn) => {
+    btn.classList.toggle("opacity-50", !ready);
+    btn.classList.toggle("cursor-not-allowed", !ready);
+    btn.setAttribute("aria-disabled", ready ? "false" : "true");
+    btn.style.opacity = ready ? "" : "0.5";
+    btn.style.cursor = ready ? "" : "not-allowed";
+  });
 }
 
 function showToast(message) {
@@ -1614,7 +1622,7 @@ function updateAllUI(budget) {
   updateProjectionChart();
 
   // Render all custom projection charts stacked
-  updateAllCustomProjectionCharts();
+  scheduleChartsUpdate({ force: false });
 }
 
 /**
@@ -2525,6 +2533,10 @@ function collapseAllExpenses() {
 function collapseIncomeSection() {
   const content = document.getElementById("income-section-content");
   const arrow = document.getElementById("income-section-arrow");
+  const livingExpensesSection = document.getElementById(
+    "living-expenses-section",
+  );
+
   if (content) {
     content.style.maxHeight = "0px";
     content.style.opacity = "0";
@@ -2532,17 +2544,27 @@ function collapseIncomeSection() {
   if (arrow) {
     arrow.style.transform = "rotate(0deg)";
   }
+  if (livingExpensesSection) {
+    livingExpensesSection.classList.remove("border-t-0");
+  }
 }
 
 function expandIncomeSection() {
   const content = document.getElementById("income-section-content");
   const arrow = document.getElementById("income-section-arrow");
+  const livingExpensesSection = document.getElementById(
+    "living-expenses-section",
+  );
+
   if (content) {
     content.style.maxHeight = "3000px";
     content.style.opacity = "1";
   }
   if (arrow) {
     arrow.style.transform = "rotate(180deg)";
+  }
+  if (livingExpensesSection) {
+    livingExpensesSection.classList.add("border-t-0");
   }
 }
 
@@ -3190,32 +3212,58 @@ function initCombinedToggleSync() {
         if (t !== e.target) t.checked = isChecked;
       });
       applyCombinedUi(isChecked);
-      updateAllCustomProjectionCharts();
+      scheduleChartsUpdate({ force: false });
     });
   });
 }
 
-// Debounced chart update function for performance
+function scheduleChartsUpdate({ force = false } = {}) {
+  if (!calculatorState.currentBudget) return;
+
+  const perf = (window.__swPerf = window.__swPerf || Object.create(null));
+  perf.scheduled = (perf.scheduled || 0) + 1;
+
+  const state = (window.__swChartUpdateState =
+    window.__swChartUpdateState || Object.create(null));
+  state.force = !!state.force || !!force;
+
+  if (state.timeoutId) return;
+
+  const delayMs = state.force ? 0 : 120;
+  state.timeoutId = setTimeout(() => {
+    const doForce = !!state.force;
+    state.force = false;
+    state.timeoutId = null;
+
+    const start =
+      typeof performance !== "undefined" &&
+      typeof performance.now === "function"
+        ? performance.now()
+        : Date.now();
+
+    if (doForce) {
+      forceRefreshCharts();
+    } else {
+      updateAllCustomProjectionCharts();
+    }
+
+    const end =
+      typeof performance !== "undefined" &&
+      typeof performance.now === "function"
+        ? performance.now()
+        : Date.now();
+    perf.ran = (perf.ran || 0) + 1;
+    perf.forced = (perf.forced || 0) + (doForce ? 1 : 0);
+    perf.lastMs = Math.round((end - start) * 10) / 10;
+  }, delayMs);
+}
+
 function debouncedChartUpdate() {
-  clearTimeout(window.chartUpdateTimeout);
-  window.chartUpdateTimeout = setTimeout(() => {
-    updateAllCustomProjectionCharts();
-  }, 100); // 100ms delay for better performance
+  scheduleChartsUpdate({ force: false });
 }
 
 function refreshCustomChartsSoon() {
-  if (!calculatorState.currentBudget) return;
-  if (typeof requestAnimationFrame === "function") {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        forceRefreshCharts();
-      });
-    });
-  } else {
-    setTimeout(() => {
-      forceRefreshCharts();
-    }, 0);
-  }
+  scheduleChartsUpdate({ force: true });
 }
 
 // Force refresh charts by destroying existing ones
@@ -3236,7 +3284,7 @@ function forceRefreshCharts() {
     });
   });
   // Then update with fresh data
-  updateAllCustomProjectionCharts();
+  updateAllCustomProjectionCharts({ bypassSignature: true });
 }
 
 // Handle expense changes that affect percentages and amounts
@@ -3277,13 +3325,13 @@ function handleExpenseChangeWithChartSync() {
       }
 
       // Force chart refresh
-      forceRefreshCharts();
+      refreshCustomChartsSoon();
     }
   }, 400);
 }
 
 // Render all stacked charts/summaries and titles
-function updateAllCustomProjectionCharts() {
+function updateAllCustomProjectionCharts({ bypassSignature = false } = {}) {
   if (!calculatorState.currentBudget) return;
 
   // Get current budget data
@@ -3294,13 +3342,41 @@ function updateAllCustomProjectionCharts() {
   const isCombined =
     showCombinedToggles.length > 0 ? showCombinedToggles[0].checked : false;
 
+  const sigParts = [
+    isCombined ? "1" : "0",
+    calculatorState.compoundInterest?.years ?? "",
+    calculatorState.compoundInterest?.compoundFrequency ?? "",
+    budget.monthly_disposable_income ?? "",
+    budget.total_monthly_expenses ?? "",
+    budget.recommended_savings_pct ?? "",
+    budget.recommended_investments_pct ?? "",
+    budget.custom_savings_pct ?? "",
+    budget.custom_investments_pct ?? "",
+    savingsPercentageInput?.value ?? "",
+    investmentsPercentageInput?.value ?? "",
+    customSavingsAmountInput?.value ?? "",
+    customInvestmentsAmountInput?.value ?? "",
+  ];
+  const sig = sigParts.join("|");
+  if (!bypassSignature && window.__swChartsLastSig === sig) return;
+  window.__swChartsLastSig = sig;
+
   // Determine which charts should be shown based on available data
+  const sPctLive = parseFloat(savingsPercentageInput?.value ?? "") || 0;
+  const iPctLive = parseFloat(investmentsPercentageInput?.value ?? "") || 0;
+  const sAmtLive = parseFloat(customSavingsAmountInput?.value ?? "") || 0;
+  const iAmtLive = parseFloat(customInvestmentsAmountInput?.value ?? "") || 0;
+  const hasLiveCustom =
+    !!calculatorState.customSavingsToggleEnabled &&
+    (sPctLive > 0 || iPctLive > 0 || sAmtLive > 0 || iAmtLive > 0);
   const hasSavingsData =
     budget.recommended_savings_pct > 0 ||
-    (budget.custom_savings_pct && budget.custom_savings_pct > 0);
+    (budget.custom_savings_pct && budget.custom_savings_pct > 0) ||
+    (hasLiveCustom && (sPctLive > 0 || sAmtLive > 0));
   const hasInvestmentsData =
     budget.recommended_investments_pct > 0 ||
-    (budget.custom_investments_pct && budget.custom_investments_pct > 0);
+    (budget.custom_investments_pct && budget.custom_investments_pct > 0) ||
+    (hasLiveCustom && (iPctLive > 0 || iAmtLive > 0));
 
   // Show/hide chart containers based on data availability
   const savingsViews = getAllElements("customSavingsView");
@@ -3753,10 +3829,10 @@ function switchToSaveTab() {
     }
   }
 
-  // Immediately update charts when switching to save tab
-  setTimeout(() => {
-    refreshCustomChartsSoon();
-  }, 100);
+  const saveInvestTab = document.getElementById("save-invest-content");
+  if (saveInvestTab && !saveInvestTab.classList.contains("hidden")) {
+    debouncedChartUpdate();
+  }
 }
 
 // Start the application once the DOM is fully loaded.
@@ -3768,6 +3844,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Set up visibility observer for save & invest tab to ensure charts render properly
   const saveInvestTabs = getAllElements("save-invest-content");
   saveInvestTabs.forEach((saveInvestTab) => {
+    let wasVisible = !saveInvestTab.classList.contains("hidden");
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (
@@ -3775,9 +3852,8 @@ document.addEventListener("DOMContentLoaded", () => {
           mutation.attributeName === "class"
         ) {
           const isVisible = !saveInvestTab.classList.contains("hidden");
-          if (isVisible) {
-            refreshCustomChartsSoon();
-          }
+          if (isVisible && !wasVisible) refreshCustomChartsSoon();
+          wasVisible = isVisible;
         }
       });
     });
@@ -3789,6 +3865,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const printDownloadBtn = document.getElementById("print-download-btn");
+  const printDownloadBtnMobile = document.getElementById(
+    "print-download-btn-mobile",
+  );
   const resultsWrapper = document.getElementById(
     "deductions-disposable-section",
   );
@@ -3951,6 +4030,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (printDownloadBtn) {
     printDownloadBtn.addEventListener("click", (evt) => {
+      evt.preventDefault();
+      updatePrintDownloadButtonState();
+      if (!isPrintDownloadReady()) {
+        showToast(
+          "Please enter your annual income and at least one monthly expense before downloading results.",
+        );
+        return;
+      }
+      showEmailModal();
+    });
+  }
+
+  if (printDownloadBtnMobile) {
+    printDownloadBtnMobile.addEventListener("click", (evt) => {
       evt.preventDefault();
       updatePrintDownloadButtonState();
       if (!isPrintDownloadReady()) {
