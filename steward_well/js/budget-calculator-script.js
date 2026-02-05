@@ -3997,7 +3997,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function submitToMailchimp(email) {
     // Mailchimp production URL
     const mailchimpUrl =
-      "https://gmail.us6.list-manage.com/subscribe/post?u=f706093f2bf603c2b686de6c9&id=782ff24f2e&f_id=00a9cfe3f0";
+      "https://stewardwellcapital.us14.list-manage.com/subscribe/post?u=060d01fcccabd39539e51f425&amp;id=f1650c082d&amp;f_id=00945de1f0";
 
     const formData = new URLSearchParams();
     formData.append("EMAIL", email);
