@@ -288,16 +288,49 @@ function calculateBudget(
       : 0;
 
   const monthlyTakeHomePay = monthlyDisposableIncome;
-  const remainder = Math.max(0, monthlyTakeHomePay - totalMonthlyExpenses);
+  // Calculate 10% base cashflow (reserved first)
+  const baseCashflowAmt = monthlyTakeHomePay > 0 ? 0.1 * monthlyTakeHomePay : 0;
+  // Allocatable remainder is TakeHome - Expenses - BaseCashflow
+  // This effectively reserves 10% of TakeHome for cashflow before other allocations
+  const remainder = Math.max(
+    0,
+    monthlyTakeHomePay - totalMonthlyExpenses - baseCashflowAmt,
+  );
 
-  const recommendedCashflowPct = monthlyTakeHomePay > 0 ? 10 : 0;
+  // === RECOMMENDED ALLOCATIONS ===
   const recommendedSavingsPct = remainder > 0 ? 15 : 0;
   const recommendedInvestmentsPct = remainder > 0 ? 20 : 0;
 
+  // Amounts
+  const recSavingsAmt = remainder > 0 ? 0.15 * remainder : 0;
+  const recInvestmentsAmt = remainder > 0 ? 0.2 * remainder : 0;
+  // Surplus after savings and investments
+  const recSurplusAmt =
+    remainder > 0
+      ? Math.max(0, remainder - recSavingsAmt - recInvestmentsAmt)
+      : 0;
+
+  // Total Cashflow = Base (10%) + Surplus
+  // We use Math.min to ensure we don't allocate more than (TakeHome - Expenses) if that amount is small
+  // But given remainder def, if remainder > 0, then (TakeHome - Expenses) >= BaseCashflow.
+  // If remainder == 0, then (TakeHome - Expenses) < BaseCashflow, so we just take whatever is left of TakeHome-Expenses.
+  const grossSurplus = Math.max(0, monthlyTakeHomePay - totalMonthlyExpenses);
+  const totalRecCashflowAmt =
+    remainder > 0 ? baseCashflowAmt + recSurplusAmt : grossSurplus;
+
+  // Calculate percentage for display:
+  // "10% + the remaining amount percentage relative to the original monthly take-home pay"
+  // If remainder > 0, this is 10 + (recSurplusAmt / TakeHome * 100)
+  // If remainder == 0, it's just (grossSurplus / TakeHome * 100)
+  const recommendedCashflowPct =
+    monthlyTakeHomePay > 0
+      ? (totalRecCashflowAmt / monthlyTakeHomePay) * 100
+      : 0;
+
   const recommendedAllocations = {
-    monthly_cashflow: 0.1 * monthlyTakeHomePay || 0,
-    monthly_savings: 0.15 * remainder || 0,
-    monthly_investments: 0.2 * remainder || 0,
+    monthly_cashflow: totalRecCashflowAmt,
+    monthly_savings: recSavingsAmt,
+    monthly_investments: recInvestmentsAmt,
   };
 
   const zone = null;
@@ -305,10 +338,11 @@ function calculateBudget(
   const savingsAllowed = true;
   const investmentsAllowed = true;
 
-  // Calculate custom allocations if percentages are provided
+  // === CUSTOM ALLOCATIONS ===
   let customAllocations = null;
   let finalUserSavingsPct = parseFloat(userSavingsPct) || 0;
   let finalUserInvestmentsPct = parseFloat(userInvestmentsPct) || 0;
+  let customCashflowPct = 0;
 
   // Check if user has entered any valid custom savings or investment percentage
   const hasUserCustomInput =
@@ -326,17 +360,35 @@ function calculateBudget(
       finalUserInvestmentsPct *= scale;
     }
 
+    // Amounts based on allocatable remainder
     let sAmt = remainder > 0 ? (finalUserSavingsPct / 100) * remainder : 0;
     let iAmt = remainder > 0 ? (finalUserInvestmentsPct / 100) * remainder : 0;
 
     sAmt = Math.floor(sAmt * 100) / 100;
     iAmt = Math.floor(iAmt * 100) / 100;
 
+    // Custom Surplus
+    const cSurplusAmt =
+      remainder > 0 ? Math.max(0, remainder - sAmt - iAmt) : 0;
+
+    // Total Custom Cashflow
+    const totalCustomCashflowAmt =
+      remainder > 0 ? baseCashflowAmt + cSurplusAmt : grossSurplus;
+
+    // Custom Cashflow Percentage for display
+    customCashflowPct =
+      monthlyTakeHomePay > 0
+        ? (totalCustomCashflowAmt / monthlyTakeHomePay) * 100
+        : 0;
+
     customAllocations = {
-      monthly_cashflow: recommendedAllocations.monthly_cashflow,
+      monthly_cashflow: totalCustomCashflowAmt,
       monthly_savings: sAmt,
       monthly_investments: iAmt,
     };
+  } else {
+    // If no custom input, default custom cashflow pct to recommended
+    customCashflowPct = recommendedCashflowPct;
   }
 
   return {
@@ -364,7 +416,7 @@ function calculateBudget(
     // Custom allocations also use percentages of disposable income
     custom_savings_pct: finalUserSavingsPct,
     custom_investments_pct: finalUserInvestmentsPct,
-    custom_cashflow_pct: recommendedCashflowPct,
+    custom_cashflow_pct: customCashflowPct,
     custom_allocations: customAllocations, // This will be null if no custom input
   };
 }
@@ -3990,42 +4042,36 @@ document.addEventListener("DOMContentLoaded", () => {
     if (emailErrorMsg) emailErrorMsg.classList.add("hidden");
   };
 
-  /**
-   * Submits email to Mailchimp in a production-safe, non-blocking way.
-   * @param {string} email
-   */
   async function submitToMailchimp(email) {
-    // Mailchimp production URL
-    const mailchimpUrl =
-      "https://stewardwellcapital.us14.list-manage.com/subscribe/post?u=060d01fcccabd39539e51f425&amp;id=f1650c082d&amp;f_id=00945de1f0";
-
-    const formData = new URLSearchParams();
-    formData.append("EMAIL", email);
-    // Anti-spam honeypot field (b_u_id)
-    formData.append("b_f706093f2bf603c2b686de6c9_782ff24f2e", "");
-
-    try {
-      // Set a timeout for the request to ensure it doesn't hang
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      await fetch(mailchimpUrl, {
-        method: "POST",
-        mode: "no-cors", // Required for Mailchimp's post endpoint
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString(),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-    } catch (error) {
-      // Log error but don't rethrow - we want the user flow to continue
-      if (error.name === "AbortError") {
-        console.warn("Mailchimp submission timed out.");
-      } else {
-        console.error("Mailchimp submission error:", error);
-      }
+    const actionUrl =
+      // "https://gmail.us6.list-manage.com/subscribe/post?u=f706093f2bf603c2b686de6c9&id=782ff24f2e&f_id=00a9cfe3f0";
+      "https://gmail.us18.list-manage.com/subscribe/post?u=a6ff0159919e0d2ce5c0ae096&amp;id=63d7e35d30&amp;f_id=0026b3e6f0";
+    let iframe = document.getElementById("mc-submission-iframe");
+    if (!iframe) {
+      iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.name = "mc-submission-iframe";
+      iframe.id = "mc-submission-iframe";
+      document.body.appendChild(iframe);
     }
+    const form = document.createElement("form");
+    form.action = actionUrl;
+    form.method = "POST";
+    form.target = "mc-submission-iframe";
+    const emailInput = document.createElement("input");
+    emailInput.type = "hidden";
+    emailInput.name = "EMAIL";
+    emailInput.value = email;
+    form.appendChild(emailInput);
+    const honeypot = document.createElement("input");
+    honeypot.type = "hidden";
+    // honeypot.name = "b_f706093f2bf603c2b686de6c9_782ff24f2e";
+    honeypot.name = "b_a6ff0159919e0d2ce5c0ae096_63d7e35d30";
+    honeypot.value = "";
+    form.appendChild(honeypot);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
 
   if (printDownloadBtn) {
