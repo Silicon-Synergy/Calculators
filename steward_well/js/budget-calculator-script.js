@@ -4027,13 +4027,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitEmailBtn = document.getElementById("submit-email-btn");
   const cancelEmailBtn = document.getElementById("cancel-email-btn");
 
+  // Debug: Check if email elements are found
+  console.log("Email modal elements:", {
+    emailModal: !!emailModal,
+    emailModalBackdrop: !!emailModalBackdrop,
+    userEmailInput: !!userEmailInput,
+    emailErrorMsg: !!emailErrorMsg,
+    submitEmailBtn: !!submitEmailBtn,
+    cancelEmailBtn: !!cancelEmailBtn,
+  });
+
   const showEmailModal = () => {
+    console.log("Showing email modal");
     if (emailModal) {
       emailModal.classList.remove("hidden");
       if (userEmailInput) {
         userEmailInput.value = ""; // Clear previous input
         userEmailInput.focus();
       }
+      console.log("Email modal shown successfully");
+    } else {
+      console.error("Email modal element not found");
     }
   };
 
@@ -4042,36 +4056,64 @@ document.addEventListener("DOMContentLoaded", () => {
     if (emailErrorMsg) emailErrorMsg.classList.add("hidden");
   };
 
+  function getFinancialHealthTag() {
+    const budget = calculatorState.currentBudget;
+    if (!budget || !budget.expenses_percentage) {
+      return "Healthy";
+    }
+
+    const expensePercentage = budget.expenses_percentage;
+
+    // Determine financial health based on expense percentage thresholds
+    if (expensePercentage <= 70) {
+      return "Healthy";
+    } else if (expensePercentage <= 85) {
+      return "Cautious";
+    } else {
+      return "Critical";
+    }
+  }
+
   async function submitToMailchimp(email) {
     const actionUrl =
-      // "https://gmail.us6.list-manage.com/subscribe/post?u=f706093f2bf603c2b686de6c9&id=782ff24f2e&f_id=00a9cfe3f0";
-      "https://gmail.us18.list-manage.com/subscribe/post?u=a6ff0159919e0d2ce5c0ae096&amp;id=63d7e35d30&amp;f_id=0026b3e6f0";
-    let iframe = document.getElementById("mc-submission-iframe");
-    if (!iframe) {
-      iframe = document.createElement("iframe");
-      iframe.style.display = "none";
-      iframe.name = "mc-submission-iframe";
-      iframe.id = "mc-submission-iframe";
-      document.body.appendChild(iframe);
+      "https://stewardwellcapital.us14.list-manage.com/subscribe/post?u=060d01fcccabd39539e51f425&id=f1650c082d&f_id=009a5de1f0";
+
+    try {
+      console.log(`Starting Mailchimp submission for: ${email}`);
+
+      // Get the financial health tag
+      const financialHealthTag = getFinancialHealthTag();
+      console.log(`Assigning financial health tag: ${financialHealthTag}`);
+
+      // Create FormData for the Mailchimp submission
+      const formData = new FormData();
+      formData.append("EMAIL", email);
+      formData.append("FNAME", "Subscriber");
+      formData.append("LNAME", "Friend");
+      formData.append("CALCULATOR", financialHealthTag);
+      formData.append("tags", "7016281");
+      formData.append("b_060d01fcccabd39539e51f425_f1650c082d", "");
+      formData.append("subscribe", "Subscribe");
+
+      // Use fetch API for more reliable submission
+      const response = await fetch(actionUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors", // This is important for cross-origin requests to Mailchimp
+      });
+
+      console.log("Mailchimp submission response received");
+      console.log(`Response status: ${response.status}`);
+      console.log(`Response ok: ${response.ok}`);
+      console.log("Mailchimp form submitted successfully");
+
+      // Note: With mode: 'no-cors', we can't read the response, but we know the request was sent
+      return true;
+    } catch (error) {
+      console.error("Error during Mailchimp submission:", error);
+      console.log("Continuing with download despite Mailchimp error");
+      return false;
     }
-    const form = document.createElement("form");
-    form.action = actionUrl;
-    form.method = "POST";
-    form.target = "mc-submission-iframe";
-    const emailInput = document.createElement("input");
-    emailInput.type = "hidden";
-    emailInput.name = "EMAIL";
-    emailInput.value = email;
-    form.appendChild(emailInput);
-    const honeypot = document.createElement("input");
-    honeypot.type = "hidden";
-    // honeypot.name = "b_f706093f2bf603c2b686de6c9_782ff24f2e";
-    honeypot.name = "b_a6ff0159919e0d2ce5c0ae096_63d7e35d30";
-    honeypot.value = "";
-    form.appendChild(honeypot);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
   }
 
   if (printDownloadBtn) {
@@ -4112,12 +4154,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (submitEmailBtn) {
     submitEmailBtn.addEventListener("click", async () => {
-      if (!userEmailInput) return;
+      console.log("Email submit button clicked");
+      if (!userEmailInput) {
+        console.error("User email input not found");
+        return;
+      }
 
       const email = userEmailInput.value.trim();
+      console.log(`Email entered: ${email}`);
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!email || !emailRegex.test(email)) {
+        console.log("Invalid email format");
         if (emailErrorMsg) {
           emailErrorMsg.classList.remove("hidden");
           emailErrorMsg.textContent = "Please enter a valid email address.";
@@ -4133,10 +4181,15 @@ document.addEventListener("DOMContentLoaded", () => {
       submitEmailBtn.disabled = true;
 
       try {
+        console.log("Starting Mailchimp submission process...");
         // Send to Mailchimp
-        await submitToMailchimp(email);
+        const result = await submitToMailchimp(email);
+        console.log(`Mailchimp submission completed with result: ${result}`);
+      } catch (error) {
+        console.error("Error during Mailchimp submission:", error);
       } finally {
         // Always proceed to download regardless of Mailchimp result
+        console.log("Proceeding to download PDF...");
         submitEmailBtn.textContent = originalText;
         submitEmailBtn.disabled = false;
         hideEmailModal();
