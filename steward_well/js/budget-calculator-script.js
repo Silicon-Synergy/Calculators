@@ -290,12 +290,9 @@ function calculateBudget(
   const monthlyTakeHomePay = monthlyDisposableIncome;
   // Calculate 10% base cashflow (reserved first)
   const baseCashflowAmt = monthlyTakeHomePay > 0 ? 0.1 * monthlyTakeHomePay : 0;
-  // Allocatable remainder is TakeHome - Expenses - BaseCashflow
-  // This effectively reserves 10% of TakeHome for cashflow before other allocations
-  const remainder = Math.max(
-    0,
-    monthlyTakeHomePay - totalMonthlyExpenses - baseCashflowAmt,
-  );
+  // Allocatable remainder is TakeHome - Expenses
+  // This pool is used for savings and investment percentages
+  const remainder = Math.max(0, monthlyTakeHomePay - totalMonthlyExpenses);
 
   // === RECOMMENDED ALLOCATIONS ===
   const recommendedSavingsPct = remainder > 0 ? 15 : 0;
@@ -310,13 +307,8 @@ function calculateBudget(
       ? Math.max(0, remainder - recSavingsAmt - recInvestmentsAmt)
       : 0;
 
-  // Total Cashflow = Base (10%) + Surplus
-  // We use Math.min to ensure we don't allocate more than (TakeHome - Expenses) if that amount is small
-  // But given remainder def, if remainder > 0, then (TakeHome - Expenses) >= BaseCashflow.
-  // If remainder == 0, then (TakeHome - Expenses) < BaseCashflow, so we just take whatever is left of TakeHome-Expenses.
-  const grossSurplus = Math.max(0, monthlyTakeHomePay - totalMonthlyExpenses);
-  const totalRecCashflowAmt =
-    remainder > 0 ? baseCashflowAmt + recSurplusAmt : grossSurplus;
+  // Total Cashflow = Surplus after savings and investments
+  const totalRecCashflowAmt = recSurplusAmt;
 
   // Calculate percentage for display:
   // "10% + the remaining amount percentage relative to the original monthly take-home pay"
@@ -372,8 +364,7 @@ function calculateBudget(
       remainder > 0 ? Math.max(0, remainder - sAmt - iAmt) : 0;
 
     // Total Custom Cashflow
-    const totalCustomCashflowAmt =
-      remainder > 0 ? baseCashflowAmt + cSurplusAmt : grossSurplus;
+    const totalCustomCashflowAmt = cSurplusAmt;
 
     // Custom Cashflow Percentage for display
     customCashflowPct =
